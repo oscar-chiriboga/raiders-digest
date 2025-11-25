@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arc Raiders Wiki Image Download Helper</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #0a0e14 0%, #1a2332 100%);
+            color: #fff;
+        }
+        h1 {
+            color: #00d9ff;
+            border-bottom: 2px solid #00d9ff;
+            padding-bottom: 10px;
+        }
+        .instructions {
+            background: rgba(0, 217, 255, 0.1);
+            border-left: 4px solid #00d9ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 10px 0;
+        }
+        button {
+            background: #00d9ff;
+            color: #0a0e14;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #64b5f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+        }
+        .weapon-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .weapon-link {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        .weapon-link:hover {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
+        }
+        .weapon-link a {
+            color: #00d9ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .weapon-link a:hover {
+            text-decoration: underline;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(74, 222, 128, 0.1);
+            border-left: 4px solid #4ade80;
+            border-radius: 8px;
+            display: none;
+        }
+        .warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-left-color: #fbbf24;
+            color: #fbbf24;
+        }
+        code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Arc Raiders Wiki Image Download Helper</h1>
+    
+    <div class="instructions">
+        <h2>📋 How to Use This Tool</h2>
+        <ol>
+            <li>Click <strong>"Open All Weapon Pages"</strong> below</li>
+            <li>Each weapon page will open in a new tab</li>
+            <li>On each tab:
+                <ul>
+                    <li>Right-click on the weapon image</li>
+                    <li>Select "Save Image As..."</li>
+                    <li>Save to: <code>assets/items/weapons/weapon-name.png</code></li>
+                    <li>Use lowercase and hyphens (e.g., <code>il-toro.png</code>)</li>
+                </ul>
+            </li>
+            <li>After downloading all images, update <code>src/data.js</code> with image paths</li>
+        </ol>
+    </div>
+
+    <div class="status warning">
+        ⚠️ <strong>Note:</strong> Your browser may block multiple popups. Please allow popups for this page when prompted.
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <button onclick="openAllWeaponPages()">🚀 Open All Weapon Pages (20 tabs)</button>
+        <button onclick="openAllWeaponPages(5)">📂 Open First 5 Only</button>
+    </div>
+
+    <h2>🔫 All 20 Weapons</h2>
+    <div class="weapon-list">
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Bettina" target="_blank">Bettina</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Renegade" target="_blank">Renegade</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Anvil" target="_blank">Anvil</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Vulcano" target="_blank">Vulcano</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Ferro" target="_blank">Ferro</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Tempest" target="_blank">Tempest</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Jupiter" target="_blank">Jupiter</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Osprey" target="_blank">Osprey</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Bobcat" target="_blank">Bobcat</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Equalizer" target="_blank">Equalizer</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Hullcracker" target="_blank">Hullcracker</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Stitcher" target="_blank">Stitcher</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Rattler" target="_blank">Rattler</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Arpeggio" target="_blank">Arpeggio</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Venator" target="_blank">Venator</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Il_Toro" target="_blank">Il Toro</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Burletta" target="_blank">Burletta</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Torrente" target="_blank">Torrente</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Hairpin" target="_blank">Hairpin</a></div>
+        <div class="weapon-link"><a href="https://arcraiders.wiki/wiki/Kettle" target="_blank">Kettle</a></div>
+    </div>
+
+    <div class="instructions">
+        <h2>💾 After Downloading Images</h2>
+        <p>Update <code>src/data.js</code> with this pattern:</p>
+        <pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; overflow-x: auto;">
+<code>// At top of data.js
+const weaponImages = {
+  bettina: require('./assets/items/weapons/bettina.png'),
+  renegade: require('./assets/items/weapons/renegade.png'),
+  anvil: require('./assets/items/weapons/anvil.png'),
+  // ... add all 20 weapons
+};
+
+// In WEAPONS_DATA array, add image property:
+export const WEAPONS_DATA = [
+  { 
+    name: 'Bettina',
+    image: weaponImages.bettina,  // ← Add this line
+    tier: 'A',
+    type: 'Assault Rifle',
+    // ... rest of data
+  },
+  // ... more weapons
+];</code></pre>
+    </div>
+
+    <script>
+        const weapons = [
+            'Bettina', 'Renegade', 'Anvil', 'Vulcano', 'Ferro',
+            'Tempest', 'Jupiter', 'Osprey', 'Bobcat', 'Equalizer',
+            'Hullcracker', 'Stitcher', 'Rattler', 'Arpeggio', 'Venator',
+            'Il_Toro', 'Burletta', 'Torrente', 'Hairpin', 'Kettle'
+        ];
+
+        function openAllWeaponPages(limit = null) {
+            const status = document.querySelector('.status');
+            status.style.display = 'block';
+            
+            const weaponsToOpen = limit ? weapons.slice(0, limit) : weapons;
+            
+            weaponsToOpen.forEach((weapon, index) => {
+                setTimeout(() => {
+                    const url = `https://arcraiders.wiki/wiki/${weapon}`;
+                    window.open(url, '_blank');
+                }, index * 300); // 300ms delay between each tab
+            });
+
+            setTimeout(() => {
+                status.innerHTML = `✅ Opened ${weaponsToOpen.length} weapon pages! Now download the images from each tab.`;
+            }, weaponsToOpen.length * 300);
+        }
+
+        // Show warning on page load
+        window.addEventListener('load', () => {
+            document.querySelector('.status.warning').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

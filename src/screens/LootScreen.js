@@ -1,48 +1,1005 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
-import { LOOT_DATA } from '../data';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TextInput, Dimensions, TouchableOpacity, Platform, Image, Modal } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LOOT_DATA, LOOT_CATEGORIES, LOOT_RARITIES } from '../data-generated-loot';
+import AnimatedScreen from '../components/AnimatedScreen';
+import { LinearGradient } from 'expo-linear-gradient';
 
-export default function LootScreen() {
+const { width } = Dimensions.get('window');
+const isDesktop = width > 768;
+
+// Tier to rarity color mapping
+const getTierColor = (tier) => {
+  const tierMap = {
+    'Common': { color: '#9ca3af', letter: 'D', bg: 'rgba(156, 163, 175, 0.1)' },
+    'Uncommon': { color: '#22c55e', letter: 'C', bg: 'rgba(34, 197, 94, 0.1)' },
+    'Rare': { color: '#3b82f6', letter: 'B', bg: 'rgba(59, 130, 246, 0.1)' },
+    'Epic': { color: '#a855f7', letter: 'A', bg: 'rgba(168, 85, 247, 0.1)' },
+    'Legendary': { color: '#ff3e00', letter: 'S', bg: 'rgba(255, 62, 0, 0.1)' }
+  };
+  return tierMap[tier] || tierMap['Common'];
+};
+
+const getRarityShort = (rarity) => {
+  const shorts = {
+    'Uncommon': 'UNCMN',
+    'Legendary': 'LGND',
+  };
+  return shorts[rarity] || rarity.toUpperCase();
+};
+
+export default function LootScreen({ navigation }) {
   const [search, setSearch] = useState('');
-  const filtered = LOOT_DATA.filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase()) ||
-    item.source.toLowerCase().includes(search.toLowerCase())
-  );
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedRarity, setSelectedRarity] = useState('All');
+  const [selectedItem, setSelectedItem] = useState(null);
+  
+  // Get available rarities for the selected category
+  const getAvailableRarities = () => {
+    if (selectedCategory === 'All') return LOOT_RARITIES;
+    
+    const availableRarities = new Set();
+    LOOT_DATA.forEach(item => {
+      if (item.category === selectedCategory) {
+        availableRarities.add(item.rarity);
+      }
+    });
+    return LOOT_RARITIES.filter(rarity => availableRarities.has(rarity));
+  };
+  
+  const availableRarities = getAvailableRarities();
+  
+  // Auto-reset rarity filter if current selection is not available in the new category
+  useEffect(() => {
+    if (selectedRarity !== 'All' && !availableRarities.includes(selectedRarity)) {
+      setSelectedRarity('All');
+    }
+  }, [selectedCategory, availableRarities, selectedRarity]);
+  
+  const filtered = LOOT_DATA.filter(item => {
+    const matchesSearch = !search || 
+      item.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.description.toLowerCase().includes(search.toLowerCase()) ||
+      item.subcategory.toLowerCase().includes(search.toLowerCase());
+    
+    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+    const matchesRarity = selectedRarity === 'All' || item.rarity === selectedRarity;
+    
+    return matchesSearch && matchesCategory && matchesRarity;
+  });
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>LOOT REGISTRY</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Search items (e.g., 'Alloy', 'Queen')..."
-        placeholderTextColor="#64748b"
-        value={search}
-        onChangeText={setSearch}
-      />
-      <View style={styles.tableHeader}>
-        <Text style={styles.th}>Item Name</Text>
-        <Text style={styles.th}>Source</Text>
-        <Text style={styles.th}>Usage</Text>
-      </View>
-      {filtered.map((item, idx) => (
-        <View key={idx} style={styles.row}>
-          <Text style={styles.td}>{item.name}</Text>
-          <Text style={styles.td}>{item.source}</Text>
-          <Text style={styles.tdUsage}>{item.use}</Text>
+    <AnimatedScreen>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <Ionicons name="cube" size={16} color="#ff3e00" />
+            <Text style={styles.title}>CACHE <Text style={styles.titleSlash}>//</Text> DB</Text>
+          </View>
+          <View style={styles.statsBar}>
+            <Text style={styles.statText}>TOTAL: {LOOT_DATA.length.toString().padStart(3, '0')}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statTextActive}>FILTER: {selectedCategory.toUpperCase()}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statText}>FOUND: {filtered.length.toString().padStart(3, '0')}</Text>
+          </View>
         </View>
-      ))}
-    </ScrollView>
+        
+        {/* Search Bar */}
+        <View style={styles.searchBar}>
+          <Ionicons name="search" size={14} color="#737373" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="SEARCH_DATABASE..."
+            placeholderTextColor="#3f3f46"
+            value={search}
+            onChangeText={setSearch}
+          />
+          {search ? (
+            <TouchableOpacity onPress={() => setSearch('')} style={styles.clearButton}>
+              <Ionicons name="close" size={18} color="#737373" />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.cursor} />
+          )}
+        </View>
+        
+        {/* Category Filter */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={styles.filterContainer}
+          contentContainerStyle={styles.filterContent}
+        >
+          <TouchableOpacity
+            style={[styles.filterBtn, selectedCategory === 'All' && styles.filterBtnActive]}
+            onPress={() => setSelectedCategory('All')}
+          >
+            <Text style={[styles.filterText, selectedCategory === 'All' && styles.filterTextActive]}>
+              ALL
+            </Text>
+          </TouchableOpacity>
+          {LOOT_CATEGORIES.map((category) => (
+            <TouchableOpacity
+              key={category}
+              style={[styles.filterBtn, selectedCategory === category && styles.filterBtnActive]}
+              onPress={() => setSelectedCategory(category)}
+            >
+              <Text style={[styles.filterText, selectedCategory === category && styles.filterTextActive]}>
+                {category.toUpperCase()}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        
+        {/* Rarity Filter */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={styles.rarityContainer}
+          contentContainerStyle={styles.filterContent}
+        >
+          <TouchableOpacity
+            style={[styles.rarityBtn, selectedRarity === 'All' && styles.rarityBtnActive]}
+            onPress={() => setSelectedRarity('All')}
+          >
+            <Text style={[styles.rarityText, selectedRarity === 'All' && styles.rarityTextActive]}>
+              ALL RARITIES
+            </Text>
+          </TouchableOpacity>
+          {LOOT_RARITIES.map((rarity) => {
+            const tierInfo = getTierColor(rarity);
+            const isAvailable = availableRarities.includes(rarity);
+            const isDisabled = !isAvailable && selectedCategory !== 'All';
+            
+            return (
+              <TouchableOpacity
+                key={rarity}
+                style={[
+                  styles.rarityBtn,
+                  selectedRarity === rarity && styles.rarityBtnActive,
+                  isDisabled && styles.rarityBtnDisabled,
+                  { borderColor: selectedRarity === rarity ? tierInfo.color : (isDisabled ? '#1a1a1a' : '#262626') }
+                ]}
+                onPress={() => isDisabled ? null : setSelectedRarity(rarity)}
+                disabled={isDisabled}
+              >
+                <Text style={[
+                  styles.rarityText,
+                  { color: selectedRarity === rarity ? tierInfo.color : (isDisabled ? '#404040' : '#737373') }
+                ]}>
+                  {rarity.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+        
+        {/* Loot Grid */}
+        <View style={[styles.lootGrid, isDesktop && styles.lootGridDesktop]}>
+          {filtered.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="server-outline" size={48} color="#3f3f46" />
+              <Text style={styles.emptyText}>NO_DATA_FOUND</Text>
+            </View>
+          ) : (
+            filtered.map((item) => {
+              const tierInfo = getTierColor(item.rarity);
+              return (
+                <TouchableOpacity 
+                  key={item.id} 
+                  style={[styles.lootCard, isDesktop && styles.lootCardDesktop]}
+                  onPress={() => setSelectedItem(item)}
+                  activeOpacity={0.8}
+                >
+                  {/* Compact Card Layout */}
+                  <View style={styles.cardContent}>
+                    <View style={[styles.iconContainer, { borderColor: tierInfo.color, backgroundColor: '#000' }]}>
+                      {item.icon ? (
+                        <Image source={{ uri: item.icon }} style={styles.itemIcon} resizeMode="contain" />
+                      ) : (
+                        <Ionicons name="cube" size={20} color={tierInfo.color} />
+                      )}
+                    </View>
+                    <View style={styles.cardInfo}>
+                      <View style={styles.cardHeader}>
+                        <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
+                        <View style={[styles.tierBadge, { borderColor: tierInfo.color }]}>
+                          <Text style={[styles.tierText, { color: tierInfo.color }]}>
+                            {getRarityShort(item.rarity)}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={styles.subcategoryText} numberOfLines={1}>{item.subcategory}</Text>
+                      <View style={styles.cardStats}>
+                        <View style={styles.statItem}>
+                          <Text style={styles.statLabel}>$</Text>
+                          <Text style={styles.statValue}>{item.value}</Text>
+                        </View>
+                        <View style={styles.statItem}>
+                          <Text style={styles.statLabel}>WT:</Text>
+                          <Text style={styles.statValue}>{item.weight}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                  {/* Hover accent bar */}
+                  <View style={styles.accentBar} />
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </View>
+      </ScrollView>
+      
+      {/* Item Detail Modal */}
+      <Modal
+        visible={selectedItem !== null}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setSelectedItem(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {selectedItem && (
+              <>
+                {/* Scanline Overlay */}
+                <View style={styles.scanlines} />
+                
+                {/* Modal Header */}
+                <View style={styles.modalHeader}>
+                  <View style={styles.modalHeaderLeft}>
+                    <Ionicons name="server" size={16} color="#ff3e00" />
+                    <Text style={styles.modalTitle}>ITEM_INTEL // {selectedItem.id.toString().padStart(3, '0')}</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setSelectedItem(null)} style={styles.closeButton}>
+                    <Ionicons name="close" size={20} color="#9ca3af" />
+                  </TouchableOpacity>
+                </View>
+                
+                <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+                  {/* Item Icon & Name */}
+                  <View style={styles.modalItemHeader}>
+                    <View style={[styles.modalIconContainer, { 
+                      borderColor: getTierColor(selectedItem.rarity).color,
+                      backgroundColor: getTierColor(selectedItem.rarity).bg
+                    }]}>
+                      {selectedItem.icon ? (
+                        <Image source={{ uri: selectedItem.icon }} style={styles.modalItemIcon} resizeMode="contain" />
+                      ) : (
+                        <Ionicons name="cube" size={48} color="#404040" />
+                      )}
+                    </View>
+                    <View style={styles.modalItemInfo}>
+                      <View style={styles.modalNameRow}>
+                        <Text style={styles.modalItemName}>{selectedItem.name}</Text>
+                        <View style={[styles.modalTierBadge, { 
+                          borderColor: getTierColor(selectedItem.rarity).color,
+                          backgroundColor: getTierColor(selectedItem.rarity).bg
+                        }]}>
+                          <Text style={[styles.modalTierText, { color: getTierColor(selectedItem.rarity).color }]}>
+                            {getRarityShort(selectedItem.rarity)}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={styles.modalSubcategory}>{selectedItem.category} / {selectedItem.subcategory}</Text>
+                      <Text style={styles.modalDescription} numberOfLines={2}>{selectedItem.description}</Text>
+                    </View>
+                  </View>
+                  
+                  {/* Stats */}
+                  <View style={styles.modalSection}>
+                    <View style={styles.sectionHeader}>
+                      <View style={styles.sectionDivider} />
+                      <Text style={styles.modalSectionTitle}>Stats</Text>
+                      <View style={styles.sectionDivider} />
+                    </View>
+                    <View style={styles.modalStatsRow}>
+                      <View style={styles.modalStatBox}>
+                        <Text style={styles.modalStatLabel}>VALUE</Text>
+                        <Text style={styles.modalStatValue}>${selectedItem.value}</Text>
+                      </View>
+                      <View style={styles.modalStatBox}>
+                        <Text style={styles.modalStatLabel}>WEIGHT</Text>
+                        <Text style={styles.modalStatValue}>{selectedItem.weight}kg</Text>
+                      </View>
+                      {selectedItem.stackSize > 1 && (
+                        <View style={styles.modalStatBox}>
+                          <Text style={styles.modalStatLabel}>STACK</Text>
+                          <Text style={styles.modalStatValue}>×{selectedItem.stackSize}</Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                  
+                  {/* Loot Area */}
+                  {selectedItem.lootArea && selectedItem.lootArea !== 'Unknown' && (
+                    <View style={styles.modalSection}>
+                      <Text style={styles.modalSectionTitle}>[ FOUND IN ]</Text>
+                      <View style={styles.modalLootAreas}>
+                        {selectedItem.lootArea.split(',').map((area, index) => (
+                          <View key={index} style={styles.modalLootAreaChip}>
+                            <Ionicons name="location" size={12} color="#ff3e00" />
+                            <Text style={styles.modalLootAreaText}>{area.trim()}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                  
+                  {/* Workbench */}
+                  {selectedItem.workbench && (
+                    <View style={styles.modalSection}>
+                      <Text style={styles.modalSectionTitle}>[ CRAFTING ]</Text>
+                      <View style={styles.modalWorkbench}>
+                        <Ionicons name="construct" size={14} color="#22c55e" />
+                        <Text style={styles.modalWorkbenchText}>{selectedItem.workbench}</Text>
+                      </View>
+                    </View>
+                  )}
+                  
+                  {/* Needed to Craft */}
+                  {selectedItem.components && selectedItem.components.length > 0 && (
+                    <View style={styles.modalSection}>
+                      <View style={styles.sectionHeader}>
+                        <View style={styles.sectionDivider} />
+                        <Text style={styles.modalSectionTitle}>Needed to Craft</Text>
+                        <View style={styles.sectionDivider} />
+                      </View>
+                      <View style={styles.recycleGrid}>
+                        {selectedItem.components.map((comp, index) => (
+                          <View key={index} style={styles.recycleCard}>
+                            <View style={[styles.recycleIconBox, {
+                              borderColor: getTierColor(comp.component.rarity || 'common').color,
+                              backgroundColor: getTierColor(comp.component.rarity || 'common').bg
+                            }]}>
+                              {comp.component.icon && (
+                                <Image 
+                                  source={{ uri: comp.component.icon }} 
+                                  style={styles.recycleIcon} 
+                                  resizeMode="contain"
+                                />
+                              )}
+                            </View>
+                            <View style={styles.recycleCardInfo}>
+                              <Text style={styles.recycleCardName} numberOfLines={1}>
+                                {comp.component.name}
+                              </Text>
+                              <Text style={styles.recycleCardQty}>QTY: {comp.quantity}</Text>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                  
+                  {/* Recycling Breakdown */}
+                  {selectedItem.recycleComponents && selectedItem.recycleComponents.length > 0 && (
+                    <View style={styles.modalSection}>
+                      <View style={styles.sectionHeader}>
+                        <View style={styles.sectionDivider} />
+                        <Text style={styles.modalSectionTitle}>Breakdown</Text>
+                        <View style={styles.sectionDivider} />
+                      </View>
+                      <View style={styles.recycleGrid}>
+                        {selectedItem.recycleComponents.map((comp, index) => (
+                          <View key={index} style={styles.recycleCard}>
+                            <View style={[styles.recycleIconBox, {
+                              borderColor: getTierColor(comp.component.rarity || 'common').color,
+                              backgroundColor: getTierColor(comp.component.rarity || 'common').bg
+                            }]}>
+                              {comp.component.icon && (
+                                <Image 
+                                  source={{ uri: comp.component.icon }} 
+                                  style={styles.recycleIcon} 
+                                  resizeMode="contain"
+                                />
+                              )}
+                            </View>
+                            <View style={styles.recycleCardInfo}>
+                              <Text style={styles.recycleCardName} numberOfLines={1}>
+                                {comp.component.name}
+                              </Text>
+                              <Text style={styles.recycleCardQty}>QTY: {comp.quantity}</Text>
+                            </View>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                  
+                  {/* Dropped By */}
+                  {selectedItem.droppedBy && selectedItem.droppedBy.length > 0 && (
+                    <View style={styles.modalSection}>
+                      <View style={styles.sectionHeader}>
+                        <View style={styles.sectionDivider} />
+                        <Text style={styles.modalSectionTitle}>Dropped by</Text>
+                        <View style={styles.sectionDivider} />
+                      </View>
+                      <View style={styles.enemyGrid}>
+                        {selectedItem.droppedBy.map((drop, index) => (
+                          <View key={index} style={styles.enemyCard}>
+                            <View style={styles.enemyIconBox}>
+                              {drop.arc.icon && (
+                                <Image 
+                                  source={{ uri: drop.arc.icon }} 
+                                  style={styles.enemyIcon} 
+                                  resizeMode="contain"
+                                />
+                              )}
+                            </View>
+                            <Text style={styles.enemyName} numberOfLines={1}>
+                              {drop.arc.name}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                  
+                  {/* Uses/Notes */}
+                  {selectedItem.uses && (
+                    <View style={styles.modalSection}>
+                      <Text style={styles.modalSectionTitle}>[ NOTES ]</Text>
+                      <Text style={styles.modalNotes}>{selectedItem.uses}</Text>
+                    </View>
+                  )}
+                </ScrollView>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
+    </AnimatedScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f172a' },
-  content: { padding: 20 },
-  title: { fontSize: 22, fontWeight: 'bold', color: '#fff', marginBottom: 12 },
-  input: { backgroundColor: '#1e293b', color: '#fff', borderRadius: 8, padding: 10, marginBottom: 12 },
-  tableHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  th: { color: '#f59e42', fontWeight: 'bold', flex: 1, fontSize: 13 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#1e293b', borderRadius: 6, marginBottom: 4, padding: 8 },
-  td: { color: '#fff', flex: 1, fontSize: 12 },
-  tdUsage: { color: '#f59e42', flex: 1, fontSize: 12 },
+  container: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  content: {
+    padding: isDesktop ? 40 : 20,
+    paddingTop: 80,
+    maxWidth: isDesktop ? 1200 : '100%',
+    alignSelf: 'center',
+    width: '100%',
+    paddingBottom: 100,
+  },
+  header: {
+    paddingHorizontal: isDesktop ? 24 : 0,
+    marginBottom: 24,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: isDesktop ? 32 : 24,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: -1,
+    textTransform: 'uppercase',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  statsBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#262626',
+  },
+  statText: {
+    fontSize: 10,
+    color: '#737373',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statTextActive: {
+    fontSize: 10,
+    color: '#ff3e00',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statDivider: {
+    color: '#262626',
+    marginHorizontal: 8,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#262626',
+    paddingHorizontal: isDesktop ? 24 : 16,
+    paddingVertical: 12,
+    marginBottom: 16,
+    marginHorizontal: isDesktop ? 24 : 0,
+  },
+  searchIcon: {
+    marginRight: 12,
+  },
+  searchInput: {
+    flex: 1,
+    color: '#ffffff',
+    fontSize: isDesktop ? 14 : 13,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  filterContainer: {
+    marginBottom: 16,
+  },
+  rarityContainer: {
+    marginBottom: 24,
+  },
+  filterContent: {
+    gap: 8,
+    paddingHorizontal: isDesktop ? 24 : 0,
+  },
+  filterBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#000000',
+    borderWidth: 1,
+    borderColor: '#262626',
+  },
+  filterBtnActive: {
+    backgroundColor: 'rgba(255, 62, 0, 0.1)',
+    borderColor: '#ff3e00',
+  },
+  filterText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#737373',
+    letterSpacing: 1.5,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  filterTextActive: {
+    color: '#ff3e00',
+    fontWeight: '900',
+  },
+  rarityBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#262626',
+  },
+  rarityBtnActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  rarityBtnDisabled: {
+    opacity: 0.3,
+  },
+  rarityText: {
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  rarityTextActive: {
+    fontWeight: '900',
+  },
+  lootGrid: {
+    gap: 16,
+    paddingHorizontal: isDesktop ? 24 : 0,
+  },
+  lootGridDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  lootCard: {
+    backgroundColor: 'rgba(23, 23, 23, 0.3)',
+    borderWidth: 1,
+    borderColor: '#262626',
+    padding: 16,
+    marginBottom: 16,
+  },
+  lootCardDesktop: {
+    width: 'calc(33.333% - 11px)',
+    marginBottom: 0,
+  },
+  cardTop: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 12,
+  },
+  iconContainer: {
+    width: 56,
+    height: 56,
+    backgroundColor: 'rgba(23, 23, 23, 0.5)',
+    borderWidth: 1,
+    borderColor: '#262626',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  itemIcon: {
+    width: '100%',
+    height: '100%',
+  },
+  cardHeaderSection: {
+    flex: 1,
+    minWidth: 0,
+  },
+  itemName: {
+    color: '#ffffff',
+    fontSize: isDesktop ? 16 : 14,
+    fontWeight: '700',
+    marginBottom: 8,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  categoryBadge: {
+    backgroundColor: '#171717',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: '#262626',
+  },
+  categoryBadgeText: {
+    fontSize: 8,
+    color: '#737373',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    textTransform: 'uppercase',
+  },
+  tierBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderWidth: 1,
+  },
+  tierText: {
+    fontSize: 8,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
+  },
+  itemDesc: {
+    color: '#a3a3a3',
+    fontSize: isDesktop ? 11 : 10,
+    lineHeight: 16,
+    marginBottom: 12,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    height: 32,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    gap: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#262626',
+  },
+  footerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  footerLabel: {
+    fontSize: 8,
+    color: '#525252',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
+  },
+  footerValue: {
+    fontSize: 9,
+    color: '#22c55e',
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80,
+  },
+  emptyText: {
+    color: '#737373',
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 2,
+    marginTop: 16,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  emptySubtext: {
+    color: '#525252',
+    fontSize: 11,
+    marginTop: 8,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: isDesktop ? 40 : 20,
+  },
+  modalContent: {
+    backgroundColor: '#0a0a0a',
+    borderWidth: 2,
+    borderColor: '#ff3e00',
+    width: '100%',
+    maxWidth: isDesktop ? 600 : '100%',
+    maxHeight: '90%',
+    shadowColor: '#ff3e00',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#262626',
+  },
+  modalHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  modalTitle: {
+    fontSize: isDesktop ? 18 : 16,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: 1,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalBody: {
+    padding: 20,
+  },
+  modalItemHeader: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#262626',
+  },
+  modalIconContainer: {
+    width: 64,
+    height: 64,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalItemIcon: {
+    width: 56,
+    height: 56,
+  },
+  modalItemInfo: {
+    flex: 1,
+  },
+  modalNameRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 6,
+  },
+  modalItemName: {
+    flex: 1,
+    fontSize: isDesktop ? 18 : 16,
+    fontWeight: '700',
+    color: '#ffffff',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  modalSubcategory: {
+    fontSize: 10,
+    color: '#737373',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  modalTierBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+  },
+  modalTierText: {
+    fontSize: 9,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  modalSection: {
+    marginBottom: 24,
+  },
+  modalSectionTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#ff3e00',
+    letterSpacing: 2,
+    marginBottom: 12,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  modalDescription: {
+    fontSize: 11,
+    color: '#9ca3af',
+    lineHeight: 16,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  modalStatsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalStatBox: {
+    flex: 1,
+    backgroundColor: 'rgba(23, 23, 23, 0.5)',
+    borderWidth: 1,
+    borderColor: '#262626',
+    padding: 12,
+    alignItems: 'center',
+  },
+  modalStatLabel: {
+    fontSize: 9,
+    color: '#737373',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+    marginBottom: 6,
+  },
+  modalStatValue: {
+    fontSize: 14,
+    color: '#22c55e',
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  modalLootAreas: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  modalLootAreaChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(255, 62, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: '#ff3e00',
+  },
+  modalLootAreaText: {
+    fontSize: 10,
+    color: '#ff3e00',
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  modalWorkbench: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    borderWidth: 1,
+    borderColor: '#22c55e',
+  },
+  modalWorkbenchText: {
+    fontSize: 12,
+    color: '#22c55e',
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  modalNotes: {
+    fontSize: isDesktop ? 13 : 12,
+    color: '#a3a3a3',
+    lineHeight: 18,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontStyle: 'italic',
+  },
+  // Section Headers
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
+  },
+  sectionDivider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#262626',
+  },
+  // Recycling Grid
+  recycleGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  recycleCard: {
+    width: isDesktop ? 'calc(50% - 6px)' : '100%',
+    backgroundColor: 'rgba(23, 23, 23, 0.3)',
+    borderWidth: 1,
+    borderColor: '#262626',
+    padding: 12,
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  recycleIconBox: {
+    width: 40,
+    height: 40,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  recycleIcon: {
+    width: 32,
+    height: 32,
+  },
+  recycleCardInfo: {
+    flex: 1,
+  },
+  recycleCardName: {
+    fontSize: 11,
+    color: '#ffffff',
+    fontWeight: '600',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    marginBottom: 4,
+  },
+  recycleCardQty: {
+    fontSize: 10,
+    color: '#22c55e',
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  // Enemy Grid
+  enemyGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  enemyCard: {
+    width: isDesktop ? 'calc(25% - 9px)' : 'calc(33.333% - 8px)',
+    backgroundColor: 'rgba(23, 23, 23, 0.3)',
+    borderWidth: 1,
+    borderColor: '#262626',
+    padding: 12,
+    alignItems: 'center',
+    gap: 8,
+  },
+  enemyIconBox: {
+    width: 48,
+    height: 48,
+    backgroundColor: 'rgba(255, 62, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: '#ff3e00',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  enemyIcon: {
+    width: 40,
+    height: 40,
+  },
+  enemyName: {
+    fontSize: 10,
+    color: '#ffffff',
+    fontWeight: '600',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    textAlign: 'center',
+  },
+  // Scanlines effect
+  scanlines: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    opacity: 0.05,
+    pointerEvents: 'none',
+  },
 });

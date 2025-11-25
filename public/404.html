@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raiders Digest - Redirecting...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000a05;
+            color: #00ff99;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .loader {
+            text-align: center;
+        }
+        .blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <h1 class="blink">▓▓▓ REDIRECTING...</h1>
+        <p>Returning to base...</p>
+    </div>
+    <script>
+        // Redirect to home
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 1000);
+    </script>
+</body>
+</html>

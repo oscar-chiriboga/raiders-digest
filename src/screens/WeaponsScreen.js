@@ -1,62 +1,423 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { WEAPONS_DATA } from '../data';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+// Import from data-generated.js which has Metaforge CDN images
+import { WEAPONS_DATA } from '../data-generated';
+import AnimatedScreen from '../components/AnimatedScreen';
+
+const { width } = Dimensions.get('window');
+const isDesktop = width > 768;
 
 const FILTERS = ['All', 'Assault Rifle', 'Rifle', 'Shotgun', 'Sniper', 'SMG', 'Heavy', 'Pistol'];
 
-export default function WeaponsScreen() {
+// Tier to rarity color mapping
+const getTierColor = (tier) => {
+  const tierMap = {
+    'D': { color: '#9ca3af', name: 'Common' },      // Grey
+    'C': { color: '#22c55e', name: 'Uncommon' },    // Green
+    'B': { color: '#3b82f6', name: 'Rare' },        // Blue
+    'A': { color: '#a855f7', name: 'Epic' },        // Purple
+    'S': { color: '#ff3e00', name: 'Legendary' }    // Orange
+  };
+  return tierMap[tier] || tierMap['D'];
+};
+
+export default function WeaponsScreen({ navigation }) {
   const [filter, setFilter] = useState('All');
+  
   const filtered = filter === 'All' ? WEAPONS_DATA : WEAPONS_DATA.filter(w => w.type === filter);
 
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>WEAPON DATABASE</Text>
-        <Text style={styles.count}>RECORDS: {filtered.length}</Text>
-      </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow}>
-        {FILTERS.map(f => (
-          <TouchableOpacity key={f} onPress={() => setFilter(f)} style={[styles.filterBtn, filter === f && styles.filterBtnActive]}>
-            <Text style={[styles.filterText, filter === f && styles.filterTextActive]}>{f}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      {filtered.map((weapon, idx) => (
-        <View key={idx} style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.weaponName}>{weapon.name}</Text>
-            <Text style={[styles.tier, styles[`tier${weapon.tier}`]]}>TIER {weapon.tier}</Text>
-          </View>
-          <Text style={styles.type}>{weapon.type}</Text>
-          <Text style={styles.desc}>{weapon.desc}</Text>
-          <Text style={styles.craft}>Craft: {weapon.craft}</Text>
+  const StatBar = ({ label, value, max }) => {
+    const percentage = Math.min((value / max) * 100, 100);
+    return (
+      <View style={styles.statBarContainer}>
+        <Text style={styles.statBarLabel}>{label}</Text>
+        <View style={styles.statBarTrack}>
+          <View style={[styles.statBarFill, { width: `${percentage}%` }]} />
         </View>
-      ))}
-    </ScrollView>
+        <Text style={styles.statBarValue}>{value}</Text>
+      </View>
+    );
+  };
+
+  return (
+    <AnimatedScreen>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <Ionicons name="radio-outline" size={16} color="#ff3e00" />
+            <Text style={styles.title}>ARSENAL // DB</Text>
+          </View>
+          <View style={styles.statsBar}>
+            <Text style={styles.statText}>TOTAL_UNITS: {WEAPONS_DATA.length.toString().padStart(2, '0')}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statTextActive}>ACTIVE_FILTER: {filter.toUpperCase()}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statText}>RESULTS: {filtered.length.toString().padStart(2, '0')}</Text>
+          </View>
+        </View>
+        
+        {/* Filter Row */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.filterRow}
+          contentContainerStyle={styles.filterContent}
+        >
+          {FILTERS.map(f => (
+            <TouchableOpacity 
+              key={f} 
+              onPress={() => setFilter(f)} 
+              style={[styles.filterBtn, filter === f && styles.filterBtnActive]}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.filterText, filter === f && styles.filterTextActive]}>{f.toUpperCase()}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        
+        {/* Weapons Grid */}
+        <View style={[styles.weaponsGrid, isDesktop && styles.weaponsGridDesktop]}>
+          {filtered.map((weapon, idx) => (
+            <View key={idx} style={[styles.weaponCard, isDesktop && styles.weaponCardDesktop]}>
+              {/* Corner Accents */}
+              <View style={styles.cornerTL} />
+              <View style={styles.cornerTR} />
+              <View style={styles.cornerBL} />
+              <View style={styles.cornerBR} />
+              
+              {/* Image Area */}
+              <View style={styles.imageContainer}>
+                <View style={styles.gridBackground} />
+                {weapon.image ? (
+                  <Image 
+                    source={{ uri: weapon.image }}
+                    style={styles.weaponImage}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <Ionicons name="flash" size={48} color="#404040" style={styles.placeholderIcon} />
+                )}
+                {/* Tier Badge */}
+                <View style={[styles.tierBadge, { borderColor: getTierColor(weapon.tier).color, backgroundColor: `${getTierColor(weapon.tier).color}10` }]}>
+                  <Text style={[styles.tierText, { color: getTierColor(weapon.tier).color }]}>TIER_{weapon.tier}</Text>
+                </View>
+              </View>
+              
+              {/* Card Content */}
+              <View style={styles.cardContent}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.weaponName} numberOfLines={1}>{weapon.name}</Text>
+                  <View style={styles.typeBadge}>
+                    <Text style={styles.typeText}>{weapon.type}</Text>
+                  </View>
+                </View>
+                
+                <Text style={styles.weaponDesc} numberOfLines={2}>{weapon.desc}</Text>
+                
+                {/* Stats Section */}
+                <View style={styles.statsSection}>
+                  <StatBar label="DMG" value={weapon.stats.damage} max={150} />
+                  <StatBar label="RPM" value={weapon.stats.fireRate} max={1200} />
+                  <StatBar label="RNG" value={weapon.stats.range || 50} max={100} />
+                </View>
+                
+                {/* Crafting Cost */}
+                <View style={styles.craftSection}>
+                  <Text style={styles.craftLabel}>CRAFT_COST</Text>
+                  <Text style={styles.craftValue}>{weapon.craft || '1,200 SCRAP'}</Text>
+                </View>
+              </View>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </AnimatedScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f172a' },
-  content: { padding: 20 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  title: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
-  count: { color: '#f59e42', fontFamily: 'monospace', fontSize: 12 },
-  filterRow: { flexDirection: 'row', marginBottom: 16 },
-  filterBtn: { backgroundColor: '#1e293b', borderRadius: 16, paddingVertical: 6, paddingHorizontal: 14, marginRight: 8 },
-  filterBtnActive: { backgroundColor: '#f59e42' },
-  filterText: { color: '#cbd5e1', fontWeight: 'bold', fontSize: 13 },
-  filterTextActive: { color: '#000' },
-  card: { backgroundColor: '#1e293b', borderRadius: 10, padding: 16, marginBottom: 14 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
-  weaponName: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  tier: { fontWeight: 'bold', fontSize: 12, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
-  tierS: { backgroundColor: '#f59e42', color: '#000' },
-  tierA: { backgroundColor: '#e5e7eb', color: '#000' },
-  tierB: { backgroundColor: '#64748b', color: '#fff' },
-  tierC: { backgroundColor: '#334155', color: '#fff' },
-  tierD: { backgroundColor: '#334155', color: '#fff' },
-  type: { color: '#fbbf24', fontSize: 12, marginBottom: 2 },
-  desc: { color: '#cbd5e1', fontSize: 13, marginBottom: 4 },
-  craft: { color: '#f59e42', fontSize: 12 },
+  container: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  content: {
+    padding: isDesktop ? 40 : 20,
+    paddingTop: 80,
+    maxWidth: isDesktop ? 1400 : '100%',
+    alignSelf: 'center',
+    width: '100%',
+    paddingBottom: 100,
+  },
+  header: {
+    paddingHorizontal: isDesktop ? 24 : 0,
+    marginBottom: 24,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: isDesktop ? 32 : 24,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: -1,
+    textTransform: 'uppercase',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  statsBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#262626',
+  },
+  statText: {
+    fontSize: 10,
+    color: '#737373',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statTextActive: {
+    fontSize: 10,
+    color: '#ff3e00',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statDivider: {
+    color: '#262626',
+    marginHorizontal: 8,
+  },
+  filterRow: {
+    marginBottom: 24,
+  },
+  filterContent: {
+    gap: 8,
+    paddingHorizontal: isDesktop ? 24 : 0,
+  },
+  filterBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#262626',
+  },
+  filterBtnActive: {
+    backgroundColor: '#ff3e00',
+    borderColor: '#ff3e00',
+  },
+  filterText: {
+    color: '#737373',
+    fontWeight: '700',
+    fontSize: 10,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  filterTextActive: {
+    color: '#000000',
+    fontWeight: '700',
+  },
+  weaponsGrid: {
+    gap: 16,
+    paddingHorizontal: isDesktop ? 24 : 0,
+  },
+  weaponsGridDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  weaponCard: {
+    backgroundColor: 'rgba(23, 23, 23, 0.3)',
+    borderWidth: 1,
+    borderColor: '#262626',
+    marginBottom: 16,
+    overflow: 'visible',
+    position: 'relative',
+  },
+  weaponCardDesktop: {
+    width: 'calc(33.333% - 11px)',
+    marginBottom: 0,
+  },
+  cornerTL: {
+    position: 'absolute',
+    top: -1,
+    left: -1,
+    width: 8,
+    height: 8,
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderColor: '#ff3e00',
+    opacity: 0,
+    zIndex: 10,
+  },
+  cornerTR: {
+    position: 'absolute',
+    top: -1,
+    right: -1,
+    width: 8,
+    height: 8,
+    borderRightWidth: 1,
+    borderTopWidth: 1,
+    borderColor: '#ff3e00',
+    opacity: 0,
+    zIndex: 10,
+  },
+  cornerBL: {
+    position: 'absolute',
+    bottom: -1,
+    left: -1,
+    width: 8,
+    height: 8,
+    borderLeftWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#ff3e00',
+    opacity: 0,
+    zIndex: 10,
+  },
+  cornerBR: {
+    position: 'absolute',
+    bottom: -1,
+    right: -1,
+    width: 8,
+    height: 8,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#ff3e00',
+    opacity: 0,
+    zIndex: 10,
+  },
+  imageContainer: {
+    height: isDesktop ? 150 : 120,
+    backgroundColor: '#000000',
+    position: 'relative',
+    borderBottomWidth: 1,
+    borderBottomColor: '#262626',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gridBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.1,
+    backgroundColor: 'transparent',
+  },
+  weaponImage: {
+    width: '100%',
+    height: '100%',
+    zIndex: 1,
+  },
+  placeholderIcon: {
+    opacity: 0.3,
+  },
+  tierBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderWidth: 1,
+  },
+  tierText: {
+    fontSize: 9,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
+  },
+  cardContent: {
+    padding: 16,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  weaponName: {
+    color: '#ffffff',
+    fontWeight: '700',
+    fontSize: isDesktop ? 18 : 16,
+    flex: 1,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  typeBadge: {
+    borderWidth: 1,
+    borderColor: '#262626',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    marginLeft: 8,
+  },
+  typeText: {
+    fontSize: 9,
+    color: '#737373',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  weaponDesc: {
+    color: '#a3a3a3',
+    fontSize: isDesktop ? 12 : 11,
+    lineHeight: 18,
+    marginBottom: 16,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    height: 36,
+  },
+  statsSection: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#262626',
+    marginBottom: 12,
+  },
+  statBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 4,
+  },
+  statBarLabel: {
+    width: 48,
+    fontSize: 9,
+    color: '#737373',
+    textAlign: 'right',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    textTransform: 'uppercase',
+  },
+  statBarTrack: {
+    flex: 1,
+    height: 4,
+    backgroundColor: '#171717',
+    position: 'relative',
+  },
+  statBarFill: {
+    height: '100%',
+    backgroundColor: '#ff3e00',
+  },
+  statBarValue: {
+    width: 32,
+    fontSize: 9,
+    color: '#ff3e00',
+    textAlign: 'right',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  craftSection: {
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#262626',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  craftLabel: {
+    fontSize: 9,
+    color: '#737373',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  craftValue: {
+    fontSize: 9,
+    color: '#ff3e00',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
 });

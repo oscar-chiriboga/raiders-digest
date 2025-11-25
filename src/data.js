@@ -121,3 +121,33 @@ export const LOOT_DATA = [
   { name: 'Heavy Gun Parts', source: 'Rocketeers / Heavy ARCs', use: 'Heavy Weapon Crafting' },
   { name: 'Sensors', source: 'Snitch / Spotter', use: 'Gadget Crafting' },
 ];
+
+export const PATCH_NOTES_DATA = [
+  {
+    id: '1.0.1',
+    title: 'Early Access Launch',
+    date: '2025-11-24',
+    summary: 'Initial release of the Raiders Digest companion app.',
+    content: [
+      'Launched the Raiders Digest app with core databases.',
+      'Added Weapons Arsenal with tier lists and crafting recipes.',
+      'Added Enemy Intel with weak points and loot drops.',
+      'Added Map Database with POIs and loot hotspots.',
+      'Added Loot Registry for resource tracking.',
+      'Implemented bottom tab navigation for easier mobile use.',
+      'Optimized UI for both mobile and desktop views.'
+    ]
+  },
+  {
+    id: '1.0.0',
+    title: 'Project Inception',
+    date: '2025-11-20',
+    summary: 'Started development of the ultimate ARC Raiders companion.',
+    content: [
+      'Defined project scope and core features.',
+      'Set up React Native Expo environment.',
+      'Designed the dark, tactical UI theme.',
+      'Gathered initial data on weapons and enemies.'
+    ]
+  }
+];
