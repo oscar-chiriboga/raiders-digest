@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: isDesktop ? 40 : 20,
-    paddingTop: 80,
+    paddingTop: 120,
     maxWidth: isDesktop ? 1400 : '100%',
     alignSelf: 'center',
     width: '100%',

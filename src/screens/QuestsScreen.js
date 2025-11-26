@@ -234,11 +234,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#050505',
   },
   scrollContent: {
+    paddingTop: 120,
     paddingBottom: 100,
   },
   header: {
     padding: 20,
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
     borderBottomWidth: 2,
     borderBottomColor: '#262626',
     backgroundColor: '#000000',

@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: isDesktop ? 40 : 24,
-    paddingTop: 80,
+    paddingTop: 120,
     paddingBottom: 100,
     maxWidth: isDesktop ? 1200 : '100%',
     alignSelf: 'center',

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LOOT_DATA, LOOT_CATEGORIES, LOOT_RARITIES } from '../data-generated-loot';
 import AnimatedScreen from '../components/AnimatedScreen';
 import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS } from '../styles/colors';
 
 const { width } = Dimensions.get('window');
 const isDesktop = width > 768;
@@ -11,11 +12,11 @@ const isDesktop = width > 768;
 // Tier to rarity color mapping
 const getTierColor = (tier) => {
   const tierMap = {
-    'Common': { color: '#9ca3af', letter: 'D', bg: 'rgba(156, 163, 175, 0.1)' },
-    'Uncommon': { color: '#22c55e', letter: 'C', bg: 'rgba(34, 197, 94, 0.1)' },
-    'Rare': { color: '#3b82f6', letter: 'B', bg: 'rgba(59, 130, 246, 0.1)' },
-    'Epic': { color: '#a855f7', letter: 'A', bg: 'rgba(168, 85, 247, 0.1)' },
-    'Legendary': { color: '#FFD700', letter: 'S', bg: 'rgba(255, 215, 0, 0.1)' }
+    'Common': { color: COLORS.rarity.common, letter: 'D', bg: 'rgba(156, 163, 175, 0.1)' },
+    'Uncommon': { color: COLORS.rarity.uncommon, letter: 'C', bg: 'rgba(34, 197, 94, 0.1)' },
+    'Rare': { color: COLORS.rarity.rare, letter: 'B', bg: 'rgba(59, 130, 246, 0.1)' },
+    'Epic': { color: COLORS.rarity.epic, letter: 'A', bg: 'rgba(168, 85, 247, 0.1)' },
+    'Legendary': { color: COLORS.rarity.legendary, letter: 'S', bg: 'rgba(255, 215, 0, 0.1)' }
   };
   return tierMap[tier] || tierMap['Common'];
 };
@@ -74,7 +75,7 @@ export default function LootScreen({ navigation }) {
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Ionicons name="cube" size={16} color="#ff8c00" />
+            <Ionicons name="cube" size={16} color={COLORS.primary} />
             <Text style={styles.title}>CACHE <Text style={styles.titleSlash}>//</Text> DB</Text>
           </View>
           <View style={styles.statsBar}>
@@ -88,17 +89,17 @@ export default function LootScreen({ navigation }) {
         
         {/* Search Bar */}
         <View style={styles.searchBar}>
-          <Ionicons name="search" size={14} color="#737373" style={styles.searchIcon} />
+          <Ionicons name="search" size={14} color={COLORS.textMuted} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="SEARCH_DATABASE..."
-            placeholderTextColor="#3f3f46"
+            placeholderTextColor={COLORS.textDark}
             value={search}
             onChangeText={setSearch}
           />
           {search ? (
             <TouchableOpacity onPress={() => setSearch('')} style={styles.clearButton}>
-              <Ionicons name="close" size={18} color="#737373" />
+              <Ionicons name="close" size={18} color={COLORS.textMuted} />
             </TouchableOpacity>
           ) : (
             <View style={styles.cursor} />
@@ -160,14 +161,14 @@ export default function LootScreen({ navigation }) {
                   styles.rarityBtn,
                   selectedRarity === rarity && styles.rarityBtnActive,
                   isDisabled && styles.rarityBtnDisabled,
-                  { borderColor: selectedRarity === rarity ? tierInfo.color : (isDisabled ? '#1a1a1a' : '#262626') }
+                  { borderColor: selectedRarity === rarity ? tierInfo.color : (isDisabled ? COLORS.border : COLORS.border) }
                 ]}
                 onPress={() => isDisabled ? null : setSelectedRarity(rarity)}
                 disabled={isDisabled}
               >
                 <Text style={[
                   styles.rarityText,
-                  { color: selectedRarity === rarity ? tierInfo.color : (isDisabled ? '#404040' : '#737373') }
+                  { color: selectedRarity === rarity ? tierInfo.color : (isDisabled ? COLORS.textDark : COLORS.textMuted) }
                 ]}>
                   {rarity.toUpperCase()}
                 </Text>
@@ -180,7 +181,7 @@ export default function LootScreen({ navigation }) {
         <View style={[styles.lootGrid, isDesktop && styles.lootGridDesktop]}>
           {filtered.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="server-outline" size={48} color="#3f3f46" />
+              <Ionicons name="server-outline" size={48} color={COLORS.textDark} />
               <Text style={styles.emptyText}>NO_DATA_FOUND</Text>
             </View>
           ) : (
@@ -195,7 +196,7 @@ export default function LootScreen({ navigation }) {
                 >
                   {/* Compact Card Layout */}
                   <View style={styles.cardContent}>
-                    <View style={[styles.iconContainer, { borderColor: tierInfo.color, backgroundColor: '#000' }]}>
+                    <View style={[styles.iconContainer, { borderColor: tierInfo.color, backgroundColor: COLORS.background }]}>
                       {item.icon ? (
                         <Image source={{ uri: item.icon }} style={styles.itemIcon} resizeMode="contain" />
                       ) : (
@@ -212,20 +213,18 @@ export default function LootScreen({ navigation }) {
                         </View>
                       </View>
                       <Text style={styles.subcategoryText} numberOfLines={1}>{item.subcategory}</Text>
-                      <View style={styles.cardStats}>
-                        <View style={styles.statItem}>
-                          <Text style={styles.statLabel}>$</Text>
-                          <Text style={styles.statValue}>{item.value}</Text>
-                        </View>
-                        <View style={styles.statItem}>
-                          <Text style={styles.statLabel}>WT:</Text>
-                          <Text style={styles.statValue}>{item.weight}</Text>
-                        </View>
-                      </View>
                     </View>
                   </View>
-                  {/* Hover accent bar */}
-                  <View style={styles.accentBar} />
+                  <View style={styles.cardStats}>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statLabel}>$</Text>
+                      <Text style={styles.statValue}>{item.value}</Text>
+                    </View>
+                    <View style={styles.statItem}>
+                      <Text style={styles.statLabel}>WT:</Text>
+                      <Text style={styles.statValue}>{item.weight}</Text>
+                    </View>
+                  </View>
                 </TouchableOpacity>
               );
             })
@@ -250,11 +249,11 @@ export default function LootScreen({ navigation }) {
                 {/* Modal Header */}
                 <View style={styles.modalHeader}>
                   <View style={styles.modalHeaderLeft}>
-                    <Ionicons name="server" size={16} color="#ff8c00" />
+                    <Ionicons name="server" size={16} color={COLORS.primary} />
                     <Text style={styles.modalTitle}>ITEM_INTEL // {selectedItem.id.toString().padStart(3, '0')}</Text>
                   </View>
                   <TouchableOpacity onPress={() => setSelectedItem(null)} style={styles.closeButton}>
-                    <Ionicons name="close" size={20} color="#9ca3af" />
+                    <Ionicons name="close" size={20} color={COLORS.text} />
                   </TouchableOpacity>
                 </View>
                 
@@ -320,7 +319,7 @@ export default function LootScreen({ navigation }) {
                       <View style={styles.modalLootAreas}>
                         {selectedItem.lootArea.split(',').map((area, index) => (
                           <View key={index} style={styles.modalLootAreaChip}>
-                            <Ionicons name="location" size={12} color="#ff3e00" />
+                            <Ionicons name="location" size={12} color={COLORS.primary} />
                             <Text style={styles.modalLootAreaText}>{area.trim()}</Text>
                           </View>
                         ))}
@@ -333,7 +332,7 @@ export default function LootScreen({ navigation }) {
                     <View style={styles.modalSection}>
                       <Text style={styles.modalSectionTitle}>[ CRAFTING ]</Text>
                       <View style={styles.modalWorkbench}>
-                        <Ionicons name="construct" size={14} color="#22c55e" />
+                        <Ionicons name="construct" size={14} color={COLORS.rarity.uncommon} />
                         <Text style={styles.modalWorkbenchText}>{selectedItem.workbench}</Text>
                       </View>
                     </View>
@@ -462,7 +461,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: isDesktop ? 40 : 20,
-    paddingTop: 80,
+    paddingTop: 120,
     maxWidth: isDesktop ? 1200 : '100%',
     alignSelf: 'center',
     width: '100%',
@@ -491,22 +490,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#262626',
+    borderTopColor: COLORS.border,
   },
   statText: {
     fontSize: 10,
-    color: '#737373',
+    color: COLORS.textMuted,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
   statTextActive: {
     fontSize: 10,
-    color: '#ff8c00',
+    color: COLORS.primary,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
   statDivider: {
-    color: '#262626',
+    color: COLORS.border,
     marginHorizontal: 8,
   },
   searchBar: {
@@ -514,7 +513,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: COLORS.border,
     paddingHorizontal: isDesktop ? 24 : 16,
     paddingVertical: 12,
     marginBottom: 16,
@@ -525,7 +524,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: '#ffffff',
+    color: COLORS.text,
     fontSize: isDesktop ? 14 : 13,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -542,23 +541,23 @@ const styles = StyleSheet.create({
   filterBtn: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: '#000000',
+    backgroundColor: COLORS.background,
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: COLORS.border,
   },
   filterBtnActive: {
     backgroundColor: 'rgba(255, 140, 0, 0.1)',
-    borderColor: '#ff8c00',
+    borderColor: COLORS.primary,
   },
   filterText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#737373',
+    color: COLORS.textMuted,
     letterSpacing: 1.5,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   filterTextActive: {
-    color: '#ff8c00',
+    color: COLORS.primary,
     fontWeight: '900',
   },
   rarityBtn: {
@@ -566,7 +565,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: COLORS.border,
   },
   rarityBtnActive: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -594,60 +593,50 @@ const styles = StyleSheet.create({
   lootCard: {
     backgroundColor: 'rgba(23, 23, 23, 0.3)',
     borderWidth: 1,
-    borderColor: '#262626',
-    padding: 16,
+    borderColor: COLORS.border,
     marginBottom: 16,
+    overflow: 'hidden',
   },
   lootCardDesktop: {
     width: 'calc(33.333% - 11px)',
     marginBottom: 0,
   },
-  cardTop: {
+  cardContent: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 12,
+    padding: 12,
   },
   iconContainer: {
-    width: 56,
-    height: 56,
+    width: 48,
+    height: 48,
     backgroundColor: 'rgba(23, 23, 23, 0.5)',
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: COLORS.border,
     justifyContent: 'center',
     alignItems: 'center',
+    flexShrink: 0,
   },
   itemIcon: {
     width: '100%',
     height: '100%',
   },
-  cardHeaderSection: {
+  cardInfo: {
     flex: 1,
     minWidth: 0,
+    justifyContent: 'center',
   },
   itemName: {
-    color: '#ffffff',
-    fontSize: isDesktop ? 16 : 14,
+    color: COLORS.text,
+    fontSize: 14,
     fontWeight: '700',
-    marginBottom: 8,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  metaRow: {
+  cardHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     gap: 8,
-    flexWrap: 'wrap',
-  },
-  categoryBadge: {
-    backgroundColor: '#171717',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: '#262626',
-  },
-  categoryBadgeText: {
-    fontSize: 8,
-    color: '#737373',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    textTransform: 'uppercase',
+    marginBottom: 4,
   },
   tierBadge: {
     paddingHorizontal: 6,
@@ -660,35 +649,34 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1,
   },
-  itemDesc: {
-    color: '#a3a3a3',
-    fontSize: isDesktop ? 11 : 10,
-    lineHeight: 16,
-    marginBottom: 12,
+  subcategoryText: {
+    color: COLORS.textMuted,
+    fontSize: 10,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    height: 32,
+    textTransform: 'uppercase',
   },
-  cardFooter: {
+  cardStats: {
     flexDirection: 'row',
-    gap: 16,
-    paddingTop: 12,
+    gap: 12,
+    paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: '#262626',
+    borderTopColor: COLORS.border,
+    padding: 12,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
-  footerItem: {
+  statItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-  footerLabel: {
-    fontSize: 8,
-    color: '#525252',
+  statLabel: {
+    fontSize: 10,
+    color: COLORS.textDark,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    letterSpacing: 1,
   },
-  footerValue: {
-    fontSize: 9,
-    color: '#22c55e',
+  statValue: {
+    fontSize: 11,
+    color: COLORS.rarity.uncommon,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -699,17 +687,11 @@ const styles = StyleSheet.create({
     paddingVertical: 80,
   },
   emptyText: {
-    color: '#737373',
+    color: COLORS.textMuted,
     fontSize: 14,
     fontWeight: '900',
     letterSpacing: 2,
     marginTop: 16,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
-  emptySubtext: {
-    color: '#525252',
-    fontSize: 11,
-    marginTop: 8,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   // Modal styles
@@ -721,13 +703,13 @@ const styles = StyleSheet.create({
     padding: isDesktop ? 40 : 20,
   },
   modalContent: {
-    backgroundColor: '#0a0a0a',
+    backgroundColor: COLORS.background,
     borderWidth: 2,
-    borderColor: '#ff8c00',
+    borderColor: COLORS.primary,
     width: '100%',
     maxWidth: isDesktop ? 600 : '100%',
     maxHeight: '90%',
-    shadowColor: '#ff8c00',
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
@@ -738,7 +720,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#262626',
+    borderBottomColor: COLORS.border,
   },
   modalHeaderLeft: {
     flexDirection: 'row',
@@ -748,7 +730,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: isDesktop ? 18 : 16,
     fontWeight: '900',
-    color: '#ffffff',
+    color: COLORS.text,
     letterSpacing: 1,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -764,7 +746,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#262626',
+    borderBottomColor: COLORS.border,
   },
   modalIconContainer: {
     width: 64,
@@ -796,7 +778,7 @@ const styles = StyleSheet.create({
   },
   modalSubcategory: {
     fontSize: 10,
-    color: '#737373',
+    color: COLORS.textMuted,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -819,14 +801,14 @@ const styles = StyleSheet.create({
   modalSectionTitle: {
     fontSize: 11,
     fontWeight: '900',
-    color: '#ff8c00',
+    color: COLORS.primary,
     letterSpacing: 2,
     marginBottom: 12,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   modalDescription: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: COLORS.text,
     lineHeight: 16,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -838,20 +820,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(23, 23, 23, 0.5)',
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: COLORS.border,
     padding: 12,
     alignItems: 'center',
   },
   modalStatLabel: {
     fontSize: 9,
-    color: '#737373',
+    color: COLORS.textMuted,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
     marginBottom: 6,
   },
   modalStatValue: {
     fontSize: 14,
-    color: '#22c55e',
+    color: COLORS.rarity.uncommon,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -868,11 +850,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: 'rgba(255, 140, 0, 0.1)',
     borderWidth: 1,
-    borderColor: '#ff8c00',
+    borderColor: COLORS.primary,
   },
   modalLootAreaText: {
     fontSize: 10,
-    color: '#ff8c00',
+    color: COLORS.primary,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     textTransform: 'uppercase',
@@ -886,17 +868,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: 'rgba(34, 197, 94, 0.1)',
     borderWidth: 1,
-    borderColor: '#22c55e',
+    borderColor: COLORS.rarity.uncommon,
   },
   modalWorkbenchText: {
     fontSize: 12,
-    color: '#22c55e',
+    color: COLORS.rarity.uncommon,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   modalNotes: {
     fontSize: isDesktop ? 13 : 12,
-    color: '#a3a3a3',
+    color: COLORS.textMuted,
     lineHeight: 18,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     fontStyle: 'italic',
@@ -911,7 +893,7 @@ const styles = StyleSheet.create({
   sectionDivider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#262626',
+    backgroundColor: COLORS.border,
   },
   // Recycling Grid
   recycleGrid: {
@@ -923,7 +905,7 @@ const styles = StyleSheet.create({
     width: isDesktop ? 'calc(50% - 6px)' : '100%',
     backgroundColor: 'rgba(23, 23, 23, 0.3)',
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: COLORS.border,
     padding: 12,
     flexDirection: 'row',
     gap: 12,
@@ -945,14 +927,14 @@ const styles = StyleSheet.create({
   },
   recycleCardName: {
     fontSize: 11,
-    color: '#ffffff',
+    color: COLORS.text,
     fontWeight: '600',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     marginBottom: 4,
   },
   recycleCardQty: {
     fontSize: 10,
-    color: '#22c55e',
+    color: COLORS.rarity.uncommon,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -966,7 +948,7 @@ const styles = StyleSheet.create({
     width: isDesktop ? 'calc(25% - 9px)' : 'calc(33.333% - 8px)',
     backgroundColor: 'rgba(23, 23, 23, 0.3)',
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: COLORS.border,
     padding: 12,
     alignItems: 'center',
     gap: 8,
@@ -976,7 +958,7 @@ const styles = StyleSheet.create({
     height: 48,
     backgroundColor: 'rgba(255, 140, 0, 0.1)',
     borderWidth: 1,
-    borderColor: '#ff8c00',
+    borderColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -986,7 +968,7 @@ const styles = StyleSheet.create({
   },
   enemyName: {
     fontSize: 10,
-    color: '#ffffff',
+    color: COLORS.text,
     fontWeight: '600',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     textAlign: 'center',
