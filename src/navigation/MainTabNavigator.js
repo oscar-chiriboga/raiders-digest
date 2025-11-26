@@ -21,18 +21,18 @@ export default function MainTabNavigator() {
         tabBarStyle: {
           backgroundColor: '#000000',
           borderTopWidth: 2,
-          borderTopColor: 'rgba(255, 62, 0, 0.3)',
+          borderTopColor: 'rgba(255, 140, 0, 0.3)',
           height: Platform.OS === 'ios' ? 88 : 70,
           paddingBottom: Platform.OS === 'ios' ? 28 : 8,
           paddingTop: 4,
           position: 'absolute',
           elevation: 0,
-          shadowColor: '#ff3e00',
+          shadowColor: '#ff8c00',
           shadowOffset: { width: 0, height: -4 },
           shadowOpacity: 0.2,
           shadowRadius: 12,
         },
-        tabBarActiveTintColor: '#ff3e00',
+        tabBarActiveTintColor: '#ff8c00',
         tabBarInactiveTintColor: '#404040',
         tabBarLabelStyle: {
           fontSize: 9,
@@ -57,7 +57,7 @@ export default function MainTabNavigator() {
         ),
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-          let iconColor = focused ? '#ff3e00' : '#404040';
+          let iconColor = focused ? '#ff8c00' : '#404040';
 
           if (route.name === 'Home') {
             iconName = 'home';
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     left: 0,
     width: '30%',
     height: 2,
-    backgroundColor: '#ff3e00',
-    shadowColor: '#ff3e00',
+    backgroundColor: '#ff8c00',
+    shadowColor: '#ff8c00',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 8,
@@ -150,14 +150,14 @@ const styles = StyleSheet.create({
     top: -4,
     width: 32,
     height: 2,
-    backgroundColor: '#ff3e00',
-    shadowColor: '#ff3e00',
+    backgroundColor: '#ff8c00',
+    shadowColor: '#ff8c00',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 10,
   },
   iconGlow: {
-    shadowColor: '#ff3e00',
+    shadowColor: '#ff8c00',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 12,

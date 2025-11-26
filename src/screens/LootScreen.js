@@ -15,7 +15,7 @@ const getTierColor = (tier) => {
     'Uncommon': { color: '#22c55e', letter: 'C', bg: 'rgba(34, 197, 94, 0.1)' },
     'Rare': { color: '#3b82f6', letter: 'B', bg: 'rgba(59, 130, 246, 0.1)' },
     'Epic': { color: '#a855f7', letter: 'A', bg: 'rgba(168, 85, 247, 0.1)' },
-    'Legendary': { color: '#ff3e00', letter: 'S', bg: 'rgba(255, 62, 0, 0.1)' }
+    'Legendary': { color: '#FFD700', letter: 'S', bg: 'rgba(255, 215, 0, 0.1)' }
   };
   return tierMap[tier] || tierMap['Common'];
 };
@@ -74,7 +74,7 @@ export default function LootScreen({ navigation }) {
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Ionicons name="cube" size={16} color="#ff3e00" />
+            <Ionicons name="cube" size={16} color="#ff8c00" />
             <Text style={styles.title}>CACHE <Text style={styles.titleSlash}>//</Text> DB</Text>
           </View>
           <View style={styles.statsBar}>
@@ -250,7 +250,7 @@ export default function LootScreen({ navigation }) {
                 {/* Modal Header */}
                 <View style={styles.modalHeader}>
                   <View style={styles.modalHeaderLeft}>
-                    <Ionicons name="server" size={16} color="#ff3e00" />
+                    <Ionicons name="server" size={16} color="#ff8c00" />
                     <Text style={styles.modalTitle}>ITEM_INTEL // {selectedItem.id.toString().padStart(3, '0')}</Text>
                   </View>
                   <TouchableOpacity onPress={() => setSelectedItem(null)} style={styles.closeButton}>
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
   },
   statTextActive: {
     fontSize: 10,
-    color: '#ff3e00',
+    color: '#ff8c00',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
@@ -547,8 +547,8 @@ const styles = StyleSheet.create({
     borderColor: '#262626',
   },
   filterBtnActive: {
-    backgroundColor: 'rgba(255, 62, 0, 0.1)',
-    borderColor: '#ff3e00',
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
+    borderColor: '#ff8c00',
   },
   filterText: {
     fontSize: 10,
@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   filterTextActive: {
-    color: '#ff3e00',
+    color: '#ff8c00',
     fontWeight: '900',
   },
   rarityBtn: {
@@ -723,11 +723,11 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#0a0a0a',
     borderWidth: 2,
-    borderColor: '#ff3e00',
+    borderColor: '#ff8c00',
     width: '100%',
     maxWidth: isDesktop ? 600 : '100%',
     maxHeight: '90%',
-    shadowColor: '#ff3e00',
+    shadowColor: '#ff8c00',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
@@ -819,7 +819,7 @@ const styles = StyleSheet.create({
   modalSectionTitle: {
     fontSize: 11,
     fontWeight: '900',
-    color: '#ff3e00',
+    color: '#ff8c00',
     letterSpacing: 2,
     marginBottom: 12,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
@@ -866,13 +866,13 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingVertical: 6,
     paddingHorizontal: 10,
-    backgroundColor: 'rgba(255, 62, 0, 0.1)',
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
     borderWidth: 1,
-    borderColor: '#ff3e00',
+    borderColor: '#ff8c00',
   },
   modalLootAreaText: {
     fontSize: 10,
-    color: '#ff3e00',
+    color: '#ff8c00',
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     textTransform: 'uppercase',
@@ -974,9 +974,9 @@ const styles = StyleSheet.create({
   enemyIconBox: {
     width: 48,
     height: 48,
-    backgroundColor: 'rgba(255, 62, 0, 0.1)',
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
     borderWidth: 1,
-    borderColor: '#ff3e00',
+    borderColor: '#ff8c00',
     justifyContent: 'center',
     alignItems: 'center',
   },

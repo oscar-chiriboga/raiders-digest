@@ -17,7 +17,7 @@ const getTierColor = (tier) => {
     'C': { color: '#22c55e', name: 'Uncommon' },    // Green
     'B': { color: '#3b82f6', name: 'Rare' },        // Blue
     'A': { color: '#a855f7', name: 'Epic' },        // Purple
-    'S': { color: '#ff3e00', name: 'Legendary' }    // Orange
+    'S': { color: '#FFD700', name: 'Legendary' }    // Gold for Legendary
   };
   return tierMap[tier] || tierMap['D'];
 };
@@ -46,7 +46,7 @@ export default function WeaponsScreen({ navigation }) {
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Ionicons name="radio-outline" size={16} color="#ff3e00" />
+            <Ionicons name="radio-outline" size={16} color="#ff8c00" />
             <Text style={styles.title}>ARSENAL // DB</Text>
           </View>
           <View style={styles.statsBar}>
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   },
   statTextActive: {
     fontSize: 10,
-    color: '#ff3e00',
+    color: '#ff8c00',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
@@ -199,20 +199,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: isDesktop ? 24 : 0,
   },
   filterBtn: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: '#262626',
   },
   filterBtnActive: {
-    backgroundColor: '#ff3e00',
-    borderColor: '#ff3e00',
+    backgroundColor: '#ff8c00',
+    borderColor: '#ff8c00',
   },
   filterText: {
     color: '#737373',
     fontWeight: '700',
-    fontSize: 10,
+    fontSize: 12,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   weaponsGrid: {
-    gap: 16,
+    gap: 24,
     paddingHorizontal: isDesktop ? 24 : 0,
   },
   weaponsGridDesktop: {
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(23, 23, 23, 0.3)',
     borderWidth: 1,
     borderColor: '#262626',
-    marginBottom: 16,
+    marginBottom: 24,
     overflow: 'visible',
     position: 'relative',
   },
@@ -248,8 +248,8 @@ const styles = StyleSheet.create({
     height: 8,
     borderLeftWidth: 1,
     borderTopWidth: 1,
-    borderColor: '#ff3e00',
-    opacity: 0,
+    borderColor: '#ff8c00',
+    opacity: 1,
     zIndex: 10,
   },
   cornerTR: {
@@ -260,8 +260,8 @@ const styles = StyleSheet.create({
     height: 8,
     borderRightWidth: 1,
     borderTopWidth: 1,
-    borderColor: '#ff3e00',
-    opacity: 0,
+    borderColor: '#ff8c00',
+    opacity: 1,
     zIndex: 10,
   },
   cornerBL: {
@@ -272,8 +272,8 @@ const styles = StyleSheet.create({
     height: 8,
     borderLeftWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#ff3e00',
-    opacity: 0,
+    borderColor: '#ff8c00',
+    opacity: 1,
     zIndex: 10,
   },
   cornerBR: {
@@ -284,8 +284,8 @@ const styles = StyleSheet.create({
     height: 8,
     borderRightWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#ff3e00',
-    opacity: 0,
+    borderColor: '#ff8c00',
+    opacity: 1,
     zIndex: 10,
   },
   imageContainer: {
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   cardContent: {
-    padding: 16,
+    padding: 20,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   weaponName: {
     color: '#ffffff',
     fontWeight: '700',
-    fontSize: isDesktop ? 18 : 16,
+    fontSize: isDesktop ? 20 : 18,
     flex: 1,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -359,14 +359,14 @@ const styles = StyleSheet.create({
   weaponDesc: {
     color: '#a3a3a3',
     fontSize: isDesktop ? 12 : 11,
-    lineHeight: 18,
+    lineHeight: 20,
     marginBottom: 16,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     height: 36,
   },
   statsSection: {
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    padding: 8,
+    padding: 12,
     borderWidth: 1,
     borderColor: '#262626',
     marginBottom: 12,
@@ -393,12 +393,12 @@ const styles = StyleSheet.create({
   },
   statBarFill: {
     height: '100%',
-    backgroundColor: '#ff3e00',
+    backgroundColor: '#ff8c00',
   },
   statBarValue: {
     width: 32,
     fontSize: 9,
-    color: '#ff3e00',
+    color: '#ff8c00',
     textAlign: 'right',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   },
   craftValue: {
     fontSize: 9,
-    color: '#ff3e00',
+    color: '#ff8c00',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
 });

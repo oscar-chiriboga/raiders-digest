@@ -85,8 +85,8 @@ const RaidersLogo = ({ style }) => (
       <Path d="M-45 0 L 0 45 L 45 0" strokeWidth="2" opacity="0.8" />
       
       {/* Signal Arcs - Orange */}
-      <Path d="M-15 -35 A 20 20 0 0 1 15 -35" strokeWidth="4" stroke="#ff3e00" strokeLinecap="round" />
-      <Path d="M-28 -48 A 36 36 0 0 1 28 -48" strokeWidth="3" stroke="#ff3e00" opacity="0.6" strokeLinecap="round" />
+      <Path d="M-15 -35 A 20 20 0 0 1 15 -35" strokeWidth="4" stroke="#ff8c00" strokeLinecap="round" />
+      <Path d="M-28 -48 A 36 36 0 0 1 28 -48" strokeWidth="3" stroke="#ff8c00" opacity="0.6" strokeLinecap="round" />
       
       {/* Center vertical line */}
       <Line x1="0" y1="-10" x2="0" y2="45" strokeWidth="2" opacity="0.5" />
@@ -145,7 +145,7 @@ export default function HomeScreen({ navigation }) {
           <RaidersLogo style={styles.logo} />
           
           <View style={styles.heroStatusBadge}>
-            <Ionicons name="terminal" size={14} color="#ff3e00" />
+            <Ionicons name="terminal" size={14} color="#ff8c00" />
             <Text style={styles.heroStatusText}>Status: Online</Text>
           </View>
           
@@ -191,7 +191,7 @@ export default function HomeScreen({ navigation }) {
               style={styles.manageButton}
             >
               <Text style={styles.manageButtonText}>MANAGE</Text>
-              <Ionicons name="chevron-forward" size={12} color="#ff3e00" />
+              <Ionicons name="chevron-forward" size={12} color="#ff8c00" />
             </TouchableOpacity>
           </View>
           
@@ -211,7 +211,7 @@ export default function HomeScreen({ navigation }) {
               {trackedQuests.map((quest) => (
                 <View key={quest.id} style={styles.questCard}>
                   <View style={styles.questHeader}>
-                    <Ionicons name="newspaper" size={16} color="#ff3e00" />
+                    <Ionicons name="newspaper" size={16} color="#ff8c00" />
                     <Text style={styles.questTitle} numberOfLines={1}>{quest.name}</Text>
                   </View>
                   
@@ -238,7 +238,7 @@ export default function HomeScreen({ navigation }) {
                         {quest.rewards.slice(0, 3).map((reward, idx) => {
                           const rarity = reward.item?.rarity?.toLowerCase() || 'common';
                           const rarityColor = {
-                            legendary: '#ff3e00',
+                            legendary: '#FFD700',
                             epic: '#a855f7',
                             rare: '#3b82f6',
                             uncommon: '#22c55e',
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     opacity: 0.1,
-    backgroundColor: '#ff3e00',
+    backgroundColor: '#ff8c00',
   },
   logo: {
     width: '100%',
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: 'rgba(255, 62, 0, 0.3)',
+    borderColor: 'rgba(255, 140, 0, 0.3)',
     borderRadius: 16,
     marginTop: 8,
     marginBottom: 16,
@@ -379,7 +379,7 @@ const styles = StyleSheet.create({
   heroStatusText: {
     fontSize: 10,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#ff3e00',
+    color: '#ff8c00',
     letterSpacing: 3,
     textTransform: 'uppercase',
   },
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
     height: 1,
     opacity: 0.5,
     // Create gradient effect manually with multiple views if needed
-    backgroundColor: '#ff3e00',
+    backgroundColor: '#ff8c00',
   },
   
   // Section Headers
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   sectionAccent: {
     width: 4,
     height: 16,
-    backgroundColor: '#ff3e00',
+    backgroundColor: '#ff8c00',
   },
   sectionAccentGrey: {
     width: 4,
@@ -490,14 +490,14 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: 'rgba(255, 62, 0, 0.1)',
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
     borderWidth: 1,
-    borderColor: '#ff3e00',
+    borderColor: '#ff8c00',
   },
   manageButtonText: {
     fontSize: 9,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#ff3e00',
+    color: '#ff8c00',
     fontWeight: '700',
     letterSpacing: 1,
   },
@@ -530,11 +530,11 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   questCard: {
-    backgroundColor: 'rgba(255, 62, 0, 0.05)',
+    backgroundColor: 'rgba(255, 140, 0, 0.05)',
     borderWidth: 1,
     borderColor: '#262626',
     borderLeftWidth: 3,
-    borderLeftColor: '#ff3e00',
+    borderLeftColor: '#ff8c00',
     padding: 16,
   },
   questHeader: {
@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
   objectiveBullet: {
     width: 4,
     height: 4,
-    backgroundColor: '#ff3e00',
+    backgroundColor: '#ff8c00',
     marginTop: 6,
   },
   objectiveText: {
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
   viewAllText: {
     fontSize: 10,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#ff3e00',
+    color: '#ff8c00',
     letterSpacing: 1,
   },
   patchCard: {
@@ -661,7 +661,7 @@ const styles = StyleSheet.create({
   patchVersion: {
     fontSize: 11,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#ff3e00',
+    color: '#ff8c00',
     fontWeight: '700',
   },
   patchDate: {
