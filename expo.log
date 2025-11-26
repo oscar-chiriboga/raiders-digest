@@ -1,6 +1,2 @@
-npm warn Unknown cli config "--web". This will stop working in the next major version of npm.
-
-> raidersdigest-all@1.0.0 start
-> expo start
-
 Starting project at /app
+Starting Metro Bundler
