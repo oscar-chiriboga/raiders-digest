@@ -9,7 +9,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Anvil",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/anvil-i.webp",
-    "tier": "B",
+    "tier": "C",
     "type": "Pistol",
     "desc": "Single-action hand cannon with high damage output and headshot damage, but slow handling.",
     "craft": "Weapon Bench 2",
@@ -43,7 +43,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Arpeggio",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/arpeggio-i.webp",
-    "tier": "B",
+    "tier": "C",
     "type": "Assault Rifle",
     "desc": "Has decent damage output and accuracy.",
     "craft": "Weapon Bench",
@@ -94,7 +94,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Burletta",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/burletta-i.webp",
-    "tier": "B",
+    "tier": "C",
     "type": "Pistol",
     "desc": "Semi-automatic pistol with decent damage output and accuracy. Can be fired as fast as you can pull the trigger.",
     "craft": "Weapon Bench 2",
@@ -128,7 +128,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Ferro",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/ferro-i.webp",
-    "tier": "C",
+    "tier": "D",
     "type": "Rifle",
     "desc": "Heavy break-action rifle. Packs a punch, but must be reloaded between every shot.",
     "craft": "Weapon Bench",
@@ -145,7 +145,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Hairpin",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/hairpin-i.webp",
-    "tier": "C",
+    "tier": "D",
     "type": "Pistol",
     "desc": "Single-action pistol with a built-in silencer. Great for stealth, but tricky in combat.",
     "craft": "Weapon Bench 1 or Basic Bench",
@@ -196,7 +196,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Il Toro",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/il%20Toro-i.webp",
-    "tier": "B",
+    "tier": "C",
     "type": "Shotgun",
     "desc": "Pump-action shotgun with large bullet spread, sharp falloff, and high damage output.",
     "craft": "Weapon Bench 1",
@@ -230,7 +230,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Kettle",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/kettle-i.webp",
-    "tier": "C",
+    "tier": "D",
     "type": "Assault Rifle",
     "desc": "Semi-automatic assault rifle. Quick and accurate, but has low bullet velocity and takes a long time reload.",
     "craft": "Weapon Bench",
@@ -247,7 +247,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Osprey",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/osprey-i.webp",
-    "tier": "A",
+    "tier": "B",
     "type": "Sniper",
     "desc": "A scoped bolt-action sniper rifle with reliable damage output and accuracy.",
     "craft": "Weapon Bench 2",
@@ -264,7 +264,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Rattler",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/rattler-i.webp",
-    "tier": "C",
+    "tier": "D",
     "type": "Assault Rifle",
     "desc": "Fully automatic assault rifle. A cheap offensive option, but has to be reloaded 2 bullets at a time.",
     "craft": "Weapon Bench",
@@ -281,7 +281,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Renegade",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/renegade-i.webp",
-    "tier": "A",
+    "tier": "B",
     "type": "Rifle",
     "desc": "Lever-action battle rifle with high damage output, accuracy, and headshot damage.",
     "craft": "Weapon Bench 2",
@@ -298,7 +298,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Stitcher",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/stitcher-ii.webp",
-    "tier": "C",
+    "tier": "D",
     "type": "SMG",
     "desc": "Full automatic SMG. Deals good damage, but has quite a low fire-rate and can be hard to control.",
     "craft": "Weapon Bench",
@@ -332,7 +332,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Torrente",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/torrente-i.webp",
-    "tier": "A",
+    "tier": "B",
     "type": "Heavy",
     "desc": "Has large ammo capacity, but is only accurate while crouched. ",
     "craft": "Weapon Bench 2",
@@ -349,7 +349,7 @@ export const WEAPONS_DATA = [
   {
     "name": "Venator",
     "image": "https://cdn.metaforge.app/arc-raiders/icons/venator-i.webp",
-    "tier": "A",
+    "tier": "B",
     "type": "Pistol",
     "desc": "Semi-automatic pistol. Fires two shots at a time.",
     "craft": "Weapon Bench 2",

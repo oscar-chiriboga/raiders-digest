@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platform, ActivityIndicator, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AnimatedScreen from '../components/AnimatedScreen';
+import DesktopNav from '../components/DesktopNav';
 import { TRADERS_DATA } from '../data-traders';
 
 const { width } = Dimensions.get('window');
@@ -43,7 +44,7 @@ export default function TradersScreen({ navigation }) {
           <Ionicons name="cube" size={16} color={rarityColor} />
         </View>
         <View style={styles.itemInfo}>
-          <Text style={styles.itemName} numberOfLines={1}>{item.item?.name || 'Unknown Item'}</Text>
+          <Text style={styles.itemName}>{item.item?.name || 'Unknown Item'}</Text>
           <Text style={styles.itemType}>{item.item?.type || 'Item'}</Text>
         </View>
         {/* Render costs if available */}
@@ -62,22 +63,26 @@ export default function TradersScreen({ navigation }) {
 
   return (
     <AnimatedScreen>
-      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Traders" />}
+      <ScrollView style={styles.container} contentContainerStyle={[styles.scrollContent, isDesktop && styles.contentDesktop]}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#ff3e00" />
-          </TouchableOpacity>
-          <View>
-            <View style={styles.headerAccent} />
-            <Text style={styles.headerTitle}>TRADERS NETWORK</Text>
-            <Text style={styles.headerSubtitle}>AUTHORIZED VENDORS & BLACK MARKET</Text>
+          <View style={styles.headerTop}>
+            <Ionicons name="people" size={16} color="#ff8c00" />
+            <Text style={styles.headerTitle}>TRADERS // DB</Text>
+          </View>
+          <View style={styles.statsBar}>
+            <Text style={styles.statText}>TOTAL: {traders.length.toString().padStart(2, '0')}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statTextActive}>STATUS: ONLINE</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statText}>NETWORK: ACTIVE</Text>
           </View>
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#ff3e00" />
+            <ActivityIndicator size="large" color="#ff8c00" />
             <Text style={styles.loadingText}>ESTABLISHING CONNECTION...</Text>
           </View>
         ) : error ? (
@@ -95,7 +100,7 @@ export default function TradersScreen({ navigation }) {
                   onPress={() => toggleTrader(trader.id)}
                 >
                   <View style={styles.traderIcon}>
-                    <Ionicons name="person" size={24} color="#ffffff" />
+                    <Ionicons name="person" size={24} color="#ff8c00" />
                   </View>
                   <View style={styles.traderInfo}>
                     <Text style={styles.traderName}>{trader.name}</Text>
@@ -114,8 +119,8 @@ export default function TradersScreen({ navigation }) {
                     
                     <View style={styles.inventorySection}>
                       <View style={styles.sectionHeader}>
-                        <Ionicons name="cart" size={14} color="#ff3e00" />
-                        <Text style={styles.sectionTitle}>CURRENT INVENTORY</Text>
+                        <Ionicons name="cart" size={14} color="#ff8c00" />
+                        <Text style={styles.sectionTitle}>INVENTORY</Text>
                       </View>
                       
                       <View style={styles.inventoryGrid}>
@@ -140,45 +145,61 @@ export default function TradersScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050505',
+    backgroundColor: 'transparent',
   },
   scrollContent: {
+    padding: isDesktop ? 40 : 20,
+    paddingTop: isDesktop ? 20 : 10,
+    maxWidth: isDesktop ? 1400 : '100%',
+    alignSelf: 'center',
+    width: '100%',
     paddingBottom: 100,
   },
+  contentDesktop: {
+    paddingTop: 70,
+  },
   header: {
-    padding: 20,
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    borderBottomWidth: 2,
-    borderBottomColor: '#262626',
-    backgroundColor: '#000000',
+    paddingHorizontal: isDesktop ? 24 : 0,
+    marginBottom: 24,
+  },
+  headerTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-  },
-  backButton: {
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#262626',
-    backgroundColor: 'rgba(23, 23, 23, 0.5)',
-  },
-  headerAccent: {
-    width: 40,
-    height: 4,
-    backgroundColor: '#ff3e00',
+    gap: 8,
     marginBottom: 8,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: isDesktop ? 32 : 24,
     fontWeight: '900',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#ffffff',
-    letterSpacing: 2,
-  },
-  headerSubtitle: {
-    fontSize: 10,
+    letterSpacing: -1,
+    textTransform: 'uppercase',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  statsBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#262626',
+    gap: 4,
+  },
+  statText: {
+    fontSize: 10,
     color: '#737373',
-    letterSpacing: 1,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statTextActive: {
+    fontSize: 10,
+    color: '#ff8c00',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statDivider: {
+    color: '#262626',
+    marginHorizontal: 4,
   },
   loadingContainer: {
     flex: 1,
@@ -213,46 +234,48 @@ const styles = StyleSheet.create({
     color: '#737373',
   },
   tradersList: {
-    padding: 20,
     gap: 16,
+    paddingHorizontal: isDesktop ? 24 : 0,
   },
   traderCard: {
-    backgroundColor: '#000000',
+    backgroundColor: 'rgba(23, 23, 23, 0.3)',
     borderWidth: 1,
     borderColor: '#262626',
     overflow: 'hidden',
+    marginBottom: 16,
   },
   traderHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     gap: 16,
-    backgroundColor: 'rgba(23, 23, 23, 0.5)',
+    backgroundColor: 'transparent',
   },
   traderIcon: {
     width: 48,
     height: 48,
-    backgroundColor: '#171717',
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#404040',
+    borderColor: '#ff8c00',
   },
   traderInfo: {
     flex: 1,
   },
   traderName: {
-    fontSize: 16,
+    fontSize: isDesktop ? 18 : 16,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#ffffff',
     marginBottom: 4,
   },
   traderLocation: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#737373',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
   traderContent: {
     padding: 16,
@@ -276,11 +299,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#262626',
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#ff3e00',
-    letterSpacing: 1,
+    color: '#ff8c00',
+    letterSpacing: 1.5,
   },
   inventoryGrid: {
     gap: 8,
@@ -289,7 +312,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: 'rgba(23, 23, 23, 0.3)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     borderWidth: 1,
     borderColor: '#262626',
     padding: 12,
@@ -299,11 +322,12 @@ const styles = StyleSheet.create({
     height: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000000',
-    borderWidth: 1,
+    backgroundColor: '#171717',
+    borderWidth: 2,
   },
   itemInfo: {
     flex: 1,
+    minWidth: 0,
   },
   itemName: {
     fontSize: 12,
@@ -311,6 +335,7 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#ffffff',
     marginBottom: 2,
+    flexWrap: 'wrap',
   },
   itemType: {
     fontSize: 10,

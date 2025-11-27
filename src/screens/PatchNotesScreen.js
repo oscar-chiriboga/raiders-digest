@@ -1,53 +1,89 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PATCH_NOTES_DATA } from '../data';
 import AnimatedScreen from '../components/AnimatedScreen';
-
-const { width } = Dimensions.get('window');
-const isDesktop = width > 768;
+import DesktopNav from '../components/DesktopNav';
 
 export default function PatchNotesScreen({ navigation }) {
+  const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setIsDesktop(window.width > 768);
+    });
+    return () => subscription?.remove();
+  }, []);
+
   return (
     <AnimatedScreen>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={styles.backText}>← BACK TO DASHBOARD</Text>
-        </TouchableOpacity>
-
+      {isDesktop && <DesktopNav navigation={navigation} currentRoute="PatchNotes" />}
+      <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
+        {!isDesktop && (
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={20} color="#ff8c00" />
+            <Text style={styles.backText}>BACK</Text>
+          </TouchableOpacity>
+        )}
         <View style={styles.header}>
-          <Text style={styles.title}>DEV LOG</Text>
-          <Text style={styles.subtitle}>SYSTEM UPDATES & PATCH NOTES</Text>
+          <View style={styles.headerTop}>
+            <Ionicons name="document-text" size={16} color="#ff8c00" />
+            <Text style={styles.title}>PATCH NOTES // DB</Text>
+          </View>
+          <View style={styles.statsBar}>
+            <Text style={styles.statText}>TOTAL: {PATCH_NOTES_DATA.length.toString().padStart(2, '0')}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statTextActive}>LATEST: v{PATCH_NOTES_DATA[0].id}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statText}>STATUS: UPDATED</Text>
+          </View>
         </View>
 
-        <View style={styles.timeline}>
-          {PATCH_NOTES_DATA.map((note, idx) => (
-            <View key={note.id} style={styles.timelineItem}>
-              <View style={styles.timelineLeft}>
-                <View style={styles.timelineDot} />
-                {idx !== PATCH_NOTES_DATA.length - 1 && <View style={styles.timelineLine} />}
+        <View style={styles.notesGrid}>
+          {PATCH_NOTES_DATA.map((note) => (
+            <View key={note.id} style={[styles.noteCard, isDesktop && styles.noteCardDesktop]}>
+              <View style={styles.noteHeader}>
+                <View style={styles.versionBadge}>
+                  <Text style={styles.version}>v{note.id}</Text>
+                </View>
+                <Text style={styles.date}>{note.date}</Text>
               </View>
               
-              <View style={[styles.noteCard, isDesktop && styles.noteCardDesktop]}>
-                <View style={styles.noteHeader}>
-                  <View>
-                    <Text style={styles.version}>v{note.id}</Text>
-                    <Text style={styles.noteTitle}>{note.title}</Text>
+              <Text style={styles.noteTitle}>{note.title}</Text>
+              <Text style={styles.summary}>{note.summary}</Text>
+              
+              {note.sections && note.sections.map((section, sIdx) => (
+                <View key={sIdx} style={styles.section}>
+                  <Text style={styles.sectionTitle}>{section.title}</Text>
+                  <View style={styles.changesList}>
+                    {section.items.map((item, i) => {
+                      if (typeof item === 'string') {
+                        return (
+                          <View key={i} style={styles.changeItem}>
+                            <View style={styles.bullet} />
+                            <Text style={styles.changeText}>{item}</Text>
+                          </View>
+                        );
+                      } else {
+                        return (
+                          <View key={i}>
+                            <View style={styles.changeItem}>
+                              <View style={styles.bullet} />
+                              <Text style={styles.changeText}>{item.text}</Text>
+                            </View>
+                            {item.subitems && item.subitems.map((subitem, j) => (
+                              <View key={j} style={styles.subChangeItem}>
+                                <View style={styles.subBullet} />
+                                <Text style={styles.changeText}>{subitem}</Text>
+                              </View>
+                            ))}
+                          </View>
+                        );
+                      }
+                    })}
                   </View>
-                  <Text style={styles.date}>{note.date}</Text>
                 </View>
-                
-                <Text style={styles.summary}>{note.summary}</Text>
-                
-                <View style={styles.changesList}>
-                  {note.content.map((change, i) => (
-                    <View key={i} style={styles.changeItem}>
-                      <Text style={styles.bullet}>•</Text>
-                      <Text style={styles.changeText}>{change}</Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
+              ))}
             </View>
           ))}
         </View>
@@ -62,116 +98,145 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   content: {
-    padding: isDesktop ? 40 : 20,
-    maxWidth: isDesktop ? 1000 : '100%',
+    padding: 20,
+    paddingTop: 10,
+    maxWidth: '100%',
     alignSelf: 'center',
     width: '100%',
     paddingBottom: 100,
   },
+  contentDesktop: {
+    paddingTop: 70,
+  },
   backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     marginBottom: 20,
     paddingVertical: 8,
     paddingHorizontal: 12,
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderColor: '#2a3f5f',
-    borderRadius: 4,
-    backgroundColor: 'rgba(42, 63, 95, 0.3)',
+    borderColor: '#262626',
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
   },
   backText: {
-    color: '#64b5f6',
-    fontSize: 12,
+    color: '#ff8c00',
+    fontSize: 11,
     fontWeight: '700',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   header: {
-    marginBottom: 32,
+    paddingHorizontal: 0,
+    marginBottom: 24,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
   },
   title: {
-    fontSize: isDesktop ? 40 : 32,
+    fontSize: 24,
     fontWeight: '900',
-    color: '#00d9ff',
-    letterSpacing: 2,
+    color: '#ffffff',
+    letterSpacing: -1,
     textTransform: 'uppercase',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  subtitle: {
-    fontSize: isDesktop ? 16 : 14,
-    color: '#64b5f6',
-    letterSpacing: 1,
-    marginTop: 4,
-    opacity: 0.8,
-  },
-  timeline: {
-    paddingLeft: 10,
-  },
-  timelineItem: {
+  statsBar: {
     flexDirection: 'row',
-    marginBottom: 32,
-  },
-  timelineLeft: {
     alignItems: 'center',
-    marginRight: 20,
-    width: 20,
+    flexWrap: 'wrap',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#262626',
+    gap: 4,
   },
-  timelineDot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#00d9ff',
-    borderWidth: 3,
-    borderColor: 'rgba(0, 217, 255, 0.3)',
-    zIndex: 1,
+  statText: {
+    fontSize: 10,
+    color: '#737373',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
   },
-  timelineLine: {
-    width: 2,
-    flex: 1,
-    backgroundColor: '#2a3f5f',
-    marginTop: 4,
+  statTextActive: {
+    fontSize: 10,
+    color: '#ff8c00',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statDivider: {
+    color: '#262626',
+    marginHorizontal: 4,
+  },
+  notesGrid: {
+    gap: 16,
+    paddingHorizontal: 0,
   },
   noteCard: {
-    flex: 1,
-    backgroundColor: '#1a1f2e',
-    borderRadius: 12,
-    padding: 20,
+    backgroundColor: 'rgba(23, 23, 23, 0.3)',
     borderWidth: 1,
-    borderColor: '#2a3f5f',
+    borderColor: '#262626',
+    padding: 20,
+    marginBottom: 16,
   },
   noteCardDesktop: {
-    padding: 32,
+    padding: 24,
   },
   noteHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#2a3f5f',
-    paddingBottom: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  versionBadge: {
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: '#ff8c00',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
   version: {
-    color: '#00d9ff',
-    fontSize: 14,
-    fontWeight: '700',
-    marginBottom: 4,
-    fontFamily: 'monospace',
-  },
-  noteTitle: {
-    color: '#fff',
-    fontSize: isDesktop ? 24 : 20,
-    fontWeight: '700',
+    color: '#ff8c00',
+    fontSize: 11,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
   },
   date: {
-    color: '#64b5f6',
-    fontSize: 12,
-    opacity: 0.7,
-    marginTop: 4,
+    color: '#737373',
+    fontSize: 10,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1,
+  },
+  noteTitle: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    marginBottom: 12,
   },
   summary: {
-    color: '#9ea7b8',
-    fontSize: isDesktop ? 16 : 14,
-    fontStyle: 'italic',
-    marginBottom: 20,
-    lineHeight: 24,
+    color: '#9ca3af',
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: 16,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    paddingLeft: 12,
+    borderLeftWidth: 2,
+    borderLeftColor: '#404040',
+  },
+  section: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#ff8c00',
+    letterSpacing: 1.5,
+    marginBottom: 8,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   changesList: {
     gap: 8,
@@ -179,16 +244,31 @@ const styles = StyleSheet.create({
   changeItem: {
     flexDirection: 'row',
     gap: 10,
+    alignItems: 'flex-start',
+  },
+  subChangeItem: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'flex-start',
+    marginLeft: 20,
   },
   bullet: {
-    color: '#00d9ff',
-    fontSize: 14,
-    marginTop: 2,
+    width: 4,
+    height: 4,
+    backgroundColor: '#ff8c00',
+    marginTop: 6,
+  },
+  subBullet: {
+    width: 3,
+    height: 3,
+    backgroundColor: '#737373',
+    marginTop: 7,
   },
   changeText: {
-    color: '#fff',
-    fontSize: isDesktop ? 15 : 14,
-    lineHeight: 22,
     flex: 1,
+    color: '#d4d4d8',
+    fontSize: 12,
+    lineHeight: 20,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
 });

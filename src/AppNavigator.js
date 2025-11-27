@@ -7,6 +7,8 @@ import MainTabNavigator from './navigation/MainTabNavigator';
 import ComingSoonScreen from './screens/ComingSoonScreen';
 import PatchNotesScreen from './screens/PatchNotesScreen';
 import TradersScreen from './screens/TradersScreen';
+import MapsScreen from './screens/MapsScreen';
+import LootCheatSheetScreen from './screens/LootCheatSheetScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +27,8 @@ export default function AppNavigator() {
           <Stack.Screen name="Main" component={MainTabNavigator} />
           <Stack.Screen name="PatchNotes" component={PatchNotesScreen} />
           <Stack.Screen name="Traders" component={TradersScreen} />
+          <Stack.Screen name="Maps" component={MapsScreen} />
+          <Stack.Screen name="LootCheatSheet" component={LootCheatSheetScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-// Import from data-generated.js which has Metaforge CDN images
 import { WEAPONS_DATA } from '../data-generated';
 import AnimatedScreen from '../components/AnimatedScreen';
+import DesktopNav from '../components/DesktopNav';
+import { COLORS } from '../styles/colors';
 
 const { width } = Dimensions.get('window');
 const isDesktop = width > 768;
 
 const FILTERS = ['All', 'Assault Rifle', 'Rifle', 'Shotgun', 'Sniper', 'SMG', 'Heavy', 'Pistol'];
 
-// Tier to rarity color mapping
 const getTierColor = (tier) => {
   const tierMap = {
-    'D': { color: '#9ca3af', name: 'Common' },      // Grey
-    'C': { color: '#22c55e', name: 'Uncommon' },    // Green
-    'B': { color: '#3b82f6', name: 'Rare' },        // Blue
-    'A': { color: '#a855f7', name: 'Epic' },        // Purple
-    'S': { color: '#FFD700', name: 'Legendary' }    // Gold for Legendary
+    'D': { color: '#9ca3af', name: 'Common' },
+    'C': { color: '#22c55e', name: 'Uncommon' },
+    'B': { color: '#3b82f6', name: 'Rare' },
+    'A': { color: '#a855f7', name: 'Epic' },
+    'S': { color: '#ff8c00', name: 'Legendary' }
   };
   return tierMap[tier] || tierMap['D'];
 };
@@ -25,7 +25,9 @@ const getTierColor = (tier) => {
 export default function WeaponsScreen({ navigation }) {
   const [filter, setFilter] = useState('All');
   
-  const filtered = filter === 'All' ? WEAPONS_DATA : WEAPONS_DATA.filter(w => w.type === filter);
+  const tierOrder = { 'D': 1, 'C': 2, 'B': 3, 'A': 4, 'S': 5 };
+  const filtered = (filter === 'All' ? WEAPONS_DATA : WEAPONS_DATA.filter(w => w.type === filter))
+    .sort((a, b) => tierOrder[a.tier] - tierOrder[b.tier]);
 
   const StatBar = ({ label, value, max }) => {
     const percentage = Math.min((value / max) * 100, 100);
@@ -42,7 +44,8 @@ export default function WeaponsScreen({ navigation }) {
 
   return (
     <AnimatedScreen>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Weapons" />}
+      <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
@@ -100,8 +103,8 @@ export default function WeaponsScreen({ navigation }) {
                   <Ionicons name="flash" size={48} color="#404040" style={styles.placeholderIcon} />
                 )}
                 {/* Tier Badge */}
-                <View style={[styles.tierBadge, { borderColor: getTierColor(weapon.tier).color, backgroundColor: `${getTierColor(weapon.tier).color}10` }]}>
-                  <Text style={[styles.tierText, { color: getTierColor(weapon.tier).color }]}>TIER_{weapon.tier}</Text>
+                <View style={[styles.tierBadge, { borderColor: getTierColor(weapon.tier).color }]}>
+                  <Text style={[styles.tierText, { color: getTierColor(weapon.tier).color }]}>{getTierColor(weapon.tier).name.toUpperCase()}</Text>
                 </View>
               </View>
               
@@ -144,11 +147,14 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: isDesktop ? 40 : 20,
-    paddingTop: 80,
+    paddingTop: isDesktop ? 20 : 10,
     maxWidth: isDesktop ? 1400 : '100%',
     alignSelf: 'center',
     width: '100%',
     paddingBottom: 100,
+  },
+  contentDesktop: {
+    paddingTop: 70,
   },
   header: {
     paddingHorizontal: isDesktop ? 24 : 0,
@@ -171,9 +177,11 @@ const styles = StyleSheet.create({
   statsBar: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: '#262626',
+    gap: 4,
   },
   statText: {
     fontSize: 10,
@@ -189,7 +197,7 @@ const styles = StyleSheet.create({
   },
   statDivider: {
     color: '#262626',
-    marginHorizontal: 8,
+    marginHorizontal: 4,
   },
   filterRow: {
     marginBottom: 24,
@@ -199,26 +207,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: isDesktop ? 24 : 0,
   },
   filterBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#262626',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(23, 23, 23, 0.5)',
+    borderWidth: 2,
+    borderColor: '#404040',
   },
   filterBtnActive: {
     backgroundColor: '#ff8c00',
     borderColor: '#ff8c00',
   },
   filterText: {
-    color: '#737373',
+    color: '#a3a3a3',
     fontWeight: '700',
-    fontSize: 12,
+    fontSize: 10,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
   filterTextActive: {
     color: '#000000',
-    fontWeight: '700',
+    fontWeight: '900',
   },
   weaponsGrid: {
     gap: 24,
@@ -237,7 +245,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   weaponCardDesktop: {
-    width: 'calc(33.333% - 11px)',
+    width: 'calc(25% - 18px)',
     marginBottom: 0,
   },
   cornerTL: {
@@ -318,8 +326,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     borderWidth: 1,
   },
   tierText: {

@@ -4,8 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Defs, Filter, FeGaussianBlur, FeMerge, FeMergeNode, LinearGradient, Stop, G, Line, Text as SvgText, Path } from 'react-native-svg';
 import AnimatedScreen from '../components/AnimatedScreen';
+import DesktopNav from '../components/DesktopNav';
 import { PATCH_NOTES_DATA } from '../data';
 import { QUESTS_DATA } from '../data-quests';
+import { LOOT_CHEATSHEET } from '../data-loot-cheatsheet';
 
 const TRACKED_QUESTS_KEY = '@tracked_quests';
 
@@ -20,76 +22,105 @@ const TIPS_DATA = [
 
 // SVG Logo Component
 const RaidersLogo = ({ style }) => (
-  <Svg viewBox="0 0 600 300" style={style}>
+  <Svg viewBox="0 0 600 200" style={style}>
     <Defs>
-      {/* Glow Filter */}
-      <Filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      {/* Orange Gradient */}
+      <LinearGradient id="orangeGrad" x1="0" y1="0" x2="1" y2="0">
+        <Stop offset="0%" stopColor="#ff8c00" />
+        <Stop offset="100%" stopColor="#ff6600" />
+      </LinearGradient>
+      {/* Strong Glow Filter */}
+      <Filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
         <FeGaussianBlur stdDeviation="3" result="coloredBlur" />
         <FeMerge>
           <FeMergeNode in="coloredBlur" />
           <FeMergeNode in="SourceGraphic" />
         </FeMerge>
       </Filter>
-      {/* Text Gradient */}
-      <LinearGradient id="textGrad" x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0%" stopColor="#fff" />
-        <Stop offset="100%" stopColor="#ccc" />
-      </LinearGradient>
     </Defs>
 
-    {/* Diagonal Retro Stripes */}
-    <G transform="translate(300, 150) rotate(-25) translate(-300, -150)" opacity="0.9" filter="url(#glow)">
-      <Line x1="380" y1="-50" x2="380" y2="400" stroke="#00d9ff" strokeWidth="4" />
-      <Line x1="400" y1="-50" x2="400" y2="400" stroke="#fbbf24" strokeWidth="4" />
-      <Line x1="420" y1="-50" x2="420" y2="400" stroke="#ef4444" strokeWidth="4" />
+    {/* Diagonal Retro Stripes - Sharper with black separators */}
+    <G transform="translate(300, 100) rotate(-22) translate(-300, -100)">
+      {/* Black separator lines for depth */}
+      <Line x1="395" y1="-50" x2="395" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
+      <Line x1="420" y1="-50" x2="420" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
+      <Line x1="445" y1="-50" x2="445" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
+      <Line x1="470" y1="-50" x2="470" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
+      <Line x1="495" y1="-50" x2="495" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
+      
+      {/* Colored stripes - matching screenshot */}
+      <Line x1="385" y1="-50" x2="385" y2="300" stroke="#7dd3fc" strokeWidth="18" opacity="0.9" />
+      <Line x1="410" y1="-50" x2="410" y2="300" stroke="#4ade80" strokeWidth="18" opacity="0.9" />
+      <Line x1="435" y1="-50" x2="435" y2="300" stroke="#fde047" strokeWidth="18" opacity="0.9" />
+      <Line x1="460" y1="-50" x2="460" y2="300" stroke="#ff4444" strokeWidth="18" opacity="0.9" />
     </G>
 
     {/* Main Title */}
-    <G transform="translate(300, 100)">
-      {/* RAIDERS */}
+    <G transform="translate(300, 80)">
+      {/* RAIDERS - Black shadow layer */}
+      <SvgText
+        y="2"
+        fontFamily="monospace"
+        fontWeight="900"
+        fontSize="72"
+        fill="#1a1a1a"
+        letterSpacing="8"
+        textAnchor="middle"
+        opacity="0.5"
+      >
+        RAIDERS
+      </SvgText>
+      {/* RAIDERS - Main text */}
       <SvgText
         y="0"
         fontFamily="monospace"
         fontWeight="900"
-        fontSize="84"
-        fill="white"
-        letterSpacing="4"
-        stroke="black"
-        strokeWidth="6"
+        fontSize="72"
+        fill="url(#orangeGrad)"
+        letterSpacing="8"
         textAnchor="middle"
+        stroke="#1a1a1a"
+        strokeWidth="6"
+        filter="url(#glow)"
       >
         RAIDERS
       </SvgText>
       
-      {/* DIGEST */}
+      {/* DIGEST - Black shadow layer */}
       <SvgText
-        y="70"
+        y="62"
         fontFamily="monospace"
         fontWeight="900"
-        fontSize="84"
-        fill="white"
-        letterSpacing="4"
-        stroke="black"
-        strokeWidth="6"
+        fontSize="72"
+        fill="#1a1a1a"
+        letterSpacing="8"
         textAnchor="middle"
+        opacity="0.5"
+      >
+        DIGEST
+      </SvgText>
+      {/* DIGEST - Main text */}
+      <SvgText
+        y="60"
+        fontFamily="monospace"
+        fontWeight="900"
+        fontSize="72"
+        fill="#ffffff"
+        letterSpacing="8"
+        textAnchor="middle"
+        stroke="#1a1a1a"
+        strokeWidth="6"
       >
         DIGEST
       </SvgText>
     </G>
 
-    {/* Geometric Emblem */}
-    <G transform="translate(300, 240) scale(1.3)" stroke="white" strokeWidth="4" fill="none" strokeLinejoin="round" filter="url(#glow)">
-      {/* Main 'W' Shape */}
-      <Path d="M-60 -20 L -30 20 L 0 -10 L 30 20 L 60 -20" strokeLinecap="square" />
-      {/* Lower V shape */}
-      <Path d="M-45 0 L 0 45 L 45 0" strokeWidth="2" opacity="0.8" />
-      
-      {/* Signal Arcs - Orange */}
-      <Path d="M-15 -35 A 20 20 0 0 1 15 -35" strokeWidth="4" stroke="#ff8c00" strokeLinecap="round" />
-      <Path d="M-28 -48 A 36 36 0 0 1 28 -48" strokeWidth="3" stroke="#ff8c00" opacity="0.6" strokeLinecap="round" />
-      
-      {/* Center vertical line */}
-      <Line x1="0" y1="-10" x2="0" y2="45" strokeWidth="2" opacity="0.5" />
+    {/* Corner Accents - Sharper */}
+    <G stroke="#ff8c00" strokeWidth="4" fill="none" strokeLinecap="square">
+      <Path d="M 50 30 L 50 50 L 30 50" />
+      <Path d="M 550 30 L 550 50 L 570 50" />
+      <Path d="M 50 170 L 50 150 L 30 150" />
+      <Path d="M 550 170 L 550 150 L 570 150" />
     </G>
   </Svg>
 );
@@ -133,7 +164,8 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <AnimatedScreen>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Home" />}
+      <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
         {/* Background Grid */}
         <View style={styles.backgroundGrid} />
 
@@ -178,35 +210,37 @@ export default function HomeScreen({ navigation }) {
               </View>
               <Ionicons name="chevron-forward" size={20} color="#404040" />
             </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.accessCard}
+              onPress={() => navigation.navigate('LootCheatSheet')}
+            >
+              <View style={styles.accessIcon}>
+                <Ionicons name="bookmark" size={24} color="#eab308" />
+              </View>
+              <View style={styles.accessInfo}>
+                <Text style={styles.accessTitle}>LOOT_CHEAT_SHEET</Text>
+                <Text style={styles.accessSubtitle}>Essential items to keep or recycle</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#404040" />
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* Tracked Quests */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionAccent} />
-            <Text style={styles.sectionTitle}>STARRED_QUESTS</Text>
-            <TouchableOpacity 
-              onPress={() => navigation.navigate('Quests')}
-              style={styles.manageButton}
-            >
-              <Text style={styles.manageButtonText}>MANAGE</Text>
-              <Ionicons name="chevron-forward" size={12} color="#ff8c00" />
-            </TouchableOpacity>
-          </View>
-          
-          {trackedQuests.length === 0 ? (
-            <TouchableOpacity 
-              onPress={() => navigation.navigate('Quests')}
-              style={styles.emptyState}
-            >
-              <Ionicons name="star-outline" size={48} color="#404040" />
-              <Text style={styles.emptyStateTitle}>NO STARRED QUESTS</Text>
-              <Text style={styles.emptyStateText}>
-                Tap here to browse quests and star your favorites to track them
-              </Text>
-            </TouchableOpacity>
-          ) : (
+        {/* Tracked Quests - Only show if there are tracked quests */}
+        {trackedQuests.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <View style={styles.sectionAccent} />
+              <Text style={styles.sectionTitle}>STARRED_QUESTS</Text>
+              <TouchableOpacity           onPress={() => navigation.navigate('Quests')}
+                style={styles.manageButton}
+              >
+                <Text style={styles.manageButtonText}>MANAGE</Text>
+                <Ionicons name="chevron-forward" size={12} color="#ff8c00" />
+              </TouchableOpacity>
+            </View>
+            
             <View style={styles.questsGrid}>
               {trackedQuests.map((quest) => (
                 <View key={quest.id} style={styles.questCard}>
@@ -260,8 +294,8 @@ export default function HomeScreen({ navigation }) {
                 </View>
               ))}
             </View>
-          )}
-        </View>
+          </View>
+        )}
 
         {/* Patch Notes & Tips Row */}
         <View style={[styles.bottomRow, isDesktop && styles.bottomRowDesktop]}>
@@ -280,20 +314,35 @@ export default function HomeScreen({ navigation }) {
               </TouchableOpacity>
             </View>
             
-            <View style={styles.patchCard}>
-              <View style={styles.patchInfo}>
-                <Text style={styles.patchVersion}>{PATCH_NOTES_DATA[0].title}</Text>
-                <Text style={styles.patchDate}>{PATCH_NOTES_DATA[0].date}</Text>
+            <View style={styles.patchCardsContainer}>
+              <View style={styles.patchCard}>
+                <View style={styles.patchInfo}>
+                  <Text style={styles.patchVersion}>{PATCH_NOTES_DATA[0].title}</Text>
+                  <Text style={styles.patchDate}>{PATCH_NOTES_DATA[0].date}</Text>
+                </View>
+                <Text style={styles.patchNumber}>V.{PATCH_NOTES_DATA[0].id}</Text>
+                <View style={styles.patchSummaryContainer}>
+                  <Text style={styles.patchSummary}>{PATCH_NOTES_DATA[0].summary}</Text>
+                </View>
               </View>
-              <Text style={styles.patchNumber}>V.{PATCH_NOTES_DATA[0].id}</Text>
-              <View style={styles.patchSummaryContainer}>
-                <Text style={styles.patchSummary}>{PATCH_NOTES_DATA[0].summary}</Text>
-              </View>
+              
+              {PATCH_NOTES_DATA[1] && (
+                <View style={styles.patchCard}>
+                  <View style={styles.patchInfo}>
+                    <Text style={styles.patchVersion}>{PATCH_NOTES_DATA[1].title}</Text>
+                    <Text style={styles.patchDate}>{PATCH_NOTES_DATA[1].date}</Text>
+                  </View>
+                  <Text style={styles.patchNumber}>V.{PATCH_NOTES_DATA[1].id}</Text>
+                  <View style={styles.patchSummaryContainer}>
+                    <Text style={styles.patchSummary}>{PATCH_NOTES_DATA[1].summary}</Text>
+                  </View>
+                </View>
+              )}
             </View>
           </View>
 
           {/* Field Notes */}
-          <View style={[styles.tipsSection, isDesktop && styles.tipsSectionDesktop]}>
+          <View style={[styles.tipsSection, isDesktop && styles.tipsSectionDesktop, !isDesktop && styles.tipsSectionMobile]}>
             <View style={styles.sectionHeader}>
               <View style={styles.sectionAccentYellow} />
               <Text style={styles.sectionTitle}>FIELD_NOTES</Text>
@@ -321,11 +370,14 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: isDesktop ? 40 : 24,
-    paddingTop: 80,
+    paddingTop: isDesktop ? 20 : 10,
     paddingBottom: 100,
     maxWidth: isDesktop ? 1200 : '100%',
     alignSelf: 'center',
     width: '100%',
+  },
+  contentDesktop: {
+    paddingTop: 70,
   },
   backgroundGrid: {
     position: 'absolute',
@@ -348,20 +400,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'center',
   },
-  heroAccent: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 96,
-    height: 96,
-    opacity: 0.1,
-    backgroundColor: '#ff8c00',
-  },
+
   logo: {
     width: '100%',
     maxWidth: isDesktop ? 500 : 320,
-    height: isDesktop ? 150 : 100,
-    marginBottom: 32,
+    height: isDesktop ? 120 : 80,
+    marginBottom: 24,
   },
   heroStatusBadge: {
     flexDirection: 'row',
@@ -646,6 +690,9 @@ const styles = StyleSheet.create({
     color: '#ff8c00',
     letterSpacing: 1,
   },
+  patchCardsContainer: {
+    gap: 16,
+  },
   patchCard: {
     backgroundColor: 'rgba(23, 23, 23, 0.2)',
     borderWidth: 1,
@@ -694,6 +741,9 @@ const styles = StyleSheet.create({
   },
   tipsSectionDesktop: {
     flex: 1,
+  },
+  tipsSectionMobile: {
+    marginTop: 24,
   },
   tipsContainer: {
     gap: 12,

@@ -124,30 +124,217 @@ export const LOOT_DATA = [
 
 export const PATCH_NOTES_DATA = [
   {
-    id: '1.0.1',
-    title: 'Early Access Launch',
-    date: '2025-11-24',
-    summary: 'Initial release of the Raiders Digest companion app.',
-    content: [
-      'Launched the Raiders Digest app with core databases.',
-      'Added Weapons Arsenal with tier lists and crafting recipes.',
-      'Added Enemy Intel with weak points and loot drops.',
-      'Added Map Database with POIs and loot hotspots.',
-      'Added Loot Registry for resource tracking.',
-      'Implemented bottom tab navigation for easier mobile use.',
-      'Optimized UI for both mobile and desktop views.'
+    id: '1.3.0',
+    title: 'Balance & Bug Fixes',
+    date: 'November 20, 2025',
+    summary: 'Major balance changes to items and weapons, plus extensive bug fixes across all maps.',
+    sections: [
+      {
+        title: 'Balance Changes - Items',
+        items: [
+          { text: 'Deadline', subitems: [
+            'Buy value increased from 8,100 to 15,000 Coins',
+            'Sell value increased from 3,000 to 5,000 Coins',
+            'Crafting changed to 3 Explosive compound + 2 ARC Circuitry',
+            'Trader stock reduced from 3 to 1'
+          ]},
+          'Power cell: Sell value reduced from 640 to 270 Coins',
+          { text: 'Launcher ammo', subitems: [
+            'Buy value changed to 6 ammo for 4,500 Coins',
+            'Sell value increased from 200 to 250 Coins',
+            'Crafting changed to 1 ARC Motion Core + 2 Crude Explosives',
+            'Crafting now available at Workbench without blueprint'
+          ]}
+        ]
+      },
+      {
+        title: 'Balance Changes - Weapons',
+        items: [
+          { text: 'Venator', subitems: [
+            'Fire-rate upgrades reduced from 22/44/60% to 13/26/40%',
+            'Weight increased from 2 to 5'
+          ]},
+          { text: 'Explosive Damage', subitems: [
+            'Rebalanced against ARC for consistency',
+            'Reduced damage on larger enemies like Bastion'
+          ]},
+          'Hullcracker: Adjusted to require more precision after explosive changes'
+        ]
+      },
+      {
+        title: 'ARC Fixes',
+        items: [
+          'Fixed bug where ARC could call reinforcements outside the map',
+          { text: 'Shredder', subitems: [
+            'Improved detection and movement toward Lure Grenades',
+            'Updated movement handling with reduced turn speed',
+            'Improved navigation to prevent getting stuck on corners'
+          ]}
+        ]
+      },
+      {
+        title: 'Map Fixes',
+        items: [
+          'Dam Battlegrounds: Fixed elevator shaft stuck issue',
+          { text: 'Spaceport', subitems: [
+            'Added collision to Hidden Bunker staircase',
+            'Fixed wall entry exploit near Launch Tower',
+            'Fixed locked room access without key'
+          ]},
+          'Blue Gate: Fixed railing props blocking bullets',
+          { text: 'Stella Montis', subitems: [
+            'Fixed terrain fall-through near Train Station',
+            'Fixed player stuck locations',
+            'Removed spawns too close to ARC areas'
+          ]},
+          'Barricades can no longer be placed overlapping character'
+        ]
+      },
+      {
+        title: 'Other Fixes',
+        items: [
+          'Fixed crash when using Raider Voice without AVX2 support',
+          'Fixed crash when surrendering after reconnecting',
+          'Fixed invisible collisions from scavenged Shredder parts',
+          'Fixed Trials weekly rollover rank display',
+          'Updated AMD driver recommendation to 25.11.1',
+          { text: 'Aphelion', subitems: [
+            'Fixed excessively bright tracers at distance',
+            'Increased blueprint drop rates'
+          ]},
+          'Stitcher: Corrected reload time scaling display',
+          'Audio: Reduced explosion tinnitus volume attenuation',
+          'Your Raider Den has been ducked out'
+        ]
+      }
     ]
   },
   {
-    id: '1.0.0',
-    title: 'Project Inception',
-    date: '2025-11-20',
-    summary: 'Started development of the ultimate ARC Raiders companion.',
-    content: [
-      'Defined project scope and core features.',
-      'Set up React Native Expo environment.',
-      'Designed the dark, tactical UI theme.',
-      'Gathered initial data on weapons and enemies.'
+    id: '1.2.0',
+    title: 'November Update - Stella Montis',
+    date: 'November 13, 2025',
+    summary: 'New map Stella Montis, Matriarch & Shredder enemies, community unlock event, and major desync improvements.',
+    sections: [
+      {
+        title: 'New Content',
+        items: [
+          'New Map: Stella Montis',
+          'New Boss: Matriarch',
+          'New Enemy: Shredder',
+          'Community Unlock Event',
+          'New items to discover',
+          'New quests to accept'
+        ]
+      },
+      {
+        title: 'Major Improvements',
+        items: [
+          'Reduced character movement latency to fix desync issues',
+          'Fixed quest completion bug for multiple objectives',
+          'Fixed various achievements not working correctly',
+          'Reduced delay between shooting ARC and seeing impact effects'
+        ]
+      },
+      {
+        title: 'Balance - Items',
+        items: [
+          { text: 'Wolfpack', subitems: [
+            'Value increased from 3,000 to 5,000 Coins',
+            'Crafting changed to 3 Refined Explosive + 2 ARC Motion Cores'
+          ]},
+          { text: 'ARC Motion Core & Circuitry', subitems: [
+            'Unlock moved to Refiner LVL 2',
+            'Crafting increased to 8 ARC Alloy'
+          ]},
+          { text: 'Launcher Ammo', subitems: [
+            'Value increased from 100 to 200 Coins',
+            'Crafting changed to 4 Metal Parts + 1 Refined Explosives'
+          ]},
+          'Spotter Relay: Value reduced from 5,000 to 2,000 Coins',
+          'Security Lockers: Adjusted loot tables'
+        ]
+      },
+      {
+        title: 'Balance - XP',
+        items: [
+          'Reduced XP per Damage from 3 to 2 for Bastion, Bombardier, Rocketeer, Leaper',
+          'Bastion looting: XP reduced from 500 to 250',
+          'Bombardier looting: XP reduced from 500 to 300',
+          'Rocketeer thruster: XP increased from 200 to 500',
+          'Leaper leg: XP increased from 200 to 500'
+        ]
+      },
+      {
+        title: 'ARC Fixes',
+        items: [
+          'Fireball: No longer gets stuck on security gates',
+          'Surveyor: Fixed fleeing behavior moving out of bounds',
+          'Fixed bug causing excessive fire damage to some enemies'
+        ]
+      },
+      {
+        title: 'Map Fixes',
+        items: [
+          { text: 'Dam Battlegrounds', subitems: [
+            'Fixed terrain fall-through locations',
+            'Fixed collision issues causing stuck players'
+          ]},
+          { text: 'Buried City', subitems: [
+            'Fixed terrain fall-through locations',
+            'Fixed flickering and clipping issues',
+            'Fixed stuck locations in subway stations'
+          ]},
+          { text: 'Spaceport', subitems: [
+            'Sealed room in Departure Building requiring breach',
+            'Fixed door breach issues in Launch Tower'
+          ]},
+          'Blue Gate: Fixed trap in Control Room'
+        ]
+      },
+      {
+        title: 'Gameplay Improvements',
+        items: [
+          'Vaulting is now smoother',
+          'Raider hatches: Fixed immunity to damage when entering',
+          'Raider hatches: Increased interaction distance',
+          'Field crafting: Selection stays on same item after crafting',
+          'Probes, Husks, Raider Caches now count for looting objectives',
+          'Fixed looting DBNO players on steep slopes'
+        ]
+      },
+      {
+        title: 'UI Improvements',
+        items: [
+          'Added inventory stack splitting option',
+          'Added confirmation message for player reports',
+          'Enemy salvage items no longer auto-assign to Quick Slots',
+          'Removed Thumb Mouse Button from Escape action',
+          'Prevent showing blocked Discord users',
+          'Changed styling of UI input hints'
+        ]
+      },
+      {
+        title: 'Weapon & Utility Fixes',
+        items: [
+          'Fixed bullets veering sideways when firing near walls',
+          'Blaze Grenade Trap: Fixed excessive damage',
+          'Anti-Tick Field: Reduced attachment time from 1s to 0.5s',
+          'Trigger Nade: Fixed bypassing DBNO invulnerability',
+          'Snap Hook: Fixed out of bounds exploit in Spaceport bunker',
+          'Smoke clouds: Now visible at same range as players'
+        ]
+      },
+      {
+        title: 'Audio & Animation',
+        items: [
+          'Added System Default option for voice chat devices',
+          'Breathing audio balanced between helmeted and non-helmeted players',
+          'Added helmet-specific audio effects for Scrappy',
+          'Fixed weapons auto-slinging when throwing grenades',
+          'Fixed weapons hidden when using deployables',
+          'Improved camera behavior to prevent wall clipping'
+        ]
+      }
     ]
   }
 ];

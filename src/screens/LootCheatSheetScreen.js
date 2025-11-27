@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Dimensions, TouchableOpacity, Platform, Image, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Platform, TouchableOpacity, TextInput, Image, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LOOT_DATA, LOOT_CATEGORIES, LOOT_RARITIES } from '../data-generated-loot';
+import { LOOT_DATA, LOOT_RARITIES } from '../data-generated-loot';
+import { LOOT_CHEATSHEET } from '../data-loot-cheatsheet';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
-import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../styles/colors';
 
 const { width } = Dimensions.get('window');
 const isDesktop = width > 768;
 
-// Tier to rarity color mapping
 const getTierColor = (tier) => {
   const tierMap = {
     'Common': { color: '#9ca3af', letter: 'D', bg: 'rgba(156, 163, 175, 0.1)' },
@@ -30,68 +29,82 @@ const getRarityShort = (rarity) => {
   return shorts[rarity] || rarity.toUpperCase();
 };
 
-export default function LootScreen({ navigation }) {
+export default function LootCheatSheetScreen({ navigation }) {
+  const [activeTab, setActiveTab] = useState('quests');
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedRarity, setSelectedRarity] = useState('All');
-  const [selectedItem, setSelectedItem] = useState(null);
-  
-  // Get available rarities for the selected category
-  const getAvailableRarities = () => {
-    if (selectedCategory === 'All') return LOOT_RARITIES;
-    
-    const availableRarities = new Set();
-    LOOT_DATA.forEach(item => {
-      if (item.category === selectedCategory) {
-        availableRarities.add(item.rarity);
-      }
-    });
-    return LOOT_RARITIES.filter(rarity => availableRarities.has(rarity));
-  };
-  
-  const availableRarities = getAvailableRarities();
-  
-  // Auto-reset rarity filter if current selection is not available in the new category
+
   useEffect(() => {
+    const availableRarities = getAvailableRarities();
     if (selectedRarity !== 'All' && !availableRarities.includes(selectedRarity)) {
       setSelectedRarity('All');
     }
-  }, [selectedCategory, availableRarities, selectedRarity]);
-  
+  }, [activeTab]);
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const rarityOrder = { 'Common': 1, 'Uncommon': 2, 'Rare': 3, 'Epic': 4, 'Legendary': 5 };
   
-  const filtered = LOOT_DATA.filter(item => {
+  const questItems = LOOT_DATA.filter(item => 
+    LOOT_CHEATSHEET.quests.some(q => q.name.toLowerCase() === item.name.toLowerCase())
+  ).sort((a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity]);
+  
+  const progressionItems = LOOT_DATA.filter(item => 
+    LOOT_CHEATSHEET.progression.some(p => p.name.toLowerCase() === item.name.toLowerCase())
+  ).sort((a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity]);
+  
+  const recycleItems = LOOT_DATA.filter(item => 
+    LOOT_CHEATSHEET.recycle.some(r => r.toLowerCase() === item.name.toLowerCase())
+  ).sort((a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity]);
+
+  const getCurrentItems = () => {
+    if (activeTab === 'quests') return questItems;
+    if (activeTab === 'progression') return progressionItems;
+    return recycleItems;
+  };
+
+  const filtered = getCurrentItems().filter(item => {
     const matchesSearch = !search || 
       item.name.toLowerCase().includes(search.toLowerCase()) ||
       item.description.toLowerCase().includes(search.toLowerCase()) ||
       item.subcategory.toLowerCase().includes(search.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
     const matchesRarity = selectedRarity === 'All' || item.rarity === selectedRarity;
-    
-    return matchesSearch && matchesCategory && matchesRarity;
-  }).sort((a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity]);
+    return matchesSearch && matchesRarity;
+  });
+
+  const getAvailableRarities = () => {
+    const currentItems = getCurrentItems();
+    const availableRarities = new Set();
+    currentItems.forEach(item => {
+      availableRarities.add(item.rarity);
+    });
+    return LOOT_RARITIES.filter(rarity => availableRarities.has(rarity));
+  };
+
+  const availableRarities = getAvailableRarities();
 
   return (
     <AnimatedScreen>
-      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Loot" />}
+      {isDesktop && <DesktopNav navigation={navigation} currentRoute="LootCheatSheet" />}
       <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
-        {/* Header Section */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={20} color="#ff8c00" />
+          <Text style={styles.backText}>BACK</Text>
+        </TouchableOpacity>
+
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Ionicons name="cube" size={16} color={COLORS.primary} />
-            <Text style={styles.title}>CACHE <Text style={styles.titleSlash}>//</Text> DB</Text>
+            <Ionicons name="bookmark" size={16} color="#ff8c00" />
+            <Text style={styles.title}>LOOT CHEAT SHEET // DB</Text>
           </View>
           <View style={styles.statsBar}>
-            <Text style={styles.statText}>TOTAL: {LOOT_DATA.length.toString().padStart(3, '0')}</Text>
+            <Text style={styles.statText}>TOTAL: {getCurrentItems().length.toString().padStart(3, '0')}</Text>
             <Text style={styles.statDivider}>|</Text>
-            <Text style={styles.statTextActive}>FILTER: {selectedCategory.toUpperCase()}</Text>
+            <Text style={styles.statTextActive}>TAB: {activeTab.toUpperCase()}</Text>
             <Text style={styles.statDivider}>|</Text>
             <Text style={styles.statText}>FOUND: {filtered.length.toString().padStart(3, '0')}</Text>
           </View>
         </View>
-        
-        {/* Search Bar */}
+
         <View style={styles.searchBar}>
           <Ionicons name="search" size={14} color={COLORS.textMuted} style={styles.searchIcon} />
           <TextInput
@@ -109,36 +122,31 @@ export default function LootScreen({ navigation }) {
             <View style={styles.cursor} />
           )}
         </View>
-        
-        {/* Category Filter */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={styles.filterContainer}
-          contentContainerStyle={styles.filterContent}
-        >
-          <TouchableOpacity
-            style={[styles.filterBtn, selectedCategory === 'All' && styles.filterBtnActive]}
-            onPress={() => setSelectedCategory('All')}
+
+        <View style={styles.tabs}>
+          <TouchableOpacity 
+            style={[styles.tab, activeTab === 'quests' && styles.tabActive]}
+            onPress={() => setActiveTab('quests')}
           >
-            <Text style={[styles.filterText, selectedCategory === 'All' && styles.filterTextActive]}>
-              ALL
-            </Text>
+            <Ionicons name="flag" size={14} color={activeTab === 'quests' ? '#000000' : '#737373'} />
+            <Text style={[styles.tabText, activeTab === 'quests' && styles.tabTextActive]}>QUESTS</Text>
           </TouchableOpacity>
-          {LOOT_CATEGORIES.map((category) => (
-            <TouchableOpacity
-              key={category}
-              style={[styles.filterBtn, selectedCategory === category && styles.filterBtnActive]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text style={[styles.filterText, selectedCategory === category && styles.filterTextActive]}>
-                {category.toUpperCase()}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        
-        {/* Rarity Filter */}
+          <TouchableOpacity 
+            style={[styles.tab, activeTab === 'progression' && styles.tabActive]}
+            onPress={() => setActiveTab('progression')}
+          >
+            <Ionicons name="trending-up" size={14} color={activeTab === 'progression' ? '#000000' : '#737373'} />
+            <Text style={[styles.tabText, activeTab === 'progression' && styles.tabTextActive]}>PROGRESSION</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.tab, activeTab === 'recycle' && styles.tabActive]}
+            onPress={() => setActiveTab('recycle')}
+          >
+            <Ionicons name="trash" size={14} color={activeTab === 'recycle' ? '#000000' : '#737373'} />
+            <Text style={[styles.tabText, activeTab === 'recycle' && styles.tabTextActive]}>RECYCLE</Text>
+          </TouchableOpacity>
+        </View>
+
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
@@ -156,8 +164,7 @@ export default function LootScreen({ navigation }) {
           {LOOT_RARITIES.map((rarity) => {
             const tierInfo = getTierColor(rarity);
             const isAvailable = availableRarities.includes(rarity);
-            const isDisabled = !isAvailable && selectedCategory !== 'All';
-            
+            const isDisabled = !isAvailable;
             return (
               <TouchableOpacity
                 key={rarity}
@@ -165,7 +172,7 @@ export default function LootScreen({ navigation }) {
                   styles.rarityBtn,
                   selectedRarity === rarity && styles.rarityBtnActive,
                   isDisabled && styles.rarityBtnDisabled,
-                  { borderColor: selectedRarity === rarity ? tierInfo.color : (isDisabled ? COLORS.border : COLORS.border) }
+                  { borderColor: selectedRarity === rarity ? tierInfo.color : COLORS.border }
                 ]}
                 onPress={() => isDisabled ? null : setSelectedRarity(rarity)}
                 disabled={isDisabled}
@@ -180,8 +187,7 @@ export default function LootScreen({ navigation }) {
             );
           })}
         </ScrollView>
-        
-        {/* Loot Grid */}
+
         <View style={[styles.lootGrid, isDesktop && styles.lootGridDesktop]}>
           {filtered.length === 0 ? (
             <View style={styles.emptyState}>
@@ -198,7 +204,6 @@ export default function LootScreen({ navigation }) {
                   onPress={() => setSelectedItem(item)}
                   activeOpacity={0.8}
                 >
-                  {/* Compact Card Layout */}
                   <View style={styles.cardContent}>
                     <View style={[styles.iconContainer, { borderColor: tierInfo.color, backgroundColor: COLORS.background }]}>
                       {item.icon ? (
@@ -206,7 +211,6 @@ export default function LootScreen({ navigation }) {
                           source={{ uri: item.icon }} 
                           style={styles.itemIcon} 
                           resizeMode="contain"
-                          onError={() => {}}
                         />
                       ) : (
                         <Ionicons name="cube" size={20} color={tierInfo.color} />
@@ -233,6 +237,12 @@ export default function LootScreen({ navigation }) {
                       <Text style={styles.statLabel}>WT:</Text>
                       <Text style={styles.statValue}>{item.weight}</Text>
                     </View>
+                    {item.recycleComponents && item.recycleComponents.length > 0 && (
+                      <View style={styles.statItem}>
+                        <Ionicons name="trash" size={10} color="#22c55e" />
+                        <Text style={styles.statValue}>{item.recycleComponents.length}</Text>
+                      </View>
+                    )}
                   </View>
                 </TouchableOpacity>
               );
@@ -240,8 +250,7 @@ export default function LootScreen({ navigation }) {
           )}
         </View>
       </ScrollView>
-      
-      {/* Item Detail Modal */}
+
       <Modal
         visible={selectedItem !== null}
         animationType="fade"
@@ -252,7 +261,6 @@ export default function LootScreen({ navigation }) {
           <View style={styles.modalContent}>
             {selectedItem && (
               <>
-                {/* Modal Header */}
                 <View style={[styles.modalHeader, { borderColor: getTierColor(selectedItem.rarity).color }]}>
                   <View style={styles.modalHeaderLeft}>
                     <View style={[styles.modalHeaderAccent, { backgroundColor: getTierColor(selectedItem.rarity).color }]} />
@@ -265,7 +273,6 @@ export default function LootScreen({ navigation }) {
                 </View>
                 
                 <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
-                  {/* Item Icon & Name */}
                   <View style={styles.modalItemHeader}>
                     <View style={[styles.modalIconContainer, { 
                       borderColor: getTierColor(selectedItem.rarity).color,
@@ -276,12 +283,10 @@ export default function LootScreen({ navigation }) {
                           source={{ uri: selectedItem.icon }} 
                           style={styles.modalItemIcon} 
                           resizeMode="contain"
-                          onError={() => {}}
                         />
                       ) : (
                         <Ionicons name="cube" size={56} color={getTierColor(selectedItem.rarity).color} />
                       )}
-                      {/* Rarity Badge on Icon */}
                       <View style={[styles.iconRarityBadge, { 
                         backgroundColor: getTierColor(selectedItem.rarity).color
                       }]}>
@@ -297,7 +302,6 @@ export default function LootScreen({ navigation }) {
                     </View>
                   </View>
                   
-                  {/* Stats Grid */}
                   <View style={styles.statsGrid}>
                     <View style={[styles.statCard, styles.statCardPrimary]}>
                       <Ionicons name="cash" size={16} color="#22c55e" />
@@ -317,75 +321,7 @@ export default function LootScreen({ navigation }) {
                       </View>
                     )}
                   </View>
-                  
-                  {/* Loot Area */}
-                  {selectedItem.lootArea && selectedItem.lootArea !== 'Unknown' && (
-                    <View style={styles.modalSection}>
-                      <View style={styles.sectionHeaderWithIcon}>
-                        <Ionicons name="location" size={14} color={COLORS.primary} />
-                        <Text style={styles.modalSectionTitle}>FOUND IN</Text>
-                      </View>
-                      <View style={styles.modalLootAreas}>
-                        {selectedItem.lootArea.split(',').map((area, index) => (
-                          <View key={index} style={styles.modalLootAreaChip}>
-                            <Text style={styles.modalLootAreaText}>{area.trim()}</Text>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-                  )}
-                  
-                  {/* Workbench */}
-                  {selectedItem.workbench && (
-                    <View style={styles.modalSection}>
-                      <View style={styles.sectionHeaderWithIcon}>
-                        <Ionicons name="construct" size={14} color={COLORS.rarity.uncommon} />
-                        <Text style={styles.modalSectionTitle}>CRAFTING</Text>
-                      </View>
-                      <View style={styles.modalWorkbench}>
-                        <Text style={styles.modalWorkbenchText}>{selectedItem.workbench}</Text>
-                      </View>
-                    </View>
-                  )}
-                  
-                  {/* Needed to Craft */}
-                  {selectedItem.components && selectedItem.components.length > 0 && (
-                    <View style={styles.modalSection}>
-                      <View style={styles.sectionHeaderWithIcon}>
-                        <Ionicons name="build" size={14} color={COLORS.primary} />
-                        <Text style={styles.modalSectionTitle}>NEEDED TO CRAFT</Text>
-                      </View>
-                      <View style={styles.recycleGrid}>
-                        {selectedItem.components.map((comp, index) => (
-                          <View key={index} style={styles.recycleCard}>
-                            <View style={[styles.recycleIconBox, {
-                              borderColor: getTierColor(comp.component.rarity || 'common').color,
-                              backgroundColor: getTierColor(comp.component.rarity || 'common').bg
-                            }]}>
-                              {comp.component.icon ? (
-                                <Image 
-                                  source={{ uri: comp.component.icon }} 
-                                  style={styles.recycleIcon} 
-                                  resizeMode="contain"
-                                  onError={() => {}}
-                                />
-                              ) : (
-                                <Ionicons name="cube" size={24} color={getTierColor(comp.component.rarity || 'common').color} />
-                              )}
-                            </View>
-                            <View style={styles.recycleCardInfo}>
-                              <Text style={styles.recycleCardName} numberOfLines={1}>
-                                {comp.component.name}
-                              </Text>
-                              <Text style={styles.recycleCardQty}>QTY: {comp.quantity}</Text>
-                            </View>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-                  )}
-                  
-                  {/* Recycling Breakdown */}
+
                   {selectedItem.recycleComponents && selectedItem.recycleComponents.length > 0 && (
                     <View style={styles.modalSection}>
                       <View style={styles.sectionHeaderWithIcon}>
@@ -396,18 +332,17 @@ export default function LootScreen({ navigation }) {
                         {selectedItem.recycleComponents.map((comp, index) => (
                           <View key={index} style={styles.recycleCard}>
                             <View style={[styles.recycleIconBox, {
-                              borderColor: getTierColor(comp.component.rarity || 'common').color,
-                              backgroundColor: getTierColor(comp.component.rarity || 'common').bg
+                              borderColor: getTierColor(comp.component.rarity || 'Common').color,
+                              backgroundColor: getTierColor(comp.component.rarity || 'Common').bg
                             }]}>
                               {comp.component.icon ? (
                                 <Image 
                                   source={{ uri: comp.component.icon }} 
                                   style={styles.recycleIcon} 
                                   resizeMode="contain"
-                                  onError={() => {}}
                                 />
                               ) : (
-                                <Ionicons name="cube" size={24} color={getTierColor(comp.component.rarity || 'common').color} />
+                                <Ionicons name="cube" size={24} color={getTierColor(comp.component.rarity || 'Common').color} />
                               )}
                             </View>
                             <View style={styles.recycleCardInfo}>
@@ -418,50 +353,6 @@ export default function LootScreen({ navigation }) {
                             </View>
                           </View>
                         ))}
-                      </View>
-                    </View>
-                  )}
-                  
-                  {/* Dropped By */}
-                  {selectedItem.droppedBy && selectedItem.droppedBy.length > 0 && (
-                    <View style={styles.modalSection}>
-                      <View style={styles.sectionHeaderWithIcon}>
-                        <Ionicons name="skull" size={14} color="#ef4444" />
-                        <Text style={styles.modalSectionTitle}>DROPPED BY</Text>
-                      </View>
-                      <View style={styles.enemyGrid}>
-                        {selectedItem.droppedBy.map((drop, index) => (
-                          <View key={index} style={styles.enemyCard}>
-                            <View style={styles.enemyIconBox}>
-                              {drop.arc.icon ? (
-                                <Image 
-                                  source={{ uri: drop.arc.icon }} 
-                                  style={styles.enemyIcon} 
-                                  resizeMode="contain"
-                                  onError={() => {}}
-                                />
-                              ) : (
-                                <Ionicons name="skull" size={32} color="#ef4444" />
-                              )}
-                            </View>
-                            <Text style={styles.enemyName} numberOfLines={1}>
-                              {drop.arc.name}
-                            </Text>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-                  )}
-                  
-                  {/* Uses/Notes */}
-                  {selectedItem.uses && (
-                    <View style={styles.modalSection}>
-                      <View style={styles.sectionHeaderWithIcon}>
-                        <Ionicons name="document-text" size={14} color={COLORS.textMuted} />
-                        <Text style={styles.modalSectionTitle}>NOTES</Text>
-                      </View>
-                      <View style={styles.notesBox}>
-                        <Text style={styles.modalNotes}>{selectedItem.uses}</Text>
                       </View>
                     </View>
                   )}
@@ -491,6 +382,25 @@ const styles = StyleSheet.create({
   contentDesktop: {
     paddingTop: 70,
   },
+  backBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: '#262626',
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
+  },
+  backText: {
+    color: '#ff8c00',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
   header: {
     paddingHorizontal: isDesktop ? 24 : 0,
     marginBottom: 24,
@@ -502,7 +412,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: isDesktop ? 32 : 24,
+    fontSize: 24,
     fontWeight: '900',
     color: '#ffffff',
     letterSpacing: -1,
@@ -552,8 +462,46 @@ const styles = StyleSheet.create({
     fontSize: isDesktop ? 14 : 13,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  filterContainer: {
+  cursor: {
+    width: 8,
+    height: 14,
+    backgroundColor: COLORS.primary,
+    opacity: 0.6,
+  },
+  clearButton: {
+    padding: 4,
+  },
+  tabs: {
+    flexDirection: 'row',
+    gap: 8,
     marginBottom: 16,
+    paddingHorizontal: isDesktop ? 24 : 0,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#262626',
+  },
+  tabActive: {
+    backgroundColor: '#ff8c00',
+    borderColor: '#ff8c00',
+  },
+  tabText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#737373',
+    letterSpacing: 1,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  tabTextActive: {
+    color: '#000000',
+    fontWeight: '900',
   },
   rarityContainer: {
     marginBottom: 24,
@@ -562,37 +510,16 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: isDesktop ? 24 : 0,
   },
-  filterBtn: {
+  rarityBtn: {
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     backgroundColor: 'rgba(23, 23, 23, 0.5)',
     borderWidth: 2,
-    borderColor: '#404040',
-  },
-  filterBtnActive: {
-    backgroundColor: '#ff8c00',
-    borderColor: '#ff8c00',
-  },
-  filterText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#a3a3a3',
-    letterSpacing: 1.5,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
-  filterTextActive: {
-    color: '#000000',
-    fontWeight: '900',
-  },
-  rarityBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: 'transparent',
-    borderWidth: 1,
     borderColor: COLORS.border,
   },
   rarityBtnActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 2,
   },
   rarityBtnDisabled: {
     opacity: 0.3,
@@ -718,7 +645,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  // Modal styles
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
@@ -810,13 +736,6 @@ const styles = StyleSheet.create({
   modalItemInfo: {
     flex: 1,
   },
-  modalNameRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 12,
-    marginBottom: 6,
-  },
   modalItemName: {
     fontSize: isDesktop ? 22 : 18,
     fontWeight: '900',
@@ -831,25 +750,6 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1,
     marginBottom: 10,
-  },
-  modalSection: {
-    marginBottom: 20,
-  },
-  sectionHeaderWithIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  modalSectionTitle: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: COLORS.primary,
-    letterSpacing: 1.5,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   modalDescription: {
     fontSize: 12,
@@ -888,55 +788,25 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  modalLootAreas: {
+  modalSection: {
+    marginBottom: 20,
+  },
+  sectionHeaderWithIcon: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     gap: 8,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
-  modalLootAreaChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: 'rgba(255, 140, 0, 0.1)',
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    borderLeftWidth: 3,
-  },
-  modalLootAreaText: {
+  modalSectionTitle: {
     fontSize: 10,
+    fontWeight: '900',
     color: COLORS.primary,
-    fontWeight: '700',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    letterSpacing: 1,
-  },
-  modalWorkbench: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-    borderWidth: 1,
-    borderColor: COLORS.rarity.uncommon,
-    borderLeftWidth: 3,
-  },
-  modalWorkbenchText: {
-    fontSize: 12,
-    color: COLORS.rarity.uncommon,
-    fontWeight: '700',
+    letterSpacing: 1.5,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  notesBox: {
-    backgroundColor: 'rgba(23, 23, 23, 0.5)',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.textMuted,
-    padding: 12,
-  },
-  modalNotes: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    lineHeight: 18,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
-  // Recycling Grid
   recycleGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -979,40 +849,4 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  // Enemy Grid
-  enemyGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  enemyCard: {
-    width: isDesktop ? 'calc(25% - 9px)' : 'calc(33.333% - 8px)',
-    backgroundColor: 'rgba(23, 23, 23, 0.3)',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 12,
-    alignItems: 'center',
-    gap: 8,
-  },
-  enemyIconBox: {
-    width: 48,
-    height: 48,
-    backgroundColor: 'rgba(255, 140, 0, 0.1)',
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  enemyIcon: {
-    width: 40,
-    height: 40,
-  },
-  enemyName: {
-    fontSize: 10,
-    color: COLORS.text,
-    fontWeight: '600',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    textAlign: 'center',
-  },
-
 });

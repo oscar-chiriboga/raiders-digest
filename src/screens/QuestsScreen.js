@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platf
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnimatedScreen from '../components/AnimatedScreen';
+import DesktopNav from '../components/DesktopNav';
 import { QUESTS_DATA } from '../data-quests';
 
 const { width } = Dimensions.get('window');
@@ -10,7 +11,7 @@ const isDesktop = width > 768;
 
 const TRACKED_QUESTS_KEY = '@tracked_quests';
 
-export default function QuestsScreen() {
+export default function QuestsScreen({ navigation }) {
   const [filteredQuests, setFilteredQuests] = useState(QUESTS_DATA);
   const [trackedQuestIds, setTrackedQuestIds] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,7 +107,7 @@ export default function QuestsScreen() {
             <Ionicons 
               name={isTracked ? "star" : "star-outline"} 
               size={20} 
-              color={isTracked ? "#ff3e00" : "#737373"} 
+              color={isTracked ? "#ff8c00" : "#737373"} 
             />
           </TouchableOpacity>
         </View>
@@ -162,46 +163,40 @@ export default function QuestsScreen() {
 
   return (
     <AnimatedScreen>
-      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Quests" />}
+      <ScrollView style={styles.container} contentContainerStyle={[styles.scrollContent, isDesktop && styles.contentDesktop]}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.headerAccent} />
-          <Text style={styles.headerTitle}>QUESTS DATABASE</Text>
-          <View style={styles.headerStats}>
-            <Ionicons name="star" size={14} color="#ff3e00" />
-            <Text style={styles.headerStatsText}>{trackedQuestIds.length} TRACKED</Text>
+          <View style={styles.headerTop}>
+            <Ionicons name="newspaper" size={16} color="#ff8c00" />
+            <Text style={styles.headerTitle}>QUESTS // DB</Text>
+          </View>
+          <View style={styles.statsBar}>
+            <Text style={styles.statText}>TOTAL: {QUESTS_DATA.length.toString().padStart(2, '0')}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statTextActive}>TRACKED: {trackedQuestIds.length.toString().padStart(2, '0')}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statText}>FOUND: {filteredQuests.length.toString().padStart(2, '0')}</Text>
           </View>
         </View>
 
         {/* Search Bar */}
         <View style={styles.searchSection}>
           <View style={styles.searchBar}>
-            <Ionicons name="search" size={16} color="#737373" />
+            <Ionicons name="search" size={14} color="#737373" />
             <TextInput
               style={styles.searchInput}
-              placeholder="SEARCH QUESTS..."
-              placeholderTextColor="#525252"
+              placeholder="SEARCH_DATABASE..."
+              placeholderTextColor="#404040"
               value={searchQuery}
               onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearch}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity onPress={() => setSearchQuery('')}>
-                <Ionicons name="close-circle" size={20} color="#737373" />
+                <Ionicons name="close" size={18} color="#737373" />
               </TouchableOpacity>
             )}
           </View>
-          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-            <Text style={styles.searchButtonText}>SEARCH</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Instructions */}
-        <View style={styles.infoCard}>
-          <Ionicons name="information-circle" size={20} color="#3b82f6" />
-          <Text style={styles.infoText}>
-            Tap the star icon to track quests on your home screen
-          </Text>
         </View>
 
         {/* Quests List */}
@@ -231,42 +226,61 @@ export default function QuestsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050505',
+    backgroundColor: 'transparent',
   },
   scrollContent: {
+    padding: isDesktop ? 40 : 20,
+    paddingTop: isDesktop ? 20 : 10,
+    maxWidth: isDesktop ? 1400 : '100%',
+    alignSelf: 'center',
+    width: '100%',
     paddingBottom: 100,
   },
+  contentDesktop: {
+    paddingTop: 70,
+  },
   header: {
-    padding: 20,
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    borderBottomWidth: 2,
-    borderBottomColor: '#262626',
-    backgroundColor: '#000000',
+    paddingHorizontal: isDesktop ? 24 : 0,
+    marginBottom: 24,
   },
-  headerAccent: {
-    width: 60,
-    height: 4,
-    backgroundColor: '#ff3e00',
-    marginBottom: 12,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '900',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#ffffff',
-    letterSpacing: 2,
-    marginBottom: 8,
-  },
-  headerStats: {
+  headerTop: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    marginBottom: 8,
   },
-  headerStatsText: {
-    fontSize: 11,
+  headerTitle: {
+    fontSize: isDesktop ? 32 : 24,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: -1,
+    textTransform: 'uppercase',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  statsBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#262626',
+    gap: 4,
+  },
+  statText: {
+    fontSize: 10,
     color: '#737373',
-    letterSpacing: 1,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statTextActive: {
+    fontSize: 10,
+    color: '#ff8c00',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statDivider: {
+    color: '#262626',
+    marginHorizontal: 4,
   },
   loadingContainer: {
     flex: 1,
@@ -281,25 +295,24 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   searchSection: {
-    padding: 20,
-    paddingBottom: 12,
-    gap: 12,
+    marginBottom: 16,
+    marginHorizontal: isDesktop ? 24 : 0,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: '#262626',
-    padding: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: isDesktop ? 24 : 16,
+    paddingVertical: 12,
   },
   searchInput: {
     flex: 1,
-    fontSize: 12,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#ffffff',
+    fontSize: isDesktop ? 14 : 13,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   emptyState: {
     alignItems: 'center',
@@ -326,55 +339,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 18,
   },
-  searchButton: {
-    backgroundColor: 'rgba(255, 62, 0, 0.1)',
-    borderWidth: 1,
-    borderColor: '#ff3e00',
-    padding: 12,
-    alignItems: 'center',
-  },
-  searchButtonText: {
-    fontSize: 11,
-    fontWeight: '700',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#ff3e00',
-    letterSpacing: 2,
-  },
-  infoCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    borderWidth: 1,
-    borderColor: '#3b82f6',
-    borderLeftWidth: 3,
-    padding: 16,
-    marginHorizontal: 20,
-    marginBottom: 12,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: 12,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#9ca3af',
-    lineHeight: 18,
-  },
+
   questsList: {
-    padding: 20,
-    paddingTop: 8,
     gap: 16,
+    paddingHorizontal: isDesktop ? 24 : 0,
   },
   questCard: {
-    backgroundColor: '#000000',
+    backgroundColor: 'rgba(23, 23, 23, 0.3)',
     borderWidth: 1,
     borderColor: '#262626',
-    borderLeftWidth: 3,
-    borderLeftColor: '#404040',
     padding: 16,
+    marginBottom: 16,
   },
   questCardTracked: {
-    borderLeftColor: '#ff3e00',
-    backgroundColor: 'rgba(255, 62, 0, 0.03)',
+    borderColor: '#ff8c00',
+    backgroundColor: 'rgba(255, 140, 0, 0.05)',
   },
   questHeader: {
     flexDirection: 'row',
@@ -390,7 +369,7 @@ const styles = StyleSheet.create({
   },
   questTitle: {
     flex: 1,
-    fontSize: 16,
+    fontSize: isDesktop ? 18 : 16,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#ffffff',
@@ -400,13 +379,13 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(115, 115, 115, 0.1)',
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: '#262626',
   },
   trackButtonActive: {
-    backgroundColor: 'rgba(255, 62, 0, 0.1)',
-    borderColor: '#ff3e00',
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
+    borderColor: '#ff8c00',
   },
   objectivesSection: {
     marginBottom: 16,
@@ -415,11 +394,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#737373',
-    letterSpacing: 2,
+    letterSpacing: 1.5,
     marginBottom: 12,
   },
   objectiveRow: {
@@ -428,9 +407,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   objectiveBullet: {
-    width: 6,
-    height: 6,
-    backgroundColor: '#ff3e00',
+    width: 4,
+    height: 4,
+    backgroundColor: '#ff8c00',
     marginTop: 6,
   },
   objectiveText: {

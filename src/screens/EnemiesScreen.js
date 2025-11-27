@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Image
 import { Ionicons } from '@expo/vector-icons';
 import { ENEMIES_DATA, ENEMY_CATEGORIES } from '../data-generated-enemies';
 import AnimatedScreen from '../components/AnimatedScreen';
+import DesktopNav from '../components/DesktopNav';
 
 const { width } = Dimensions.get('window');
 const isDesktop = width > 768;
@@ -10,16 +11,19 @@ const isDesktop = width > 768;
 export default function EnemiesScreen({ navigation }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const filteredEnemies = selectedCategory === 'All' 
+  const threatOrder = { 'Low': 1, 'Medium': 2, 'High': 3, 'Extreme': 4 };
+  
+  const filteredEnemies = (selectedCategory === 'All' 
     ? ENEMIES_DATA 
-    : ENEMIES_DATA.filter(e => e.category === selectedCategory);
+    : ENEMIES_DATA.filter(e => e.category === selectedCategory))
+    .sort((a, b) => threatOrder[a.threat] - threatOrder[b.threat]);
 
   const getThreatColor = (threat) => {
     switch(threat.toUpperCase()) {
       case 'EXTREME': 
         return { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444' };
       case 'HIGH': 
-        return { color: '#ff3e00', bg: 'rgba(255, 62, 0, 0.1)', border: '#ff3e00' };
+        return { color: '#ff8c00', bg: 'rgba(255, 140, 0, 0.1)', border: '#ff8c00' };
       case 'MEDIUM': 
         return { color: '#eab308', bg: 'rgba(234, 179, 8, 0.1)', border: '#eab308' };
       default: 
@@ -39,24 +43,20 @@ export default function EnemiesScreen({ navigation }) {
 
   return (
     <AnimatedScreen>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Enemies" />}
+      <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Ionicons name="alert-circle-outline" size={16} color="#ff3e00" />
-            <Text style={styles.title}>ENEMY INTEL // ARC</Text>
+            <Ionicons name="alert-circle-outline" size={16} color="#ff8c00" />
+            <Text style={styles.title}>ENEMIES // DB</Text>
           </View>
-          
-          {/* Stats Row */}
-          <View style={styles.statsRow}>
-            <View style={styles.statBox}>
-              <Text style={styles.statLabel}>TOTAL THREATS</Text>
-              <Text style={styles.statValue}>{ENEMIES_DATA.length.toString().padStart(2, '0')}</Text>
-            </View>
-            <View style={styles.statBoxSecondary}>
-              <Text style={styles.statLabelSecondary}>VISIBLE UNITS</Text>
-              <Text style={styles.statValueSecondary}>{filteredEnemies.length.toString().padStart(2, '0')}</Text>
-            </View>
+          <View style={styles.statsBar}>
+            <Text style={styles.statText}>TOTAL: {ENEMIES_DATA.length.toString().padStart(2, '0')}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statTextActive}>FILTER: {selectedCategory.toUpperCase()}</Text>
+            <Text style={styles.statDivider}>|</Text>
+            <Text style={styles.statText}>FOUND: {filteredEnemies.length.toString().padStart(2, '0')}</Text>
           </View>
         </View>
 
@@ -76,7 +76,7 @@ export default function EnemiesScreen({ navigation }) {
               ]}
               onPress={() => setSelectedCategory(category)}
             >
-              <View style={styles.filterDecor} />
+
               <Text style={[
                 styles.filterText,
                 selectedCategory === category && styles.filterTextActive
@@ -161,11 +161,14 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: isDesktop ? 40 : 20,
-    paddingTop: 80,
+    paddingTop: isDesktop ? 20 : 10,
     maxWidth: isDesktop ? 1400 : '100%',
     alignSelf: 'center',
     width: '100%',
     paddingBottom: 100,
+  },
+  contentDesktop: {
+    paddingTop: 70,
   },
   header: {
     paddingHorizontal: isDesktop ? 24 : 0,
@@ -185,56 +188,30 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  statsRow: {
+  statsBar: {
     flexDirection: 'row',
-    gap: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(38, 38, 38, 0.5)',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#262626',
+    gap: 4,
   },
-  statBox: {
-    flex: 1,
-    backgroundColor: 'rgba(239, 68, 68, 0.05)',
-    borderLeftWidth: 2,
-    borderLeftColor: '#ef4444',
-    padding: 8,
-  },
-  statLabel: {
-    fontSize: 9,
-    color: '#ef4444',
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginBottom: 4,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
-  statValue: {
-    fontSize: isDesktop ? 24 : 20,
-    color: '#ef4444',
-    fontWeight: '900',
-    letterSpacing: 1,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-  },
-  statBoxSecondary: {
-    flex: 1,
-    backgroundColor: 'rgba(23, 23, 23, 0.3)',
-    borderLeftWidth: 2,
-    borderLeftColor: '#404040',
-    padding: 8,
-  },
-  statLabelSecondary: {
-    fontSize: 9,
+  statText: {
+    fontSize: 10,
     color: '#737373',
-    fontWeight: '700',
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
-    marginBottom: 4,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
-  statValueSecondary: {
-    fontSize: isDesktop ? 24 : 20,
-    color: '#ffffff',
-    fontWeight: '900',
-    letterSpacing: 1,
+  statTextActive: {
+    fontSize: 10,
+    color: '#ff8c00',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    letterSpacing: 1.5,
+  },
+  statDivider: {
+    color: '#262626',
+    marginHorizontal: 4,
   },
   filterContainer: {
     marginBottom: 24,
@@ -246,32 +223,23 @@ const styles = StyleSheet.create({
   filterBtn: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: '#000000',
-    borderWidth: 1,
-    borderColor: '#262626',
-    position: 'relative',
+    backgroundColor: 'rgba(23, 23, 23, 0.5)',
+    borderWidth: 2,
+    borderColor: '#404040',
   },
   filterBtnActive: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderColor: '#ef4444',
-  },
-  filterDecor: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 4,
-    height: 4,
-    backgroundColor: '#262626',
+    backgroundColor: '#ff8c00',
+    borderColor: '#ff8c00',
   },
   filterText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#737373',
+    color: '#a3a3a3',
     letterSpacing: 1.5,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   filterTextActive: {
-    color: '#ef4444',
+    color: '#000000',
     fontWeight: '900',
   },
   enemiesGrid: {
@@ -283,7 +251,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   enemyCard: {
-    backgroundColor: '#000000',
+    backgroundColor: 'rgba(23, 23, 23, 0.3)',
     borderWidth: 1,
     borderColor: '#262626',
     marginBottom: 16,
