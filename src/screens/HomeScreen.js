@@ -744,7 +744,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tipsSectionMobile: {
-    marginTop: 24,
+    marginTop: 48,
   },
   tipsContainer: {
     gap: 12,
