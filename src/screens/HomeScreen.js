@@ -52,7 +52,7 @@ const RaidersLogo = ({ style }) => (
       <SvgText
         x="400"
         y="160"
-        fontFamily="Arial Black, Helvetica, sans-serif"
+        fontFamily="Arial Black, Arial, Helvetica, sans-serif"
         fontWeight="900"
         fontSize="110"
         letterSpacing="8"
@@ -60,6 +60,7 @@ const RaidersLogo = ({ style }) => (
         fill="url(#metalGrad)"
         stroke="#1a1a1a"
         strokeWidth="3"
+        paintOrder="stroke"
       >
         RAIDERS
       </SvgText>
@@ -69,7 +70,7 @@ const RaidersLogo = ({ style }) => (
         <SvgText
           x="0"
           y="26"
-          fontFamily="Arial, sans-serif"
+          fontFamily="Arial, Helvetica, sans-serif"
           fontWeight="bold"
           fontSize="24"
           letterSpacing="12"
@@ -77,6 +78,7 @@ const RaidersLogo = ({ style }) => (
           fill="#0a0a0a"
           stroke="#000"
           strokeWidth="1"
+          paintOrder="stroke"
         >
           DIGEST
         </SvgText>
