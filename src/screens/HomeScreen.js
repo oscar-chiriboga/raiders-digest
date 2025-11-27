@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Defs, Filter, FeGaussianBlur, FeMerge, FeMergeNode, LinearGradient, Stop, G, Line, Text as SvgText, Path } from 'react-native-svg';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
+import Footer from '../components/Footer';
 import { PATCH_NOTES_DATA } from '../data';
 import { QUESTS_DATA } from '../data-quests';
 import { LOOT_CHEATSHEET } from '../data-loot-cheatsheet';
@@ -414,12 +415,7 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <View style={styles.footerDivider} />
-          <Text style={styles.footerText}>RAIDERS DIGEST v1.0 // RESISTANCE NETWORK</Text>
-          <Text style={styles.footerSubtext}>Made with 💚 for ARC Raiders players</Text>
-        </View>
+        <Footer />
       </ScrollView>
     </AnimatedScreen>
   );
@@ -833,30 +829,5 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#d4d4d4',
     lineHeight: 18,
-  },
-  
-  // Footer
-  footer: {
-    marginTop: 64,
-    paddingTop: 32,
-    alignItems: 'center',
-    gap: 12,
-  },
-  footerDivider: {
-    width: '100%',
-    height: 1,
-    backgroundColor: '#262626',
-    marginBottom: 16,
-  },
-  footerText: {
-    fontSize: 10,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#525252',
-    letterSpacing: 2,
-  },
-  footerSubtext: {
-    fontSize: 11,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#737373',
   },
 });

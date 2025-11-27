@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
+import Footer from '../components/Footer';
 import { QUESTS_DATA } from '../data-quests';
 
 const { width } = Dimensions.get('window');
@@ -220,6 +221,8 @@ export default function QuestsScreen({ navigation }) {
             {quests.map((quest, index) => renderQuest(quest, index))}
           </View>
         )}
+        
+        <Footer />
       </ScrollView>
     </AnimatedScreen>
   );

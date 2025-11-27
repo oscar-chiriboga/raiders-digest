@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LOOT_DATA, LOOT_CATEGORIES, LOOT_RARITIES } from '../data-generated-loot';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
+import Footer from '../components/Footer';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../styles/colors';
 
@@ -239,6 +240,8 @@ export default function LootScreen({ navigation }) {
             })
           )}
         </View>
+        
+        <Footer />
       </ScrollView>
       
       {/* Item Detail Modal */}

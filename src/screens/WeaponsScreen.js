@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { WEAPONS_DATA } from '../data-generated';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
+import Footer from '../components/Footer';
 import { COLORS } from '../styles/colors';
 
 const { width } = Dimensions.get('window');
@@ -135,6 +136,8 @@ export default function WeaponsScreen({ navigation }) {
             </View>
           ))}
         </View>
+        
+        <Footer />
       </ScrollView>
     </AnimatedScreen>
   );

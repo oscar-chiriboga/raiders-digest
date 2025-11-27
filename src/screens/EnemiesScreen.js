@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ENEMIES_DATA, ENEMY_CATEGORIES } from '../data-generated-enemies';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
+import Footer from '../components/Footer';
 
 const { width } = Dimensions.get('window');
 const isDesktop = width > 768;
@@ -149,6 +150,8 @@ export default function EnemiesScreen({ navigation }) {
             );
           })}
         </View>
+        
+        <Footer />
       </ScrollView>
     </AnimatedScreen>
   );
