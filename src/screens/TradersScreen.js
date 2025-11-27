@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platf
 import { Ionicons } from '@expo/vector-icons';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
+import MobileTabBar from '../components/MobileTabBar';
 import { TRADERS_DATA } from '../data-traders';
 
 const { width } = Dimensions.get('window');
@@ -138,6 +139,7 @@ export default function TradersScreen({ navigation }) {
           </View>
         )}
       </ScrollView>
+      {!isDesktop && <MobileTabBar navigation={navigation} />}
     </AnimatedScreen>
   );
 }

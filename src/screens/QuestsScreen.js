@@ -97,7 +97,7 @@ export default function QuestsScreen({ navigation }) {
         {/* Header */}
         <View style={styles.questHeader}>
           <View style={styles.questTitleRow}>
-            <Ionicons name="newspaper" size={16} color="#ff3e00" />
+            <Ionicons name="newspaper" size={16} color="#00ff41" />
             <Text style={styles.questTitle} numberOfLines={1}>{quest.name}</Text>
           </View>
           <TouchableOpacity 
@@ -191,10 +191,12 @@ export default function QuestsScreen({ navigation }) {
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
-            {searchQuery.length > 0 && (
+            {searchQuery.length > 0 ? (
               <TouchableOpacity onPress={() => setSearchQuery('')}>
                 <Ionicons name="close" size={18} color="#737373" />
               </TouchableOpacity>
+            ) : (
+              <View style={styles.cursor} />
             )}
           </View>
         </View>
@@ -313,6 +315,12 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: isDesktop ? 14 : 13,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  cursor: {
+    width: 8,
+    height: 14,
+    backgroundColor: '#ff8c00',
+    opacity: 0.6,
   },
   emptyState: {
     alignItems: 'center',

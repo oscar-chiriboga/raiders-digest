@@ -5,6 +5,7 @@ import { LOOT_DATA, LOOT_RARITIES } from '../data-generated-loot';
 import { LOOT_CHEATSHEET } from '../data-loot-cheatsheet';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
+import MobileTabBar from '../components/MobileTabBar';
 import { COLORS } from '../styles/colors';
 
 const { width } = Dimensions.get('window');
@@ -86,11 +87,6 @@ export default function LootCheatSheetScreen({ navigation }) {
     <AnimatedScreen>
       {isDesktop && <DesktopNav navigation={navigation} currentRoute="LootCheatSheet" />}
       <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={20} color="#ff8c00" />
-          <Text style={styles.backText}>BACK</Text>
-        </TouchableOpacity>
-
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <Ionicons name="bookmark" size={16} color="#ff8c00" />
@@ -362,6 +358,7 @@ export default function LootCheatSheetScreen({ navigation }) {
           </View>
         </View>
       </Modal>
+      {!isDesktop && <MobileTabBar navigation={navigation} />}
     </AnimatedScreen>
   );
 }
@@ -381,25 +378,6 @@ const styles = StyleSheet.create({
   },
   contentDesktop: {
     paddingTop: 70,
-  },
-  backBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: '#262626',
-    backgroundColor: 'rgba(255, 140, 0, 0.1)',
-  },
-  backText: {
-    color: '#ff8c00',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   header: {
     paddingHorizontal: isDesktop ? 24 : 0,

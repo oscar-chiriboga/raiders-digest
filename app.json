@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "RaidersDigest-all",
+    "name": "Raiders Digest",
     "slug": "RaidersDigest-all",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -23,7 +23,7 @@
       "edgeToEdgeEnabled": true
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/images/rd-logo.png"
     }
   }
 }

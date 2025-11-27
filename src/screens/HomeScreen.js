@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platform, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Defs, Filter, FeGaussianBlur, FeMerge, FeMergeNode, LinearGradient, Stop, G, Line, Text as SvgText, Path } from 'react-native-svg';
@@ -20,8 +20,34 @@ const TIPS_DATA = [
   { title: 'TRUST ISSUES', text: 'All unknown signals are hostile until proven otherwise. Watch your six.' },
 ];
 
-// SVG Logo Component
-const RaidersLogo = ({ style }) => (
+// SVG Logo Component with Animation
+const RaidersLogo = ({ style }) => {
+  const glowAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
+  const glowOpacity = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.3, 0.8],
+  });
+
+  return (
+    <Animated.View style={[style, { opacity: glowOpacity }]}>
   <Svg viewBox="0 0 800 300" style={style}>
     <Defs>
       <LinearGradient id="arcOrange" x1="0" y1="0" x2="1" y2="0">
@@ -52,15 +78,28 @@ const RaidersLogo = ({ style }) => (
       <SvgText
         x="400"
         y="160"
-        fontFamily="Arial Black, Arial, Helvetica, sans-serif"
+        fontFamily="sans-serif"
         fontWeight="900"
         fontSize="110"
         letterSpacing="8"
         textAnchor="middle"
-        fill="url(#metalGrad)"
+        dominantBaseline="middle"
+        fill="#ffffff"
         stroke="#1a1a1a"
         strokeWidth="3"
-        paintOrder="stroke"
+      >
+        RAIDERS
+      </SvgText>
+      <SvgText
+        x="400"
+        y="160"
+        fontFamily="sans-serif"
+        fontWeight="900"
+        fontSize="110"
+        letterSpacing="8"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fill="url(#metalGrad)"
       >
         RAIDERS
       </SvgText>
@@ -109,7 +148,9 @@ const RaidersLogo = ({ style }) => (
       </SvgText>
     </G>
   </Svg>
-);
+    </Animated.View>
+  );
+};
 
 export default function HomeScreen({ navigation }) {
   const [trackedQuests, setTrackedQuests] = useState([]);
@@ -169,7 +210,7 @@ export default function HomeScreen({ navigation }) {
           
           <Text style={styles.heroDesc}>
             <Text style={styles.heroDescBold}>ARC RAIDERS COMPANION</Text> // OPERATIONAL.{'\n'}
-            Access real-time intel on threats, loadouts, and orbital drops. Stay alert.
+            Your tactical database for weapons, enemies, quests, and loot. Survive the ARC invasion.
           </Text>
           
           <View style={styles.heroDivider} />
@@ -183,6 +224,20 @@ export default function HomeScreen({ navigation }) {
           </View>
           
           <View style={styles.accessGrid}>
+            <TouchableOpacity 
+              style={styles.accessCard}
+              onPress={() => navigation.navigate('SurvivalGuide')}
+            >
+              <View style={styles.accessIcon}>
+                <Ionicons name="shield-checkmark" size={24} color="#ff8c00" />
+              </View>
+              <View style={styles.accessInfo}>
+                <Text style={styles.accessTitle}>SURVIVAL_GUIDE</Text>
+                <Text style={styles.accessSubtitle}>First 10 hours survival protocol</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#404040" />
+            </TouchableOpacity>
+
             <TouchableOpacity 
               style={styles.accessCard}
               onPress={() => navigation.navigate('Traders')}
@@ -207,6 +262,20 @@ export default function HomeScreen({ navigation }) {
               <View style={styles.accessInfo}>
                 <Text style={styles.accessTitle}>LOOT_CHEAT_SHEET</Text>
                 <Text style={styles.accessSubtitle}>Essential items to keep or recycle</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#404040" />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.accessCard}
+              onPress={() => navigation.navigate('Crafting')}
+            >
+              <View style={styles.accessIcon}>
+                <Ionicons name="construct" size={24} color="#ff8c00" />
+              </View>
+              <View style={styles.accessInfo}>
+                <Text style={styles.accessTitle}>CRAFTING_RECIPES</Text>
+                <Text style={styles.accessSubtitle}>All craftable items and materials</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#404040" />
             </TouchableOpacity>
@@ -343,6 +412,13 @@ export default function HomeScreen({ navigation }) {
               ))}
             </View>
           </View>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <View style={styles.footerDivider} />
+          <Text style={styles.footerText}>RAIDERS DIGEST v1.0 // RESISTANCE NETWORK</Text>
+          <Text style={styles.footerSubtext}>Made with 💚 for ARC Raiders players</Text>
         </View>
       </ScrollView>
     </AnimatedScreen>
@@ -757,5 +833,30 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#d4d4d4',
     lineHeight: 18,
+  },
+  
+  // Footer
+  footer: {
+    marginTop: 64,
+    paddingTop: 32,
+    alignItems: 'center',
+    gap: 12,
+  },
+  footerDivider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: '#262626',
+    marginBottom: 16,
+  },
+  footerText: {
+    fontSize: 10,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    color: '#525252',
+    letterSpacing: 2,
+  },
+  footerSubtext: {
+    fontSize: 11,
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    color: '#737373',
   },
 });
