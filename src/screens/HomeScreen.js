@@ -661,6 +661,7 @@ const styles = StyleSheet.create({
   // Bottom Row
   bottomRow: {
     gap: 24,
+    flexDirection: 'column',
   },
   bottomRowDesktop: {
     flexDirection: 'row',
