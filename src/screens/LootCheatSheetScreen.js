@@ -6,6 +6,7 @@ import { LOOT_CHEATSHEET } from '../data-loot-cheatsheet';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
 import MobileTabBar from '../components/MobileTabBar';
+import Footer from '../components/Footer';
 import { COLORS } from '../styles/colors';
 
 const { width } = Dimensions.get('window');
@@ -245,6 +246,8 @@ export default function LootCheatSheetScreen({ navigation }) {
             })
           )}
         </View>
+        
+        <Footer />
       </ScrollView>
 
       <Modal
@@ -828,3 +831,4 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
 });
+

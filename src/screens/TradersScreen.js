@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
 import MobileTabBar from '../components/MobileTabBar';
+import Footer from '../components/Footer';
 import { TRADERS_DATA } from '../data-traders';
 
 const { width } = Dimensions.get('window');
@@ -138,7 +139,7 @@ export default function TradersScreen({ navigation }) {
             ))}
           </View>
         )}
-      </ScrollView>
+        <Footer />`r`n      </ScrollView>
       {!isDesktop && <MobileTabBar navigation={navigation} />}
     </AnimatedScreen>
   );
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     maxWidth: isDesktop ? 1400 : '100%',
     alignSelf: 'center',
     width: '100%',
-    paddingBottom: 180,
+    paddingBottom: 100,
   },
   contentDesktop: {
     paddingTop: 70,
@@ -369,3 +370,4 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+

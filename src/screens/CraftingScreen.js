@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
 import MobileTabBar from '../components/MobileTabBar';
+import Footer from '../components/Footer';
 import { LOOT_DATA } from '../data-generated-loot';
 
 const { width } = Dimensions.get('window');
@@ -151,7 +152,7 @@ export default function CraftingScreen({ navigation }) {
             );
           })}
         </View>
-      </ScrollView>
+        <Footer />`r`n      </ScrollView>
 
       <Modal
         visible={selectedItem !== null}
@@ -221,7 +222,7 @@ export default function CraftingScreen({ navigation }) {
                       ))}
                     </View>
                   </View>
-                </ScrollView>
+                  <Footer />`r`n      </ScrollView>
               </>
             )}
           </View>
@@ -570,3 +571,4 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
 });
+

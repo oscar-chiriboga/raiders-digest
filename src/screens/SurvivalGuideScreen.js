@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
 import MobileTabBar from '../components/MobileTabBar';
+import Footer from '../components/Footer';
 
 const { width } = Dimensions.get('window');
 const isDesktop = width > 768;
@@ -185,6 +186,8 @@ export default function SurvivalGuideScreen({ navigation }) {
             <Text style={styles.text}>If you extract with a bad gun (like the "Stitcher"), dismantle it. The weapon parts are more valuable for repairing your good gun than the cash you get for selling it.</Text>
           </View>
         </View>
+        
+        <Footer />
       </ScrollView>
       {!isDesktop && <MobileTabBar navigation={navigation} />}
     </AnimatedScreen>
@@ -196,8 +199,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 24,
-    paddingTop: isDesktop ? 90 : 80,
+    padding: isDesktop ? 24 : 16,
+    paddingTop: isDesktop ? 90 : 20,
     paddingBottom: 100,
     maxWidth: 800,
     alignSelf: 'center',
