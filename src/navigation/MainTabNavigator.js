@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, View, StyleSheet, Text, Dimensions } from 'react-native';
+import { Platform, View, StyleSheet, Dimensions } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import HomeScreen from '../screens/HomeScreen';
 import WeaponsScreen from '../screens/WeaponsScreen';
@@ -13,6 +14,7 @@ const Tab = createBottomTabNavigator();
 
 export default function MainTabNavigator() {
   const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({ window }) => {
@@ -21,25 +23,31 @@ export default function MainTabNavigator() {
     return () => subscription?.remove();
   }, []);
 
+  const tabBarHeight = Platform.OS === 'ios' ? 70 : 65;
+  const bottomPadding = insets.bottom > 0 ? insets.bottom : 10;
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: isDesktop ? { display: 'none' } : {
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
           backgroundColor: '#000000',
           borderTopWidth: 1,
-          borderTopColor: '#262626',
-          height: Platform.OS === 'ios' ? 88 : 70,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 12,
+          borderTopColor: '#1a1a1a',
+          height: tabBarHeight + bottomPadding,
+          paddingBottom: bottomPadding,
           paddingTop: 8,
-          position: 'absolute',
           elevation: 0,
         },
         tabBarActiveTintColor: '#ff8c00',
-        tabBarInactiveTintColor: '#525252',
-        tabBarIcon: ({ focused, color, size }) => {
+        tabBarInactiveTintColor: '#666666',
+        tabBarShowLabel: true,
+        tabBarIcon: ({ focused, color }) => {
           let iconName;
-          let iconColor = focused ? '#ff8c00' : '#404040';
 
           if (route.name === 'Home') {
             iconName = 'home';
@@ -54,21 +62,22 @@ export default function MainTabNavigator() {
           }
 
           return (
-            <View style={[styles.iconContainer, focused && styles.iconContainerActive]}>
+            <View style={styles.iconContainer}>
+              {focused && <View style={styles.activeIndicator} />}
               <Ionicons 
                 name={iconName} 
-                size={20} 
-                color={iconColor}
+                size={24} 
+                color={color}
               />
             </View>
           );
         },
         tabBarLabelStyle: {
-          fontSize: 9,
-          fontWeight: '700',
-          letterSpacing: 0.5,
+          fontSize: 10,
+          fontWeight: '600',
           fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
           marginTop: 4,
+          marginBottom: 0,
         },
       })}
     >
@@ -85,12 +94,13 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 36,
-    width: 36,
-    borderRadius: 8,
-    backgroundColor: 'transparent',
+    position: 'relative',
   },
-  iconContainerActive: {
-    backgroundColor: 'rgba(255, 140, 0, 0.15)',
+  activeIndicator: {
+    position: 'absolute',
+    top: -8,
+    width: 32,
+    height: 2,
+    backgroundColor: '#ff8c00',
   },
 });
