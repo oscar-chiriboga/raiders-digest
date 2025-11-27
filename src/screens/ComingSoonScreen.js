@@ -14,6 +14,9 @@ export default function ComingSoonScreen({ navigation }) {
   const [timeRemaining, setTimeRemaining] = useState('');
 
   useEffect(() => {
+    // Start countdown immediately
+    checkLaunchTime();
+    
     // Check if device is already authenticated or if launch time has passed
     checkAuthentication();
 
@@ -111,6 +114,13 @@ export default function ComingSoonScreen({ navigation }) {
       <View style={styles.scanlines} pointerEvents="none" />
       <View style={styles.vignette} pointerEvents="none" />
       <Animated.View style={[styles.inner, { opacity: fadeAnim }]}>
+        {timeRemaining && (
+          <View style={styles.countdownBox}>
+            <Text style={styles.countdownLabel}>{'>'} LAUNCH COUNTDOWN:</Text>
+            <Text style={styles.countdownTime}>{timeRemaining}</Text>
+          </View>
+        )}
+        
         <View style={styles.glowBox}>
           <Animated.Text style={[styles.signal, { opacity: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] }) }]}>
             ▓▓▓ SIGNAL DETECTED...
@@ -122,13 +132,6 @@ export default function ComingSoonScreen({ navigation }) {
         <Text style={styles.intel}>
           {'>'} Comprehensive intel on ARC threats, weapon schematics, and loot hotspots is currently compiling.
         </Text>
-        
-        {timeRemaining && (
-          <View style={styles.countdownBox}>
-            <Text style={styles.countdownLabel}>{'>'} LAUNCH COUNTDOWN:</Text>
-            <Text style={styles.countdownTime}>{timeRemaining}</Text>
-          </View>
-        )}
         
         <View style={styles.accessControl}>
           <Text style={styles.accessLabel}>{'>'} ACCESS CODE REQUIRED:</Text>
