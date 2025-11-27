@@ -22,105 +22,89 @@ const TIPS_DATA = [
 
 // SVG Logo Component
 const RaidersLogo = ({ style }) => (
-  <Svg viewBox="0 0 600 200" style={style}>
+  <Svg viewBox="0 0 800 300" style={style}>
     <Defs>
-      {/* Orange Gradient */}
-      <LinearGradient id="orangeGrad" x1="0" y1="0" x2="1" y2="0">
-        <Stop offset="0%" stopColor="#ff8c00" />
-        <Stop offset="100%" stopColor="#ff6600" />
+      <LinearGradient id="arcOrange" x1="0" y1="0" x2="1" y2="0">
+        <Stop offset="0%" stopColor="#ff3300" />
+        <Stop offset="50%" stopColor="#ff6600" />
+        <Stop offset="100%" stopColor="#ff3300" />
       </LinearGradient>
-      {/* Strong Glow Filter */}
-      <Filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-        <FeGaussianBlur stdDeviation="3" result="coloredBlur" />
-        <FeMerge>
-          <FeMergeNode in="coloredBlur" />
-          <FeMergeNode in="SourceGraphic" />
-        </FeMerge>
-      </Filter>
+      <LinearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
+        <Stop offset="0%" stopColor="#ffffff" />
+        <Stop offset="45%" stopColor="#cccccc" />
+        <Stop offset="50%" stopColor="#999999" />
+        <Stop offset="55%" stopColor="#cccccc" />
+        <Stop offset="100%" stopColor="#eeeeee" />
+      </LinearGradient>
     </Defs>
 
-    {/* Diagonal Retro Stripes - Sharper with black separators */}
-    <G transform="translate(300, 100) rotate(-22) translate(-300, -100)">
-      {/* Black separator lines for depth */}
-      <Line x1="395" y1="-50" x2="395" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
-      <Line x1="420" y1="-50" x2="420" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
-      <Line x1="445" y1="-50" x2="445" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
-      <Line x1="470" y1="-50" x2="470" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
-      <Line x1="495" y1="-50" x2="495" y2="300" stroke="#000000" strokeWidth="3" opacity="0.6" />
-      
-      {/* Colored stripes - matching screenshot */}
-      <Line x1="385" y1="-50" x2="385" y2="300" stroke="#7dd3fc" strokeWidth="18" opacity="0.9" />
-      <Line x1="410" y1="-50" x2="410" y2="300" stroke="#4ade80" strokeWidth="18" opacity="0.9" />
-      <Line x1="435" y1="-50" x2="435" y2="300" stroke="#fde047" strokeWidth="18" opacity="0.9" />
-      <Line x1="460" y1="-50" x2="460" y2="300" stroke="#ff4444" strokeWidth="18" opacity="0.9" />
-    </G>
+    <G>
+      <Path d="M 50 50 L 150 50 L 170 30" fill="none" stroke="#444" strokeWidth="2" />
+      <Path d="M 750 50 L 650 50 L 630 30" fill="none" stroke="#444" strokeWidth="2" />
+      <Path d="M 50 250 L 150 250 L 170 270" fill="none" stroke="#444" strokeWidth="2" />
+      <Path d="M 750 250 L 650 250 L 630 270" fill="none" stroke="#444" strokeWidth="2" />
 
-    {/* Main Title */}
-    <G transform="translate(300, 80)">
-      {/* RAIDERS - Black shadow layer */}
+      <Line x1="40" y1="60" x2="40" y2="240" stroke="#ff4500" strokeWidth="4" opacity="0.8" />
+      <Line x1="760" y1="60" x2="760" y2="240" stroke="#ff4500" strokeWidth="4" opacity="0.8" />
+      
+      <Line x1="180" y1="150" x2="620" y2="150" stroke="#ff4500" strokeWidth="1" opacity="0.2" />
+
       <SvgText
-        y="2"
-        fontFamily="monospace"
+        x="400"
+        y="160"
+        fontFamily="Arial Black, Helvetica, sans-serif"
         fontWeight="900"
-        fontSize="72"
-        fill="#1a1a1a"
+        fontSize="110"
         letterSpacing="8"
         textAnchor="middle"
-        opacity="0.5"
-      >
-        RAIDERS
-      </SvgText>
-      {/* RAIDERS - Main text */}
-      <SvgText
-        y="0"
-        fontFamily="monospace"
-        fontWeight="900"
-        fontSize="72"
-        fill="url(#orangeGrad)"
-        letterSpacing="8"
-        textAnchor="middle"
+        fill="url(#metalGrad)"
         stroke="#1a1a1a"
-        strokeWidth="6"
-        filter="url(#glow)"
+        strokeWidth="3"
       >
         RAIDERS
       </SvgText>
       
-      {/* DIGEST - Black shadow layer */}
-      <SvgText
-        y="62"
-        fontFamily="monospace"
-        fontWeight="900"
-        fontSize="72"
-        fill="#1a1a1a"
-        letterSpacing="8"
-        textAnchor="middle"
-        opacity="0.5"
-      >
-        DIGEST
-      </SvgText>
-      {/* DIGEST - Main text */}
-      <SvgText
-        y="60"
-        fontFamily="monospace"
-        fontWeight="900"
-        fontSize="72"
-        fill="#ffffff"
-        letterSpacing="8"
-        textAnchor="middle"
-        stroke="#1a1a1a"
-        strokeWidth="6"
-      >
-        DIGEST
-      </SvgText>
-    </G>
+      <G transform="translate(400, 205)">
+        <Path d="M -150 0 L 150 0 L 160 35 L -160 35 Z" fill="#ff4500" opacity="0.9" />
+        <SvgText
+          x="0"
+          y="26"
+          fontFamily="Arial, sans-serif"
+          fontWeight="bold"
+          fontSize="24"
+          letterSpacing="12"
+          textAnchor="middle"
+          fill="#0a0a0a"
+          stroke="#000"
+          strokeWidth="1"
+        >
+          DIGEST
+        </SvgText>
+      </G>
 
-    {/* Corner Accents - Sharper */}
-    <G stroke="#ff8c00" strokeWidth="4" fill="none" strokeLinecap="square">
-      <Path d="M 50 30 L 50 50 L 30 50" />
-      <Path d="M 550 30 L 550 50 L 570 50" />
-      <Path d="M 50 170 L 50 150 L 30 150" />
-      <Path d="M 550 170 L 550 150 L 570 150" />
+      <SvgText
+        x="400"
+        y="45"
+        fontFamily="monospace"
+        fontSize="12"
+        fill="#888"
+        letterSpacing="4"
+        textAnchor="middle"
+      >
+        // SYSTEM_OVERRIDE // ARC_NET_V2.4
+      </SvgText>
+
+      <SvgText
+        x="400"
+        y="265"
+        fontFamily="monospace"
+        fontSize="10"
+        fill="#888"
+        letterSpacing="2"
+        textAnchor="middle"
+      >
+        EST. 2025 • RESISTANCE BROADCAST
+      </SvgText>
     </G>
   </Svg>
 );
@@ -403,8 +387,8 @@ const styles = StyleSheet.create({
 
   logo: {
     width: '100%',
-    maxWidth: isDesktop ? 500 : 320,
-    height: isDesktop ? 120 : 80,
+    maxWidth: isDesktop ? 600 : 400,
+    height: isDesktop ? 180 : 120,
     marginBottom: 24,
   },
   heroStatusBadge: {
@@ -750,23 +734,26 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   tipCard: {
-    backgroundColor: 'rgba(234, 179, 8, 0.05)',
-    borderLeftWidth: 2,
+    backgroundColor: 'rgba(234, 179, 8, 0.08)',
+    borderLeftWidth: 3,
     borderLeftColor: '#eab308',
-    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(234, 179, 8, 0.2)',
+    padding: 16,
   },
   tipTitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    fontWeight: '700',
+    fontWeight: '900',
     color: '#eab308',
-    marginBottom: 4,
-    letterSpacing: 1,
+    marginBottom: 8,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
   tipText: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#9ca3af',
-    lineHeight: 16,
+    color: '#d4d4d4',
+    lineHeight: 18,
   },
 });
