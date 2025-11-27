@@ -108,7 +108,6 @@ export default function CraftingScreen({ navigation }) {
             style={[styles.sortButton, sortBy === 'alpha' && styles.sortButtonActive]}
             onPress={() => setSortBy('alpha')}
           >
-            <Ionicons name="text" size={12} color={sortBy === 'alpha' ? '#ff8c00' : '#737373'} />
             <Text style={[styles.sortButtonText, sortBy === 'alpha' && styles.sortButtonTextActive]}>A-Z</Text>
           </TouchableOpacity>
           <TouchableOpacity
