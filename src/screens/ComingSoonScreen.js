@@ -11,10 +11,16 @@ export default function ComingSoonScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState('');
 
   useEffect(() => {
-    // Check if device is already authenticated
+    // Check if device is already authenticated or if launch time has passed
     checkAuthentication();
+
+    // Set up countdown timer
+    const timer = setInterval(() => {
+      checkLaunchTime();
+    }, 1000);
 
     // Fade in animation
     Animated.timing(fadeAnim, {
@@ -38,7 +44,34 @@ export default function ComingSoonScreen({ navigation }) {
         }),
       ])
     ).start();
+
+    return () => clearInterval(timer);
   }, []);
+
+  const checkLaunchTime = () => {
+    const now = new Date();
+    // Friday, November 28, 2025 at 12:00 AM
+    const launchDate = new Date('2025-11-28T00:00:00');
+
+    const diff = launchDate - now;
+
+    if (diff <= 0) {
+      // Launch time has passed, navigate to main
+      navigation.replace('Main');
+    } else {
+      // Calculate time remaining
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      if (days > 0) {
+        setTimeRemaining(`${days}D ${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M ${seconds.toString().padStart(2, '0')}S`);
+      } else {
+        setTimeRemaining(`${hours.toString().padStart(2, '0')}H ${minutes.toString().padStart(2, '0')}M ${seconds.toString().padStart(2, '0')}S`);
+      }
+    }
+  };
 
   const checkAuthentication = async () => {
     try {
@@ -46,7 +79,10 @@ export default function ComingSoonScreen({ navigation }) {
       if (auth === 'true') {
         // Device already authenticated, navigate to main
         navigation.replace('Main');
+        return;
       }
+      // Also check if launch time has passed
+      checkLaunchTime();
     } catch (error) {
       console.warn('Error checking authentication:', error);
     }
@@ -86,6 +122,13 @@ export default function ComingSoonScreen({ navigation }) {
         <Text style={styles.intel}>
           {'>'} Comprehensive intel on ARC threats, weapon schematics, and loot hotspots is currently compiling.
         </Text>
+        
+        {timeRemaining && (
+          <View style={styles.countdownBox}>
+            <Text style={styles.countdownLabel}>{'>'} LAUNCH COUNTDOWN:</Text>
+            <Text style={styles.countdownTime}>{timeRemaining}</Text>
+          </View>
+        )}
         
         <View style={styles.accessControl}>
           <Text style={styles.accessLabel}>{'>'} ACCESS CODE REQUIRED:</Text>
@@ -303,6 +346,34 @@ const styles = StyleSheet.create({
     ...Platform.select({
       web: {
         textShadow: '0 0 8px #ff4444',
+      },
+    }),
+  },
+  countdownBox: {
+    width: '100%',
+    backgroundColor: 'rgba(0,255,153,0.05)',
+    borderWidth: 1,
+    borderColor: '#00ff9955',
+    borderRadius: 4,
+    padding: 16,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  countdownLabel: {
+    color: '#8affcd',
+    fontSize: 12,
+    fontFamily: 'monospace',
+    marginBottom: 8,
+  },
+  countdownTime: {
+    color: '#00ff99',
+    fontSize: 24,
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    ...Platform.select({
+      web: {
+        textShadow: '0 0 12px #00ff99',
       },
     }),
   },
