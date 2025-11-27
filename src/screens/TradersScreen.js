@@ -150,12 +150,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   scrollContent: {
-    padding: isDesktop ? 40 : 20,
+    padding: isDesktop ? 40 : 16,
     paddingTop: isDesktop ? 20 : 10,
     maxWidth: isDesktop ? 1400 : '100%',
     alignSelf: 'center',
     width: '100%',
-    paddingBottom: 100,
+    paddingBottom: 180,
   },
   contentDesktop: {
     paddingTop: 70,
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   },
   inventoryItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 12,
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
     borderWidth: 1,
@@ -332,12 +332,12 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   itemName: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#ffffff',
-    marginBottom: 2,
-    flexWrap: 'wrap',
+    marginBottom: 4,
+    lineHeight: 18,
   },
   itemType: {
     fontSize: 10,
@@ -345,8 +345,9 @@ const styles = StyleSheet.create({
     color: '#525252',
   },
   itemCosts: {
-    flexDirection: 'row',
-    gap: 8,
+    flexDirection: 'column',
+    gap: 6,
+    alignItems: 'flex-end',
   },
   costBadge: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
