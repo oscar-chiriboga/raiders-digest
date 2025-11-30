@@ -53,105 +53,109 @@ export default function CraftingScreen({ navigation }) {
   });
 
   return (
-    <AnimatedScreen>
+    <View style={styles.mainContainer}>
       {isDesktop && <DesktopNav navigation={navigation} currentRoute="Crafting" />}
-      <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
-        
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <Ionicons name="construct" size={16} color="#ff8c00" />
-            <Text style={styles.title}>CRAFTING RECIPES // DB</Text>
+
+      <AnimatedScreen style={styles.animatedContent}>
+        <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
+
+          <View style={styles.header}>
+            <View style={styles.headerTop}>
+              <Ionicons name="construct" size={16} color="#ff8c00" />
+              <Text style={styles.title}>CRAFTING RECIPES // DB</Text>
+            </View>
+            <View style={styles.statsBar}>
+              <Text style={styles.statText}>RECIPES: {craftableItems.length.toString().padStart(3, '0')}</Text>
+              <Text style={styles.statDivider}>|</Text>
+              <Text style={styles.statTextActive}>CRAFTABLE</Text>
+              <Text style={styles.statDivider}>|</Text>
+              <Text style={styles.statText}>FOUND: {filtered.length.toString().padStart(3, '0')}</Text>
+            </View>
           </View>
-          <View style={styles.statsBar}>
-            <Text style={styles.statText}>RECIPES: {craftableItems.length.toString().padStart(3, '0')}</Text>
-            <Text style={styles.statDivider}>|</Text>
-            <Text style={styles.statTextActive}>CRAFTABLE</Text>
-            <Text style={styles.statDivider}>|</Text>
-            <Text style={styles.statText}>FOUND: {filtered.length.toString().padStart(3, '0')}</Text>
-          </View>
-        </View>
 
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={14} color="#737373" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="SEARCH_RECIPES..."
-            placeholderTextColor="#404040"
-            value={search}
-            onChangeText={setSearch}
-          />
-          {search ? (
-            <TouchableOpacity onPress={() => setSearch('')}>
-              <Ionicons name="close" size={18} color="#737373" />
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.cursor} />
-          )}
-        </View>
-
-        <View style={styles.sortButtons}>
-          <TouchableOpacity
-            style={[styles.sortButton, sortBy === 'rarity' && styles.sortButtonActive]}
-            onPress={() => setSortBy('rarity')}
-          >
-            <Ionicons name="star" size={12} color={sortBy === 'rarity' ? '#ff8c00' : '#737373'} />
-            <Text style={[styles.sortButtonText, sortBy === 'rarity' && styles.sortButtonTextActive]}>RARITY</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.sortButton, sortBy === 'workbench' && styles.sortButtonActive]}
-            onPress={() => setSortBy('workbench')}
-          >
-            <Ionicons name="hammer" size={12} color={sortBy === 'workbench' ? '#ff8c00' : '#737373'} />
-            <Text style={[styles.sortButtonText, sortBy === 'workbench' && styles.sortButtonTextActive]}>STATION</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.sortButton, sortBy === 'alpha' && styles.sortButtonActive]}
-            onPress={() => setSortBy('alpha')}
-          >
-            <Text style={[styles.sortButtonText, sortBy === 'alpha' && styles.sortButtonTextActive]}>A-Z</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.sortButton, sortBy === 'materials' && styles.sortButtonActive]}
-            onPress={() => setSortBy('materials')}
-          >
-            <Ionicons name="cube" size={12} color={sortBy === 'materials' ? '#ff8c00' : '#737373'} />
-            <Text style={[styles.sortButtonText, sortBy === 'materials' && styles.sortButtonTextActive]}>MATS</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.recipesList}>
-          {sorted.map((item) => {
-            const tierColor = getTierColor(item.rarity);
-            return (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.recipeCard}
-                onPress={() => setSelectedItem(item)}
-              >
-                <View style={styles.recipeHeader}>
-                  <View style={[styles.itemIcon, { borderColor: tierColor }]}>
-                    {item.icon ? (
-                      <Image source={{ uri: item.icon }} style={styles.icon} resizeMode="contain" />
-                    ) : (
-                      <Ionicons name="cube" size={20} color={tierColor} />
-                    )}
-                  </View>
-                  <View style={styles.itemInfo}>
-                    <Text style={styles.itemName}>{item.name}</Text>
-                    {item.workbench && (
-                      <View style={styles.workbenchBadge}>
-                        <Ionicons name="hammer" size={10} color="#ff8c00" />
-                        <Text style={styles.workbenchText}>{item.workbench}</Text>
-                      </View>
-                    )}
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color="#737373" />
-                </View>
+          <View style={styles.searchBar}>
+            <Ionicons name="search" size={14} color="#737373" style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="SEARCH_RECIPES..."
+              placeholderTextColor="#404040"
+              value={search}
+              onChangeText={setSearch}
+            />
+            {search ? (
+              <TouchableOpacity onPress={() => setSearch('')}>
+                <Ionicons name="close" size={18} color="#737373" />
               </TouchableOpacity>
-            );
-          })}
-        </View>
-        <Footer />`r`n      </ScrollView>
+            ) : (
+              <View style={styles.cursor} />
+            )}
+          </View>
+
+          <View style={styles.sortButtons}>
+            <TouchableOpacity
+              style={[styles.sortButton, sortBy === 'rarity' && styles.sortButtonActive]}
+              onPress={() => setSortBy('rarity')}
+            >
+              <Ionicons name="star" size={12} color={sortBy === 'rarity' ? '#ff8c00' : '#737373'} />
+              <Text style={[styles.sortButtonText, sortBy === 'rarity' && styles.sortButtonTextActive]}>RARITY</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.sortButton, sortBy === 'workbench' && styles.sortButtonActive]}
+              onPress={() => setSortBy('workbench')}
+            >
+              <Ionicons name="hammer" size={12} color={sortBy === 'workbench' ? '#ff8c00' : '#737373'} />
+              <Text style={[styles.sortButtonText, sortBy === 'workbench' && styles.sortButtonTextActive]}>STATION</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.sortButton, sortBy === 'alpha' && styles.sortButtonActive]}
+              onPress={() => setSortBy('alpha')}
+            >
+              <Text style={[styles.sortButtonText, sortBy === 'alpha' && styles.sortButtonTextActive]}>A-Z</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.sortButton, sortBy === 'materials' && styles.sortButtonActive]}
+              onPress={() => setSortBy('materials')}
+            >
+              <Ionicons name="cube" size={12} color={sortBy === 'materials' ? '#ff8c00' : '#737373'} />
+              <Text style={[styles.sortButtonText, sortBy === 'materials' && styles.sortButtonTextActive]}>MATS</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.recipesList}>
+            {sorted.map((item) => {
+              const tierColor = getTierColor(item.rarity);
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.recipeCard}
+                  onPress={() => setSelectedItem(item)}
+                >
+                  <View style={styles.recipeHeader}>
+                    <View style={[styles.itemIcon, { borderColor: tierColor }]}>
+                      {item.icon ? (
+                        <Image source={{ uri: item.icon }} style={styles.icon} resizeMode="contain" />
+                      ) : (
+                        <Ionicons name="cube" size={20} color={tierColor} />
+                      )}
+                    </View>
+                    <View style={styles.itemInfo}>
+                      <Text style={styles.itemName}>{item.name}</Text>
+                      {item.workbench && (
+                        <View style={styles.workbenchBadge}>
+                          <Ionicons name="hammer" size={10} color="#ff8c00" />
+                          <Text style={styles.workbenchText}>{item.workbench}</Text>
+                        </View>
+                      )}
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color="#737373" />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <Footer />
+        </ScrollView>
+      </AnimatedScreen>
 
       <Modal
         visible={selectedItem !== null}
@@ -221,7 +225,7 @@ export default function CraftingScreen({ navigation }) {
                       ))}
                     </View>
                   </View>
-                  <Footer />`r`n      </ScrollView>
+                </ScrollView>
               </>
             )}
           </View>
@@ -229,11 +233,18 @@ export default function CraftingScreen({ navigation }) {
       </Modal>
 
       {!isDesktop && <MobileTabBar navigation={navigation} />}
-    </AnimatedScreen>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#0a0e14',
+  },
+  animatedContent: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: 'transparent',
