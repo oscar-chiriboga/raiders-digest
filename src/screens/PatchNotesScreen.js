@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { PATCH_NOTES_DATA } from '../data';
 import AnimatedScreen from '../components/AnimatedScreen';
 import DesktopNav from '../components/DesktopNav';
+import MobileTabBar from '../components/MobileTabBar';
 
 export default function PatchNotesScreen({ navigation }) {
   const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
@@ -16,83 +17,95 @@ export default function PatchNotesScreen({ navigation }) {
   }, []);
 
   return (
-    <AnimatedScreen>
+    <View style={styles.mainContainer}>
       {isDesktop && <DesktopNav navigation={navigation} currentRoute="PatchNotes" />}
-      <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
-        {!isDesktop && (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={20} color="#ff8c00" />
-            <Text style={styles.backText}>BACK</Text>
-          </TouchableOpacity>
-        )}
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <Ionicons name="document-text" size={16} color="#ff8c00" />
-            <Text style={styles.title}>PATCH NOTES // DB</Text>
-          </View>
-          <View style={styles.statsBar}>
-            <Text style={styles.statText}>TOTAL: {PATCH_NOTES_DATA.length.toString().padStart(2, '0')}</Text>
-            <Text style={styles.statDivider}>|</Text>
-            <Text style={styles.statTextActive}>LATEST: v{PATCH_NOTES_DATA[0].id}</Text>
-            <Text style={styles.statDivider}>|</Text>
-            <Text style={styles.statText}>STATUS: UPDATED</Text>
-          </View>
-        </View>
 
-        <View style={styles.notesGrid}>
-          {PATCH_NOTES_DATA.map((note) => (
-            <View key={note.id} style={[styles.noteCard, isDesktop && styles.noteCardDesktop]}>
-              <View style={styles.noteHeader}>
-                <View style={styles.versionBadge}>
-                  <Text style={styles.version}>v{note.id}</Text>
-                </View>
-                <Text style={styles.date}>{note.date}</Text>
-              </View>
-              
-              <Text style={styles.noteTitle}>{note.title}</Text>
-              <Text style={styles.summary}>{note.summary}</Text>
-              
-              {note.sections && note.sections.map((section, sIdx) => (
-                <View key={sIdx} style={styles.section}>
-                  <Text style={styles.sectionTitle}>{section.title}</Text>
-                  <View style={styles.changesList}>
-                    {section.items.map((item, i) => {
-                      if (typeof item === 'string') {
-                        return (
-                          <View key={i} style={styles.changeItem}>
-                            <View style={styles.bullet} />
-                            <Text style={styles.changeText}>{item}</Text>
-                          </View>
-                        );
-                      } else {
-                        return (
-                          <View key={i}>
-                            <View style={styles.changeItem}>
-                              <View style={styles.bullet} />
-                              <Text style={styles.changeText}>{item.text}</Text>
-                            </View>
-                            {item.subitems && item.subitems.map((subitem, j) => (
-                              <View key={j} style={styles.subChangeItem}>
-                                <View style={styles.subBullet} />
-                                <Text style={styles.changeText}>{subitem}</Text>
-                              </View>
-                            ))}
-                          </View>
-                        );
-                      }
-                    })}
-                  </View>
-                </View>
-              ))}
+      <AnimatedScreen style={styles.animatedContent}>
+        <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
+          {!isDesktop && (
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+              <Ionicons name="arrow-back" size={20} color="#ff8c00" />
+              <Text style={styles.backText}>BACK</Text>
+            </TouchableOpacity>
+          )}
+          <View style={styles.header}>
+            <View style={styles.headerTop}>
+              <Ionicons name="document-text" size={16} color="#ff8c00" />
+              <Text style={styles.title}>PATCH NOTES // DB</Text>
             </View>
-          ))}
-        </View>
-      </ScrollView>
-    </AnimatedScreen>
+            <View style={styles.statsBar}>
+              <Text style={styles.statText}>TOTAL: {PATCH_NOTES_DATA.length.toString().padStart(2, '0')}</Text>
+              <Text style={styles.statDivider}>|</Text>
+              <Text style={styles.statTextActive}>LATEST: v{PATCH_NOTES_DATA[0].id}</Text>
+              <Text style={styles.statDivider}>|</Text>
+              <Text style={styles.statText}>STATUS: UPDATED</Text>
+            </View>
+          </View>
+
+          <View style={styles.notesGrid}>
+            {PATCH_NOTES_DATA.map((note) => (
+              <View key={note.id} style={[styles.noteCard, isDesktop && styles.noteCardDesktop]}>
+                <View style={styles.noteHeader}>
+                  <View style={styles.versionBadge}>
+                    <Text style={styles.version}>v{note.id}</Text>
+                  </View>
+                  <Text style={styles.date}>{note.date}</Text>
+                </View>
+
+                <Text style={styles.noteTitle}>{note.title}</Text>
+                <Text style={styles.summary}>{note.summary}</Text>
+
+                {note.sections && note.sections.map((section, sIdx) => (
+                  <View key={sIdx} style={styles.section}>
+                    <Text style={styles.sectionTitle}>{section.title}</Text>
+                    <View style={styles.changesList}>
+                      {section.items.map((item, i) => {
+                        if (typeof item === 'string') {
+                          return (
+                            <View key={i} style={styles.changeItem}>
+                              <View style={styles.bullet} />
+                              <Text style={styles.changeText}>{item}</Text>
+                            </View>
+                          );
+                        } else {
+                          return (
+                            <View key={i}>
+                              <View style={styles.changeItem}>
+                                <View style={styles.bullet} />
+                                <Text style={styles.changeText}>{item.text}</Text>
+                              </View>
+                              {item.subitems && item.subitems.map((subitem, j) => (
+                                <View key={j} style={styles.subChangeItem}>
+                                  <View style={styles.subBullet} />
+                                  <Text style={styles.changeText}>{subitem}</Text>
+                                </View>
+                              ))}
+                            </View>
+                          );
+                        }
+                      })}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      </AnimatedScreen>
+
+      {!isDesktop && <MobileTabBar navigation={navigation} />}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#0a0e14',
+  },
+  animatedContent: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: 'transparent',
