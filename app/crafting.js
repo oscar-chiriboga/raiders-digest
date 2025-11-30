@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Dimensions, Platform, Image, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AnimatedScreen from '../components/AnimatedScreen';
-import DesktopNav from '../components/DesktopNav';
-import MobileTabBar from '../components/MobileTabBar';
-import Footer from '../components/Footer';
-import { LOOT_DATA } from '../data-generated-loot';
+import AnimatedScreen from '../src/components/AnimatedScreen';
+import DesktopNav from '../src/components/DesktopNav';
+import MobileTabBar from '../src/components/MobileTabBar';
+import Footer from '../src/components/Footer';
+import { LOOT_DATA } from '../src/data-generated-loot';
 
 const { width } = Dimensions.get('window');
 const isDesktop = width > 768;
@@ -21,7 +21,7 @@ const getTierColor = (rarity) => {
   return colors[rarity] || '#9ca3af';
 };
 
-export default function CraftingScreen({ navigation }) {
+export default function CraftingScreen() {
   const [search, setSearch] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [sortBy, setSortBy] = useState('rarity');
@@ -54,7 +54,7 @@ export default function CraftingScreen({ navigation }) {
 
   return (
     <View style={styles.mainContainer}>
-      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Crafting" />}
+      {isDesktop && <DesktopNav currentRoute="Crafting" />}
 
       <AnimatedScreen style={styles.animatedContent}>
         <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
@@ -177,7 +177,7 @@ export default function CraftingScreen({ navigation }) {
                     <Ionicons name="close" size={24} color="#ffffff" />
                   </TouchableOpacity>
                 </View>
-                
+
                 <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
                   <View style={styles.modalItemHeader}>
                     <View style={[styles.modalIconContainer, { borderColor: getTierColor(selectedItem.rarity) }]}>
@@ -232,7 +232,7 @@ export default function CraftingScreen({ navigation }) {
         </View>
       </Modal>
 
-      {!isDesktop && <MobileTabBar navigation={navigation} />}
+      {!isDesktop && <MobileTabBar />}
     </View>
   );
 }
@@ -581,4 +581,3 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
 });
-

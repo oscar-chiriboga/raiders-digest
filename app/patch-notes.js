@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { PATCH_NOTES_DATA } from '../data';
-import AnimatedScreen from '../components/AnimatedScreen';
-import DesktopNav from '../components/DesktopNav';
-import MobileTabBar from '../components/MobileTabBar';
+import { PATCH_NOTES_DATA } from '../src/data';
+import AnimatedScreen from '../src/components/AnimatedScreen';
+import DesktopNav from '../src/components/DesktopNav';
+import MobileTabBar from '../src/components/MobileTabBar';
+import { useRouter } from 'expo-router';
 
-export default function PatchNotesScreen({ navigation }) {
+export default function PatchNotesScreen() {
+
   const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
 
   useEffect(() => {
@@ -18,12 +20,12 @@ export default function PatchNotesScreen({ navigation }) {
 
   return (
     <View style={styles.mainContainer}>
-      {isDesktop && <DesktopNav navigation={navigation} currentRoute="PatchNotes" />}
+      {isDesktop && <DesktopNav currentRoute="PatchNotes" />}
 
       <AnimatedScreen style={styles.animatedContent}>
         <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
           {!isDesktop && (
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
               <Ionicons name="arrow-back" size={20} color="#ff8c00" />
               <Text style={styles.backText}>BACK</Text>
             </TouchableOpacity>
@@ -93,7 +95,7 @@ export default function PatchNotesScreen({ navigation }) {
         </ScrollView>
       </AnimatedScreen>
 
-      {!isDesktop && <MobileTabBar navigation={navigation} />}
+      {!isDesktop && <MobileTabBar />}
     </View>
   );
 }

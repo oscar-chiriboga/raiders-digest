@@ -1,57 +1,60 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { CommonActions } from '@react-navigation/native';
+import { Link, usePathname } from 'expo-router';
 
-export default function DesktopNav({ navigation, currentRoute }) {
+export default function DesktopNav() {
+  const pathname = usePathname();
+
   const navItems = [
-    { name: 'Home', icon: 'home', route: 'Home' },
-    { name: 'Weapons', icon: 'hammer', route: 'Weapons' },
-    { name: 'Enemies', icon: 'skull', route: 'Enemies' },
-    { name: 'Quests', icon: 'newspaper', route: 'Quests' },
-    { name: 'Loot', icon: 'cube', route: 'Loot' },
-    { name: 'Traders', icon: 'people', route: 'Traders' },
-    { name: 'Patch Notes', icon: 'document-text', route: 'PatchNotes' },
+    { name: 'Home', icon: 'home', route: '/' },
+    { name: 'Weapons', icon: 'hammer', route: '/weapons' },
+    { name: 'Enemies', icon: 'skull', route: '/enemies' },
+    { name: 'Quests', icon: 'newspaper', route: '/quests' },
+    { name: 'Loot', icon: 'cube', route: '/loot' },
+    { name: 'Traders', icon: 'people', route: '/traders' },
+    { name: 'Patch Notes', icon: 'document-text', route: '/patch-notes' },
   ];
+
+  const isActiveRoute = (route) => {
+    if (route === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(route);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.nav}>
         {/* Logo/Brand */}
-        {currentRoute !== 'Home' && (
+        {pathname !== '/' && (
           <View style={styles.brand}>
             <Ionicons name="radio" size={20} color="#ff8c00" />
             <Text style={styles.brandText}>RAIDERS DIGEST</Text>
           </View>
         )}
-        {currentRoute === 'Home' && <View style={styles.brand} />}
+        {pathname === '/' && <View style={styles.brand} />}
 
         {/* Navigation Items */}
         <View style={styles.navItems}>
           {navItems.map((item) => {
-            const isActive = currentRoute === item.route;
+            const isActive = isActiveRoute(item.route);
             return (
-              <TouchableOpacity
-                key={item.route}
-                style={[styles.navItem, isActive && styles.navItemActive]}
-                onPress={() => {
-                  navigation.dispatch(
-                    CommonActions.navigate({
-                      name: item.route,
-                    })
-                  );
-                }}
-              >
-                <Ionicons 
-                  name={item.icon} 
-                  size={18} 
-                  color={isActive ? '#ff8c00' : '#737373'} 
-                />
-                <Text style={[styles.navText, isActive && styles.navTextActive]}>
-                  {item.name.toUpperCase()}
-                </Text>
-                {isActive && <View style={styles.activeIndicator} />}
-              </TouchableOpacity>
+              <Link key={item.route} href={item.route} asChild>
+                <TouchableOpacity
+                  style={[styles.navItem, isActive && styles.navItemActive]}
+                >
+                  <Ionicons
+                    name={item.icon}
+                    size={18}
+                    color={isActive ? '#ff8c00' : '#737373'}
+                  />
+                  <Text style={[styles.navText, isActive && styles.navTextActive]}>
+                    {item.name.toUpperCase()}
+                  </Text>
+                  {isActive && <View style={styles.activeIndicator} />}
+                </TouchableOpacity>
+              </Link>
             );
           })}
         </View>
@@ -107,6 +110,7 @@ const styles = StyleSheet.create({
     borderColor: '#262626',
     backgroundColor: 'transparent',
     position: 'relative',
+    cursor: 'pointer',
   },
   navItemActive: {
     backgroundColor: 'rgba(255, 140, 0, 0.1)',

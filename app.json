@@ -2,6 +2,7 @@
   "expo": {
     "name": "Raiders Digest",
     "slug": "RaidersDigest-all",
+    "scheme": "raidersdigest",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,7 +24,11 @@
       "edgeToEdgeEnabled": true
     },
     "web": {
-      "favicon": "./assets/images/rd-logo.png"
-    }
+      "favicon": "./assets/images/rd-logo.png",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }

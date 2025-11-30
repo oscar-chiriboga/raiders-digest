@@ -1,30 +1,47 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Platform, Linking } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Link, usePathname } from 'expo-router';
 
-export default function MobileTabBar({ navigation }) {
+export default function MobileTabBar() {
+  const pathname = usePathname();
+
   const tabs = [
-    { name: 'Home', icon: 'home', route: 'Main', params: { screen: 'Home' } },
-    { name: 'Weapons', icon: 'hammer', route: 'Main', params: { screen: 'Weapons' } },
-    { name: 'Enemies', icon: 'skull', route: 'Main', params: { screen: 'Enemies' } },
-    { name: 'Quests', icon: 'newspaper', route: 'Main', params: { screen: 'Quests' } },
-    { name: 'Loot', icon: 'cube', route: 'Main', params: { screen: 'Loot' } },
+    { name: 'Home', icon: 'home', route: '/' },
+    { name: 'Weapons', icon: 'hammer', route: '/weapons' },
+    { name: 'Enemies', icon: 'skull', route: '/enemies' },
+    { name: 'Quests', icon: 'newspaper', route: '/quests' },
+    { name: 'Loot', icon: 'cube', route: '/loot' },
   ];
+
+  const isActiveRoute = (route) => {
+    if (route === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(route);
+  };
 
   return (
     <View style={styles.tabBar}>
-      {tabs.map((tab) => (
-        <TouchableOpacity
-          key={tab.name}
-          style={styles.tab}
-          onPress={() => navigation.navigate(tab.route, tab.params)}
-        >
-          <View style={styles.tabIconContainer}>
-            <Ionicons name={tab.icon} size={22} color="#737373" />
-          </View>
-          <Text style={styles.tabText}>{tab.name.toUpperCase()}</Text>
-        </TouchableOpacity>
-      ))}
+      {tabs.map((tab) => {
+        const isActive = isActiveRoute(tab.route);
+        return (
+          <Link key={tab.name} href={tab.route} asChild>
+            <TouchableOpacity style={styles.tab}>
+              <View style={[styles.tabIconContainer, isActive && styles.tabIconContainerActive]}>
+                <Ionicons
+                  name={tab.icon}
+                  size={22}
+                  color={isActive ? '#ff8c00' : '#737373'}
+                />
+              </View>
+              <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                {tab.name.toUpperCase()}
+              </Text>
+            </TouchableOpacity>
+          </Link>
+        );
+      })}
     </View>
   );
 }
@@ -48,6 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 8,
     gap: 4,
+    cursor: 'pointer',
   },
   tabIconContainer: {
     width: 32,
@@ -57,11 +75,19 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: 'rgba(115, 115, 115, 0.1)',
   },
+  tabIconContainerActive: {
+    backgroundColor: 'rgba(255, 140, 0, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 140, 0, 0.3)',
+  },
   tabText: {
     fontSize: 8,
     fontWeight: '700',
     color: '#737373',
     letterSpacing: 0.5,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+  },
+  tabTextActive: {
+    color: '#ff8c00',
   },
 });
