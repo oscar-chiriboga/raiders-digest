@@ -66,9 +66,9 @@ export default function TradersScreen() {
           {item.trader_price && (
             <View style={styles.itemCardPrice}>
               {traderName === 'Celeste' ? (
-                <ArcSeedsIcon size={12} color="#E5B558" />
+                <ArcSeedsIcon size={18} color="#E5B558" />
               ) : (
-                <CurrencyIcon size={12} color="#E5B558" />
+                <CurrencyIcon size={18} color="#E5B558" />
               )}
               <Text style={styles.priceText}>{item.trader_price}</Text>
             </View>

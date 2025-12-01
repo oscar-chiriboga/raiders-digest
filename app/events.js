@@ -120,6 +120,13 @@ export default function EventsScreen() {
   const [currentTime, setCurrentTime] = useState(Date.now());
   const previousEventsRef = useRef([]);
 
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setIsDesktop(window.width > 768);
+    });
+    return () => subscription?.remove();
+  }, []);
+
   const fetchEvents = useCallback(async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
     try {
