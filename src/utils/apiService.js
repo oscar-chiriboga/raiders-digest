@@ -92,9 +92,8 @@ export const fetchTraders = async (forceRefresh = false) => {
       throw new Error(`Failed to fetch traders: ${response.statusText}`);
     }
     const result = await response.json();
-    // Assuming the API returns { data: [...] } or just [...]
-    // Based on quests, it's likely { data: [...] }
-    return result.data || result || [];
+    // The traders endpoint returns { data: { Apollo: [...], Celeste: [...], ... } }
+    return result.data || result || {};
   };
 
   return await fetchWithCache('traders', fetchFunction, forceRefresh);

@@ -9,7 +9,7 @@ const MORE_ITEMS = [
   { name: 'Enemies', icon: 'skull', route: '/enemies', category: 'Database' },
   { name: 'Loot', icon: 'cube', route: '/loot', category: 'Database' },
   { name: 'Traders', icon: 'people', route: '/traders', category: 'Database' },
-  { name: 'Maps', icon: 'map', route: '/maps', category: 'Database' },
+  { name: 'Maps (Coming Soon)', icon: 'map', route: '/maps', category: 'Database' },
   { name: 'Crafting', icon: 'construct', route: '/crafting', category: 'Guides' },
   { name: 'Cheat Sheet', icon: 'bookmark', route: '/loot-cheatsheet', category: 'Guides' },
   { name: 'Survival Guide', icon: 'shield-checkmark', route: '/survival-guide', category: 'Guides' },

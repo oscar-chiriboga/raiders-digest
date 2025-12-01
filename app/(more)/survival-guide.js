@@ -89,6 +89,116 @@ export default function SurvivalGuideScreen() {
             </View>
           </View>
         </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>STEP 3: THE WORKSHOP & "SCRAPPY"</Text>
+          <Text style={styles.text}>Your Workshop is your passive income.</Text>
+          
+          <View style={styles.subsection}>
+            <Text style={styles.subsectionTitle}>Upgrade Scrappy:</Text>
+            <Text style={styles.text}>Your robot pet finds materials while you are offline.</Text>
+            <View style={styles.checkpoint}>
+              <Text style={styles.checkpointTitle}>⚡ CHECKPOINT:</Text>
+              <Text style={styles.text}>You will get stuck at Level 3. You need Lemons and Olives. You must go to the Blue Gate Map (Olive Grove) to find these. It's dangerous; run in, grab fruit, and extract.</Text>
+            </View>
+          </View>
+
+          <View style={styles.subsection}>
+            <Text style={styles.subsectionTitle}>Workbench Priority:</Text>
+            <View style={styles.priorityItem}>
+              <Text style={styles.priorityNumber}>1.</Text>
+              <View>
+                <Text style={styles.priorityName}>Medical Lab</Text>
+                <Text style={styles.text}>To craft full stacks of meds.</Text>
+              </View>
+            </View>
+            <View style={styles.priorityItem}>
+              <Text style={styles.priorityNumber}>2.</Text>
+              <View>
+                <Text style={styles.priorityName}>Gunsmith</Text>
+                <Text style={styles.text}>To add sights and grips (recoil control).</Text>
+              </View>
+            </View>
+            <View style={styles.priorityItem}>
+              <Text style={styles.priorityNumber}>3.</Text>
+              <View>
+                <Text style={styles.priorityName}>Utility Station</Text>
+                <Text style={styles.text}>To craft your own Hatch Keys.</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>STEP 4: COMBAT "CHEAT SHEET"</Text>
+          <Text style={styles.text}>Don't fight unless you have to. If you must fight, use the right tactic:</Text>
+          
+          <View style={styles.enemyTable}>
+            <View style={styles.enemyRow}>
+              <Text style={styles.enemyName}>Ticks (Spiders)</Text>
+              <Text style={styles.enemyTactic}>Don't Shoot. They explode. Melee them to knock them back.</Text>
+            </View>
+            <View style={styles.enemyRow}>
+              <Text style={styles.enemyName}>Wasps (Drones)</Text>
+              <Text style={styles.enemyTactic}>Shoot the Rotors/Thrusters. Body shots bounce off armor.</Text>
+            </View>
+            <View style={styles.enemyRow}>
+              <Text style={styles.enemyName}>Snitch (Scanner)</Text>
+              <Text style={styles.enemyTactic}>Kill on Sight. If it spots you, it calls a dropship. Shoot the eye.</Text>
+            </View>
+            <View style={styles.enemyRow}>
+              <Text style={styles.enemyName}>Leaper (Jumping Tank)</Text>
+              <Text style={styles.enemyTactic}>Fire. Use Blaze Grenades or shoot red barrels to overheat it.</Text>
+            </View>
+            <View style={styles.enemyRow}>
+              <Text style={styles.enemyName}>Bastion (Big Shield Bot)</Text>
+              <Text style={styles.enemyTactic}>The Back. Distract it and shoot the yellow canisters on its rear.</Text>
+            </View>
+          </View>
+
+          <View style={styles.weaponTip}>
+            <Text style={styles.weaponTipTitle}>🎯 Best Starter Weapons:</Text>
+            <Text style={styles.text}>Use the Ferro (Assault Rifle) or Anvil (Heavy Rifle). Avoid shotguns early on.</Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>STEP 5: HOW TO EXTRACT (AND KEEP YOUR LOOT)</Text>
+          <Text style={styles.text}>There are two ways out. Choose wisely.</Text>
+          
+          <View style={styles.extractMethod}>
+            <Text style={styles.extractTitle}>A. Cargo Elevators (The "Loud" Way)</Text>
+            <Text style={styles.extractRisk}>Risk: High. Everyone on the map hears the alarm.</Text>
+            <Text style={styles.extractStrategy}>Strategy: Trigger the button, then hide 50 meters away. Do not stand on the platform. Wait for the doors to open, check for campers, then sprint inside at the last second.</Text>
+          </View>
+
+          <View style={styles.extractMethod}>
+            <Text style={styles.extractTitle}>B. Raider Hatches (The "Pro" Way)</Text>
+            <Text style={styles.extractRisk}>Risk: Low. Silent and instant.</Text>
+            <Text style={styles.extractCost}>Cost: Requires a Raider Hatch Key.</Text>
+            <Text style={styles.extractStrategy}>Strategy: Always keep a key in your Safe Pocket. If you find rare Blueprints, use the key immediately. It's worth the cost.</Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🎒 INVENTORY MANAGEMENT RULES</Text>
+          
+          <View style={styles.inventoryRule}>
+            <Text style={styles.inventoryTitle}>The Safe Pocket:</Text>
+            <Text style={styles.text}>Items here are saved even if you die.</Text>
+            <View style={styles.inventoryList}>
+              <Text style={styles.inventoryAlways}>ALWAYS put here:</Text>
+              <Text style={styles.text}>Hatch Keys, Blueprints, Rare Mats (ARC Powercells).</Text>
+              <Text style={styles.inventoryNever}>NEVER put here:</Text>
+              <Text style={styles.text}>Ammo or Meds.</Text>
+            </View>
+          </View>
+
+          <View style={styles.inventoryRule}>
+            <Text style={styles.inventoryTitle}>Trash Guns:</Text>
+            <Text style={styles.text}>If you extract with a bad gun (like the "Stitcher"), dismantle it. The weapon parts are more valuable for repairing your good gun than the cash you get for selling it.</Text>
+          </View>
+        </View>
         
         <Footer />
       </ScrollView>
@@ -115,4 +225,27 @@ const styles = StyleSheet.create({
   bullet: { width: 6, height: 6, backgroundColor: '#ff8c00', marginTop: 6 },
   skillContent: { flex: 1 },
   skillName: { fontSize: 15, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ffffff', marginBottom: 8 },
+  subsection: { marginTop: 16 },
+  subsectionTitle: { fontSize: 15, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ffffff', marginBottom: 14 },
+  checkpoint: { backgroundColor: 'rgba(255, 140, 0, 0.1)', borderLeftWidth: 3, borderLeftColor: '#ff8c00', padding: 12, marginTop: 12 },
+  checkpointTitle: { fontSize: 12, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ff8c00', marginBottom: 8 },
+  priorityItem: { flexDirection: 'row', gap: 12, marginBottom: 16, paddingLeft: 8 },
+  priorityNumber: { fontSize: 14, fontWeight: '900', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ff8c00' },
+  priorityName: { fontSize: 13, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ffffff', marginBottom: 4 },
+  enemyTable: { marginTop: 16, marginBottom: 16 },
+  enemyRow: { backgroundColor: 'rgba(23, 23, 23, 0.5)', borderWidth: 1, borderColor: '#262626', padding: 12, marginBottom: 8 },
+  enemyName: { fontSize: 14, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ff8c00', marginBottom: 8 },
+  enemyTactic: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#d4d4d8', lineHeight: 20 },
+  weaponTip: { backgroundColor: 'rgba(255, 140, 0, 0.1)', borderWidth: 1, borderColor: '#ff8c00', padding: 16, marginTop: 8 },
+  weaponTipTitle: { fontSize: 12, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ff8c00', marginBottom: 8 },
+  extractMethod: { backgroundColor: 'rgba(23, 23, 23, 0.5)', borderWidth: 1, borderColor: '#262626', padding: 16, marginBottom: 16 },
+  extractTitle: { fontSize: 15, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ffffff', marginBottom: 10 },
+  extractRisk: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ff4400', marginBottom: 8 },
+  extractCost: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#eab308', marginBottom: 8 },
+  extractStrategy: { fontSize: 13, fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#d4d4d8', lineHeight: 20 },
+  inventoryRule: { marginBottom: 20 },
+  inventoryTitle: { fontSize: 15, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ffffff', marginBottom: 10 },
+  inventoryList: { paddingLeft: 12 },
+  inventoryAlways: { fontSize: 11, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#22c55e', marginTop: 8, marginBottom: 4 },
+  inventoryNever: { fontSize: 11, fontWeight: '700', fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace', color: '#ff4400', marginTop: 8, marginBottom: 4 },
 });

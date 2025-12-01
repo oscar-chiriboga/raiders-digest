@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Tabs, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, StyleSheet, Platform, Dimensions, Modal, Text, ScrollView, TouchableOpacity, Pressable } from 'react-native';
@@ -103,11 +103,18 @@ function MoreModal({ visible, onClose }) {
 }
 
 function AppTabs() {
-  const isDesktop = Platform.OS === 'web' && Dimensions.get('window').width > 768;
+  const [isDesktop, setIsDesktop] = useState(Platform.OS === 'web' && Dimensions.get('window').width > 768);
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 70 : 65;
   const bottomPadding = insets.bottom > 0 ? insets.bottom : 10;
   const [moreModalVisible, setMoreModalVisible] = useState(false);
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setIsDesktop(Platform.OS === 'web' && window.width > 768);
+    });
+    return () => subscription?.remove();
+  }, []);
 
   return (
     <>
