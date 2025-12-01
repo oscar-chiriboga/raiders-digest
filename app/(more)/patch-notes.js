@@ -36,7 +36,7 @@ export default function PatchNotesScreen() {
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <Ionicons name="document-text" size={16} color="#ff8c00" />
-            <Text style={styles.title}>PATCH NOTES // DB</Text>
+            <Text style={styles.title}>LATEST PATCH NOTES // DB</Text>
           </View>
           <View style={styles.statsBar}>
             <Text style={styles.statText}>TOTAL: {PATCH_NOTES_DATA.length.toString().padStart(2, '0')}</Text>

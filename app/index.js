@@ -363,7 +363,7 @@ export default function HomeScreen() {
             <View style={styles.patchHeader}>
               <View style={styles.sectionHeader}>
                 <View style={styles.sectionAccentGrey} />
-                <Text style={styles.sectionTitle}>DEV_LOG</Text>
+                <Text style={styles.sectionTitle}>LATEST PATCH NOTES</Text>
               </View>
               <TouchableOpacity onPress={() => router.push('/patch-notes')}>
                 <View style={styles.viewAllContainer}>

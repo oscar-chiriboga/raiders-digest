@@ -360,7 +360,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.patchHeader}>
               <View style={styles.sectionHeader}>
                 <View style={styles.sectionAccentGrey} />
-                <Text style={styles.sectionTitle}>DEV_LOG</Text>
+                <Text style={styles.sectionTitle}>LATEST PATCH NOTES</Text>
               </View>
               <TouchableOpacity onPress={() => navigation.navigate('PatchNotes')}>
                 <View style={styles.viewAllContainer}>

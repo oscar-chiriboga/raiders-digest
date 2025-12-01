@@ -124,6 +124,26 @@ export const LOOT_DATA = [
 
 export const PATCH_NOTES_DATA = [
   {
+    id: '1.4.0',
+    title: 'Exploit Fixes & Polish',
+    date: 'November 27, 2025',
+    summary: 'Critical exploit patches for locked rooms and gun quick swap, plus quality of life improvements.',
+    sections: [
+      {
+        title: 'Content and Bug Fixes',
+        items: [
+          'Exploit mitigation mechanisms have been added for all locked rooms across all maps',
+          'Fixed the gun exploit that allowed you to shoot quicker than intended by swapping to a quick use item and back',
+          'The exterior access to Spaceport\'s Control Tower locked room has been blocked off',
+          'Fixed the issue that sometimes caused low resolution textures in the Main Menu',
+          'Fixed players being able to push each other by jumping on each other\'s backs',
+          'Fixed lighting artifacts that would sometimes occur upon entering maps',
+          'Raider Voice now correctly respects the selected voice option after restarting the game'
+        ]
+      }
+    ]
+  },
+  {
     id: '1.3.0',
     title: 'Balance & Bug Fixes',
     date: 'November 20, 2025',

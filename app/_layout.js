@@ -103,16 +103,21 @@ function MoreModal({ visible, onClose }) {
 }
 
 function AppTabs() {
-  const [isDesktop, setIsDesktop] = useState(Platform.OS === 'web' && Dimensions.get('window').width > 768);
+  const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 70 : 65;
   const bottomPadding = insets.bottom > 0 ? insets.bottom : 10;
   const [moreModalVisible, setMoreModalVisible] = useState(false);
 
   useEffect(() => {
-    const subscription = Dimensions.addEventListener('change', ({ window }) => {
-      setIsDesktop(Platform.OS === 'web' && window.width > 768);
-    });
+    const updateLayout = () => {
+      const width = Dimensions.get('window').width;
+      setIsDesktop(width > 768);
+    };
+    
+    updateLayout(); // Set initial value
+    
+    const subscription = Dimensions.addEventListener('change', updateLayout);
     return () => subscription?.remove();
   }, []);
 
