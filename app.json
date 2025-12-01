@@ -5,12 +5,13 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "userInterfaceStyle": "dark",
+    "scheme": "raiders-digest",
+    "bundler": "metro",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0a0e14"
     },
     "ios": {
       "supportsTablet": true
@@ -18,12 +19,23 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true
+        "backgroundColor": "#0a0e14"
+      }
     },
     "web": {
-      "favicon": "./assets/images/rd-logo.png"
+      "favicon": "./assets/images/rd-logo.jpeg",
+      "output": "static",
+      "name": "Raiders Digest - Arc Raiders Database",
+      "description": "Complete database and guides for Arc Raiders. Browse weapons, enemies, loot, quests, traders, maps, and crafting recipes. Your essential Arc Raiders companion.",
+      "themeColor": "#ff8c00",
+      "backgroundColor": "#0a0a0a",
+      "lang": "en"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }

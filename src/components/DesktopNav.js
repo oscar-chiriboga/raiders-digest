@@ -1,57 +1,58 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { CommonActions } from '@react-navigation/native';
+import { usePathname, useRouter } from 'expo-router';
 
-export default function DesktopNav({ navigation, currentRoute }) {
-  const navItems = [
-    { name: 'Home', icon: 'home', route: 'Home' },
-    { name: 'Weapons', icon: 'hammer', route: 'Weapons' },
-    { name: 'Enemies', icon: 'skull', route: 'Enemies' },
-    { name: 'Quests', icon: 'newspaper', route: 'Quests' },
-    { name: 'Loot', icon: 'cube', route: 'Loot' },
-    { name: 'Traders', icon: 'people', route: 'Traders' },
-    { name: 'Patch Notes', icon: 'document-text', route: 'PatchNotes' },
-  ];
+const navItems = [
+  { name: 'Home', icon: 'home', href: '/' },
+  { name: 'Weapons', icon: 'hammer', href: '/weapons' },
+  { name: 'Quests', icon: 'newspaper', href: '/quests' },
+  { name: 'Events', icon: 'calendar', href: '/events' },
+  { name: 'Enemies', icon: 'skull', href: '/enemies' },
+  { name: 'Loot', icon: 'cube', href: '/loot' },
+  { name: 'Traders', icon: 'people', href: '/traders' },
+  { name: 'More', icon: 'apps', href: '/more' },
+];
+
+export default function DesktopNav() {
+  const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
       <View style={styles.nav}>
-        {/* Logo/Brand */}
-        {currentRoute !== 'Home' && (
-          <View style={styles.brand}>
-            <Ionicons name="radio" size={20} color="#ff8c00" />
-            <Text style={styles.brandText}>RAIDERS DIGEST</Text>
-          </View>
-        )}
-        {currentRoute === 'Home' && <View style={styles.brand} />}
+        <View style={styles.brand}>
+          <Ionicons name="radio" size={20} color="#ff8c00" />
+          <Text style={styles.brandText}>RAIDERS DIGEST</Text>
+        </View>
 
-        {/* Navigation Items */}
         <View style={styles.navItems}>
-          {navItems.map((item) => {
-            const isActive = currentRoute === item.route;
+          {navItems.map((item, index) => {
+            // Check if the current path is the item's href. For home, it's a direct match.
+            // For others, check if the path starts with the href (e.g., /loot/item-1 matches /loot)
+            // but isn't just the root path if the href is not just "/"
+            const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+            
             return (
-              <TouchableOpacity
-                key={item.route}
-                style={[styles.navItem, isActive && styles.navItemActive]}
-                onPress={() => {
-                  navigation.dispatch(
-                    CommonActions.navigate({
-                      name: item.route,
-                    })
-                  );
-                }}
+              <Pressable 
+                key={item.href}
+                onPress={() => router.push(item.href)}
+                style={[
+                  styles.navItem,
+                  isActive && styles.navItemActive,
+                  index < navItems.length - 1 && { marginRight: 8 }
+                ]}
               >
                 <Ionicons 
                   name={item.icon} 
                   size={18} 
-                  color={isActive ? '#ff8c00' : '#737373'} 
+                  color={isActive ? '#ff8c00' : '#a8a8a8'} 
                 />
                 <Text style={[styles.navText, isActive && styles.navTextActive]}>
                   {item.name.toUpperCase()}
                 </Text>
                 {isActive && <View style={styles.activeIndicator} />}
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
@@ -84,23 +85,22 @@ const styles = StyleSheet.create({
   brand: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   brandText: {
     fontSize: 16,
-    fontWeight: '900',
+    fontWeight: 'bold',
     color: '#ffffff',
     letterSpacing: 2,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
+    marginLeft: 12,
   },
   navItems: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
   },
   navItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
@@ -114,10 +114,11 @@ const styles = StyleSheet.create({
   },
   navText: {
     fontSize: 9,
-    fontWeight: '700',
-    color: '#737373',
+    fontWeight: 'bold',
+    color: '#a8a8a8',
     letterSpacing: 1,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
+    marginLeft: 6,
   },
   navTextActive: {
     color: '#ff8c00',

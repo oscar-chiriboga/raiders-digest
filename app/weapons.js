@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { WEAPONS_DATA } from '../data-generated';
-import AnimatedScreen from '../components/AnimatedScreen';
-import DesktopNav from '../components/DesktopNav';
-import Footer from '../components/Footer';
-import { COLORS } from '../styles/colors';
+import { WEAPONS_DATA } from '../src/data-generated';
+import AnimatedScreen from '../src/components/AnimatedScreen';
+import DesktopNav from '../src/components/DesktopNav';
+import Footer from '../src/components/Footer';
+import SEO from '../src/components/SEO';
+import { COLORS } from '../src/styles/colors';
 
 const { width } = Dimensions.get('window');
-const isDesktop = width > 768;
 
 const FILTERS = ['All', 'Assault Rifle', 'Rifle', 'Shotgun', 'Sniper', 'SMG', 'Heavy', 'Pistol'];
 
@@ -23,8 +23,16 @@ const getTierColor = (tier) => {
   return tierMap[tier] || tierMap['D'];
 };
 
-export default function WeaponsScreen({ navigation }) {
+export default function WeaponsScreen() {
+  const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
   const [filter, setFilter] = useState('All');
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setIsDesktop(window.width > 768);
+    });
+    return () => subscription?.remove();
+  }, []);
   
   const tierOrder = { 'D': 1, 'C': 2, 'B': 3, 'A': 4, 'S': 5 };
   const filtered = (filter === 'All' ? WEAPONS_DATA : WEAPONS_DATA.filter(w => w.type === filter))
@@ -46,7 +54,12 @@ export default function WeaponsScreen({ navigation }) {
 
   return (
     <AnimatedScreen>
-      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Weapons" />}
+      <SEO 
+        title="Weapons Database"
+        description="Complete Arc Raiders weapons database. Browse all weapons by type: Assault Rifles, SMGs, Shotguns, Snipers, Heavy weapons. View stats, damage, and tier ratings."
+        path="/weapons"
+      />
+      {isDesktop && <DesktopNav navigation={{}} currentRoute="Weapons" />}
       <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
         {/* Header Section */}
         <View style={styles.header}>
@@ -86,15 +99,13 @@ export default function WeaponsScreen({ navigation }) {
         <View style={[styles.weaponsGrid, isDesktop && styles.weaponsGridDesktop]}>
           {filtered.map((weapon, idx) => (
             <View key={idx} style={[styles.weaponCard, isDesktop && styles.weaponCardDesktop]}>
-              {/* Corner Accents */}
-              <View style={styles.cornerTL} />
+                            <View style={styles.cornerTL} />
               <View style={styles.cornerTR} />
               <View style={styles.cornerBL} />
               <View style={styles.cornerBR} />
               
               {/* Image Area */}
               <View style={styles.imageContainer}>
-                <View style={styles.gridBackground} />
                 {weapon.image ? (
                   <Image 
                     source={{ uri: weapon.image }}
@@ -102,9 +113,8 @@ export default function WeaponsScreen({ navigation }) {
                     resizeMode="contain"
                   />
                 ) : (
-                  <Ionicons name="flash" size={48} color="#707070" style={styles.placeholderIcon} />
+                  <Ionicons name="flash" size={48} color="#707070" />
                 )}
-                {/* Tier Badge */}
                 <View style={[styles.tierBadge, { borderColor: getTierColor(weapon.tier).color }]}>
                   <Text style={[styles.tierText, { color: getTierColor(weapon.tier).color }]}>{getTierColor(weapon.tier).name.toUpperCase()}</Text>
                 </View>
@@ -145,14 +155,14 @@ export default function WeaponsScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+    container: {
     flex: 1,
     backgroundColor: 'transparent',
   },
   content: {
-    padding: isDesktop ? 40 : 20,
-    paddingTop: isDesktop ? 20 : 10,
-    maxWidth: isDesktop ? 1400 : '100%',
+    padding: 20,
+    paddingTop: 10,
+    maxWidth: 1400,
     alignSelf: 'center',
     width: '100%',
     paddingBottom: 100,
@@ -161,7 +171,7 @@ const styles = StyleSheet.create({
     paddingTop: 70,
   },
   header: {
-    paddingHorizontal: isDesktop ? 24 : 0,
+    paddingHorizontal: 0,
     marginBottom: 24,
   },
   headerTop: {
@@ -171,12 +181,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: isDesktop ? 32 : 24,
+    fontSize: 24,
     fontWeight: '900',
     color: '#ffffff',
     letterSpacing: -1,
     textTransform: 'uppercase',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   statsBar: {
     flexDirection: 'row',
@@ -190,13 +200,13 @@ const styles = StyleSheet.create({
   statText: {
     fontSize: 10,
     color: '#a8a8a8',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
     letterSpacing: 1.5,
   },
   statTextActive: {
     fontSize: 10,
     color: '#ff8c00',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
     letterSpacing: 1.5,
   },
   statDivider: {
@@ -208,7 +218,7 @@ const styles = StyleSheet.create({
   },
   filterContent: {
     gap: 8,
-    paddingHorizontal: isDesktop ? 24 : 0,
+    paddingHorizontal: 0,
   },
   filterBtn: {
     paddingVertical: 8,
@@ -225,7 +235,7 @@ const styles = StyleSheet.create({
     color: '#a3a3a3',
     fontWeight: '700',
     fontSize: 10,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
     letterSpacing: 1.5,
   },
   filterTextActive: {
@@ -234,7 +244,7 @@ const styles = StyleSheet.create({
   },
   weaponsGrid: {
     gap: 24,
-    paddingHorizontal: isDesktop ? 24 : 0,
+    paddingHorizontal: 0,
   },
   weaponsGridDesktop: {
     flexDirection: 'row',
@@ -250,58 +260,26 @@ const styles = StyleSheet.create({
   },
   weaponCardDesktop: {
     width: 'calc(25% - 18px)',
-    marginBottom: 0,
+    marginBottom: 24,
   },
   cornerTL: {
-    position: 'absolute',
-    top: -1,
-    left: -1,
-    width: 8,
-    height: 8,
-    borderLeftWidth: 1,
-    borderTopWidth: 1,
-    borderColor: '#ff8c00',
-    opacity: 1,
-    zIndex: 10,
+    position: 'absolute', top: -1, left: -1, width: 8, height: 8,
+    borderLeftWidth: 1, borderTopWidth: 1, borderColor: '#ff8c00',
   },
   cornerTR: {
-    position: 'absolute',
-    top: -1,
-    right: -1,
-    width: 8,
-    height: 8,
-    borderRightWidth: 1,
-    borderTopWidth: 1,
-    borderColor: '#ff8c00',
-    opacity: 1,
-    zIndex: 10,
+    position: 'absolute', top: -1, right: -1, width: 8, height: 8,
+    borderRightWidth: 1, borderTopWidth: 1, borderColor: '#ff8c00',
   },
   cornerBL: {
-    position: 'absolute',
-    bottom: -1,
-    left: -1,
-    width: 8,
-    height: 8,
-    borderLeftWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#ff8c00',
-    opacity: 1,
-    zIndex: 10,
+    position: 'absolute', bottom: -1, left: -1, width: 8, height: 8,
+    borderLeftWidth: 1, borderBottomWidth: 1, borderColor: '#ff8c00',
   },
   cornerBR: {
-    position: 'absolute',
-    bottom: -1,
-    right: -1,
-    width: 8,
-    height: 8,
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#ff8c00',
-    opacity: 1,
-    zIndex: 10,
+    position: 'absolute', bottom: -1, right: -1, width: 8, height: 8,
+    borderRightWidth: 1, borderBottomWidth: 1, borderColor: '#ff8c00',
   },
   imageContainer: {
-    height: isDesktop ? 150 : 120,
+    height: 150,
     backgroundColor: '#000000',
     position: 'relative',
     borderBottomWidth: 1,
@@ -309,22 +287,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  gridBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.1,
-    backgroundColor: 'transparent',
-  },
   weaponImage: {
     width: '100%',
     height: '100%',
-    zIndex: 1,
-  },
-  placeholderIcon: {
-    opacity: 0.3,
   },
   tierBadge: {
     position: 'absolute',
@@ -337,7 +302,7 @@ const styles = StyleSheet.create({
   tierText: {
     fontSize: 9,
     fontWeight: '900',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
     letterSpacing: 1,
   },
   cardContent: {
@@ -352,9 +317,9 @@ const styles = StyleSheet.create({
   weaponName: {
     color: '#ffffff',
     fontWeight: '700',
-    fontSize: isDesktop ? 20 : 18,
+    fontSize: 18,
     flex: 1,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   typeBadge: {
     borderWidth: 1,
@@ -366,14 +331,14 @@ const styles = StyleSheet.create({
   typeText: {
     fontSize: 9,
     color: '#a8a8a8',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   weaponDesc: {
     color: '#a3a3a3',
-    fontSize: isDesktop ? 12 : 11,
+    fontSize: 12,
     lineHeight: 20,
     marginBottom: 16,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
     height: 36,
   },
   statsSection: {
@@ -394,14 +359,13 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: '#a8a8a8',
     textAlign: 'right',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
     textTransform: 'uppercase',
   },
   statBarTrack: {
     flex: 1,
     height: 4,
     backgroundColor: '#171717',
-    position: 'relative',
   },
   statBarFill: {
     height: '100%',
@@ -412,7 +376,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: '#ff8c00',
     textAlign: 'right',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   craftSection: {
     paddingTop: 8,
@@ -425,11 +389,11 @@ const styles = StyleSheet.create({
   craftLabel: {
     fontSize: 9,
     color: '#a8a8a8',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   craftValue: {
     fontSize: 9,
     color: '#ff8c00',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
 });

@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: 10,
-    color: '#737373',
+    color: '#a8a8a8',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   date: {
-    color: '#737373',
+    color: '#a8a8a8',
     fontSize: 10,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1,
@@ -218,14 +218,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   summary: {
-    color: '#9ca3af',
+    color: '#c0c0c0',
     fontSize: 13,
     lineHeight: 20,
     marginBottom: 16,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     paddingLeft: 12,
     borderLeftWidth: 2,
-    borderLeftColor: '#404040',
+    borderLeftColor: '#707070',
   },
   section: {
     marginBottom: 16,
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   subBullet: {
     width: 3,
     height: 3,
-    backgroundColor: '#737373',
+    backgroundColor: '#a8a8a8',
     marginTop: 7,
   },
   changeText: {

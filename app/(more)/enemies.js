@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Image, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { ENEMIES_DATA, ENEMY_CATEGORIES } from '../data-generated-enemies';
-import AnimatedScreen from '../components/AnimatedScreen';
-import DesktopNav from '../components/DesktopNav';
-import Footer from '../components/Footer';
+import { ENEMIES_DATA, ENEMY_CATEGORIES } from '../../src/data-generated-enemies';
+import AnimatedScreen from '../../src/components/AnimatedScreen';
+import DesktopNav from '../../src/components/DesktopNav';
+import Footer from '../../src/components/Footer';
+import SEO from '../../src/components/SEO';
 
 const { width } = Dimensions.get('window');
-const isDesktop = width > 768;
 
-export default function EnemiesScreen({ navigation }) {
+export default function EnemiesScreen() {
+  const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setIsDesktop(window.width > 768);
+    });
+    return () => subscription?.remove();
+  }, []);
 
   const threatOrder = { 'Low': 1, 'Medium': 2, 'High': 3, 'Extreme': 4 };
   
@@ -21,30 +29,21 @@ export default function EnemiesScreen({ navigation }) {
 
   const getThreatColor = (threat) => {
     switch(threat.toUpperCase()) {
-      case 'EXTREME': 
-        return { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444' };
-      case 'HIGH': 
-        return { color: '#ff8c00', bg: 'rgba(255, 140, 0, 0.1)', border: '#ff8c00' };
-      case 'MEDIUM': 
-        return { color: '#eab308', bg: 'rgba(234, 179, 8, 0.1)', border: '#eab308' };
-      default: 
-        return { color: '#c0c0c0', bg: 'rgba(156, 163, 175, 0.1)', border: '#52525b' };
-    }
-  };
-
-  const getCategoryIcon = (category) => {
-    switch(category) {
-      case 'Flying': return 'airplane';
-      case 'Heavy': return 'warning';
-      case 'Turret': return 'locate';
-      case 'Ground': return 'flash';
-      default: return 'radio';
+      case 'EXTREME': return { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444' };
+      case 'HIGH': return { color: '#ff8c00', bg: 'rgba(255, 140, 0, 0.1)', border: '#ff8c00' };
+      case 'MEDIUM': return { color: '#eab308', bg: 'rgba(234, 179, 8, 0.1)', border: '#eab308' };
+      default: return { color: '#c0c0c0', bg: 'rgba(156, 163, 175, 0.1)', border: '#52525b' };
     }
   };
 
   return (
     <AnimatedScreen>
-      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Enemies" />}
+      <SEO 
+        title="Enemies Database"
+        description="Complete Arc Raiders enemies database. Browse all hostile units including Drones, Walkers, Heavy Units, and more. View stats, abilities, and weaknesses."
+        path="/enemies"
+      />
+      {isDesktop && <DesktopNav navigation={{}} currentRoute="Enemies" />}
       <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
         {/* Header Section */}
         <View style={styles.header}>
@@ -71,39 +70,23 @@ export default function EnemiesScreen({ navigation }) {
           {ENEMY_CATEGORIES.map((category) => (
             <TouchableOpacity
               key={category}
-              style={[
-                styles.filterBtn,
-                selectedCategory === category && styles.filterBtnActive
-              ]}
+              style={[ styles.filterBtn, selectedCategory === category && styles.filterBtnActive ]}
               onPress={() => setSelectedCategory(category)}
             >
-
-              <Text style={[
-                styles.filterText,
-                selectedCategory === category && styles.filterTextActive
-              ]}>
+              <Text style={[ styles.filterText, selectedCategory === category && styles.filterTextActive ]}>
                 {category.toUpperCase()}
               </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
         
-        {/* Enemies Grid */}
         <View style={[styles.enemiesGrid, isDesktop && styles.enemiesGridDesktop]}>
           {filteredEnemies.map((enemy) => {
             const threatColors = getThreatColor(enemy.threat);
             return (
               <View key={enemy.id} style={[styles.enemyCard, isDesktop && styles.enemyCardDesktop]}>
-                {/* Corner Decorations */}
-                <View style={styles.cornerDecorTR} />
-                <View style={styles.cornerDecorBR} />
-                
-                {/* Top Row: Icon + Name + Category */}
                 <View style={styles.cardTop}>
-                  <View style={[
-                    styles.iconWrapper,
-                    enemy.threat === 'Extreme' && styles.iconWrapperExtreme
-                  ]}>
+                  <View style={[styles.iconWrapper, enemy.threat === 'Extreme' && styles.iconWrapperExtreme]}>
                     {enemy.image ? (
                       <Image 
                         source={{ uri: enemy.image }} 
@@ -112,7 +95,7 @@ export default function EnemiesScreen({ navigation }) {
                       />
                     ) : (
                       <Ionicons 
-                        name={getCategoryIcon(enemy.category)} 
+                        name="alert-circle-outline" 
                         size={28} 
                         color={enemy.threat === 'Extreme' ? '#ef4444' : '#a3a3a3'} 
                       />
@@ -126,23 +109,15 @@ export default function EnemiesScreen({ navigation }) {
                   </View>
                 </View>
 
-                {/* Middle Row: Threat Assessment */}
                 <View style={styles.threatSection}>
                   <Text style={styles.threatLabel}>THREAT_ASSESSMENT</Text>
-                  <View style={[
-                    styles.threatBadge, 
-                    { 
-                      borderColor: threatColors.border, 
-                      backgroundColor: threatColors.bg 
-                    }
-                  ]}>
+                  <View style={[styles.threatBadge, { borderColor: threatColors.border, backgroundColor: threatColors.bg }]}>
                     <Text style={[styles.threatText, { color: threatColors.color }]}>
                       {enemy.threat.toUpperCase()}
                     </Text>
                   </View>
                 </View>
 
-                {/* Description */}
                 <View style={styles.descSection}>
                   <Text style={styles.enemyDesc}>{enemy.description}</Text>
                 </View>
@@ -163,9 +138,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   content: {
-    padding: isDesktop ? 40 : 20,
-    paddingTop: isDesktop ? 20 : 10,
-    maxWidth: isDesktop ? 1400 : '100%',
+    padding: 20,
+    paddingTop: 10,
+    maxWidth: 1400,
     alignSelf: 'center',
     width: '100%',
     paddingBottom: 100,
@@ -173,8 +148,8 @@ const styles = StyleSheet.create({
   contentDesktop: {
     paddingTop: 70,
   },
-  header: {
-    paddingHorizontal: isDesktop ? 24 : 0,
+   header: {
+    paddingHorizontal: 0,
     marginBottom: 24,
   },
   headerTop: {
@@ -184,12 +159,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: isDesktop ? 32 : 24,
+    fontSize: 24,
     fontWeight: '900',
     color: '#ffffff',
     letterSpacing: -1,
     textTransform: 'uppercase',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   statsBar: {
     flexDirection: 'row',
@@ -203,13 +178,13 @@ const styles = StyleSheet.create({
   statText: {
     fontSize: 10,
     color: '#a8a8a8',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
     letterSpacing: 1.5,
   },
   statTextActive: {
     fontSize: 10,
     color: '#ff8c00',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
     letterSpacing: 1.5,
   },
   statDivider: {
@@ -221,7 +196,7 @@ const styles = StyleSheet.create({
   },
   filterContent: {
     gap: 8,
-    paddingHorizontal: isDesktop ? 24 : 0,
+    paddingHorizontal: 0,
   },
   filterBtn: {
     paddingVertical: 8,
@@ -239,7 +214,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#a3a3a3',
     letterSpacing: 1.5,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   filterTextActive: {
     color: '#000000',
@@ -247,7 +222,7 @@ const styles = StyleSheet.create({
   },
   enemiesGrid: {
     gap: 16,
-    paddingHorizontal: isDesktop ? 24 : 0,
+    paddingHorizontal: 0,
   },
   enemiesGridDesktop: {
     flexDirection: 'row',
@@ -286,7 +261,7 @@ const styles = StyleSheet.create({
   },
   cardTop: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
     marginBottom: 16,
   },
   iconWrapper: {
@@ -312,9 +287,9 @@ const styles = StyleSheet.create({
   enemyName: {
     color: '#ffffff',
     fontWeight: '700',
-    fontSize: isDesktop ? 18 : 16,
+    fontSize: 16,
     marginBottom: 4,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   categoryBadge: {
     backgroundColor: '#171717',
@@ -328,7 +303,7 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 9,
     color: '#a8a8a8',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   threatSection: {
     flexDirection: 'row',
@@ -343,7 +318,7 @@ const styles = StyleSheet.create({
   threatLabel: {
     fontSize: 9,
     color: '#909090',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   threatBadge: {
     paddingHorizontal: 8,
@@ -354,7 +329,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '900',
     letterSpacing: 1,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
   descSection: {
     paddingLeft: 12,
@@ -364,8 +339,8 @@ const styles = StyleSheet.create({
   },
   enemyDesc: {
     color: '#a3a3a3',
-    fontSize: isDesktop ? 11 : 10,
+    fontSize: 10,
     lineHeight: 18,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontFamily: 'monospace',
   },
 });

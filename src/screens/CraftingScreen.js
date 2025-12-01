@@ -16,9 +16,9 @@ const getTierColor = (rarity) => {
     'Epic': '#a855f7',
     'Rare': '#3b82f6',
     'Uncommon': '#22c55e',
-    'Common': '#9ca3af',
+    'Common': '#c0c0c0',
   };
-  return colors[rarity] || '#9ca3af';
+  return colors[rarity] || '#c0c0c0';
 };
 
 export default function CraftingScreen({ navigation }) {
@@ -72,17 +72,17 @@ export default function CraftingScreen({ navigation }) {
         </View>
 
         <View style={styles.searchBar}>
-          <Ionicons name="search" size={14} color="#737373" style={styles.searchIcon} />
+          <Ionicons name="search" size={14} color="#a8a8a8" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="SEARCH_RECIPES..."
-            placeholderTextColor="#404040"
+            placeholderTextColor="#707070"
             value={search}
             onChangeText={setSearch}
           />
           {search ? (
             <TouchableOpacity onPress={() => setSearch('')}>
-              <Ionicons name="close" size={18} color="#737373" />
+              <Ionicons name="close" size={18} color="#a8a8a8" />
             </TouchableOpacity>
           ) : (
             <View style={styles.cursor} />
@@ -94,14 +94,14 @@ export default function CraftingScreen({ navigation }) {
             style={[styles.sortButton, sortBy === 'rarity' && styles.sortButtonActive]}
             onPress={() => setSortBy('rarity')}
           >
-            <Ionicons name="star" size={12} color={sortBy === 'rarity' ? '#ff8c00' : '#737373'} />
+            <Ionicons name="star" size={12} color={sortBy === 'rarity' ? '#ff8c00' : '#a8a8a8'} />
             <Text style={[styles.sortButtonText, sortBy === 'rarity' && styles.sortButtonTextActive]}>RARITY</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.sortButton, sortBy === 'workbench' && styles.sortButtonActive]}
             onPress={() => setSortBy('workbench')}
           >
-            <Ionicons name="hammer" size={12} color={sortBy === 'workbench' ? '#ff8c00' : '#737373'} />
+            <Ionicons name="hammer" size={12} color={sortBy === 'workbench' ? '#ff8c00' : '#a8a8a8'} />
             <Text style={[styles.sortButtonText, sortBy === 'workbench' && styles.sortButtonTextActive]}>STATION</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -114,7 +114,7 @@ export default function CraftingScreen({ navigation }) {
             style={[styles.sortButton, sortBy === 'materials' && styles.sortButtonActive]}
             onPress={() => setSortBy('materials')}
           >
-            <Ionicons name="cube" size={12} color={sortBy === 'materials' ? '#ff8c00' : '#737373'} />
+            <Ionicons name="cube" size={12} color={sortBy === 'materials' ? '#ff8c00' : '#a8a8a8'} />
             <Text style={[styles.sortButtonText, sortBy === 'materials' && styles.sortButtonTextActive]}>MATS</Text>
           </TouchableOpacity>
         </View>
@@ -145,7 +145,7 @@ export default function CraftingScreen({ navigation }) {
                       </View>
                     )}
                   </View>
-                  <Ionicons name="chevron-forward" size={20} color="#737373" />
+                  <Ionicons name="chevron-forward" size={20} color="#a8a8a8" />
                 </View>
               </TouchableOpacity>
             );
@@ -186,7 +186,7 @@ export default function CraftingScreen({ navigation }) {
                     <View style={styles.modalItemInfo}>
                       <Text style={styles.modalItemName}>{selectedItem.name}</Text>
                       <Text style={styles.modalSubcategory}>
-                        <Ionicons name="folder" size={10} color="#737373" /> {selectedItem.category} / {selectedItem.subcategory}
+                        <Ionicons name="folder" size={10} color="#a8a8a8" /> {selectedItem.category} / {selectedItem.subcategory}
                       </Text>
                       {selectedItem.workbench && (
                         <View style={styles.workbenchBadgeLarge}>
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: 10,
-    color: '#737373',
+    color: '#a8a8a8',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   sortButtonText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#737373',
+    color: '#a8a8a8',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1,
   },
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
   },
   modalSubcategory: {
     fontSize: 10,
-    color: '#737373',
+    color: '#a8a8a8',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1,
     marginBottom: 10,
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
   },
   modalDescription: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: '#c0c0c0',
     lineHeight: 18,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },

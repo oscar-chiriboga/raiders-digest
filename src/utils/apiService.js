@@ -1,6 +1,10 @@
 import { fetchWithCache } from './apiCache';
 
-const API_BASE_URL = 'https://metaforge.app/api/arc-raiders';
+// Use local proxy in development, direct API in production
+const IS_DEV = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+const API_BASE_URL = IS_DEV 
+  ? 'http://localhost:3001/api/arc-raiders'
+  : 'https://metaforge.app/api/arc-raiders';
 
 /**
  * Fetch weapons data from API with caching

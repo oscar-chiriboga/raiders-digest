@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 9,
-    color: '#525252',
+    color: '#909090',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     lineHeight: 14,
     marginBottom: 12,
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   transmission: {
     fontSize: 9,
-    color: '#404040',
+    color: '#707070',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1,
   },

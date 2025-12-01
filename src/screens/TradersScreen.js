@@ -37,8 +37,8 @@ export default function TradersScreen({ navigation }) {
       epic: '#a855f7',
       rare: '#3b82f6',
       uncommon: '#22c55e',
-      common: '#9ca3af',
-    }[rarity] || '#9ca3af';
+      common: '#c0c0c0',
+    }[rarity] || '#c0c0c0';
 
     return (
       <View key={index} style={styles.inventoryItem}>
@@ -111,7 +111,7 @@ export default function TradersScreen({ navigation }) {
                   <Ionicons 
                     name={expandedTraderId === trader.id ? "chevron-up" : "chevron-down"} 
                     size={24} 
-                    color="#737373" 
+                    color="#a8a8a8" 
                   />
                 </TouchableOpacity>
 
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: 10,
-    color: '#737373',
+    color: '#a8a8a8',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     letterSpacing: 1.5,
   },
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 12,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#737373',
+    color: '#a8a8a8',
     letterSpacing: 2,
   },
   errorContainer: {
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   errorSubtext: {
     fontSize: 12,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#737373',
+    color: '#a8a8a8',
   },
   tradersList: {
     gap: 16,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   traderLocation: {
     fontSize: 9,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#737373',
+    color: '#a8a8a8',
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   traderDescription: {
     fontSize: 12,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#9ca3af',
+    color: '#c0c0c0',
     lineHeight: 18,
     marginBottom: 20,
   },
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   itemType: {
     fontSize: 10,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#525252',
+    color: '#909090',
   },
   itemCosts: {
     flexDirection: 'column',
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
   emptyInventory: {
     fontSize: 12,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#525252',
+    color: '#909090',
     fontStyle: 'italic',
     textAlign: 'center',
     padding: 20,

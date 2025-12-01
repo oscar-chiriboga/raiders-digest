@@ -49,7 +49,7 @@ export const useApiData = (dataType, fetchFunctionOrStaticData) => {
       setData(result);
     } catch (err) {
       console.warn(`Failed to fetch ${dataType}:`, err);
-      setError(err);
+      setError(err.message || 'Failed to fetch data');
       // Keep using static data on error if provided
       if (typeof fetchFunctionOrStaticData !== 'function') {
         setData(fetchFunctionOrStaticData);

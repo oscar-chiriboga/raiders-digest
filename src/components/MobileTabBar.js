@@ -20,7 +20,7 @@ export default function MobileTabBar({ navigation }) {
           onPress={() => navigation.navigate(tab.route, tab.params)}
         >
           <View style={styles.tabIconContainer}>
-            <Ionicons name={tab.icon} size={22} color="#737373" />
+            <Ionicons name={tab.icon} size={22} color="#a8a8a8" />
           </View>
           <Text style={styles.tabText}>{tab.name.toUpperCase()}</Text>
         </TouchableOpacity>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 8,
     fontWeight: '700',
-    color: '#737373',
+    color: '#a8a8a8',
     letterSpacing: 0.5,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },

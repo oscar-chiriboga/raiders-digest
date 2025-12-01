@@ -22,7 +22,7 @@ export default function AnimatedScreen({ children, style }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.scanlines} pointerEvents="none" />
+      <View style={styles.scanlines} />
       <Animated.View 
         style={[
           styles.content, 

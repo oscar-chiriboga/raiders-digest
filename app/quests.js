@@ -1,28 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platform, ActivityIndicator, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AnimatedScreen from '../components/AnimatedScreen';
-import DesktopNav from '../components/DesktopNav';
-import Footer from '../components/Footer';
-import { QUESTS_DATA } from '../data-quests';
+import { useFocusEffect } from 'expo-router';
 
-const { width } = Dimensions.get('window');
-const isDesktop = width > 768;
+import AnimatedScreen from '../src/components/AnimatedScreen';
+import DesktopNav from '../src/components/DesktopNav';
+import Footer from '../src/components/Footer';
+import SEO from '../src/components/SEO';
+import { QUESTS_DATA } from '../src/data-quests';
 
 const TRACKED_QUESTS_KEY = '@tracked_quests';
 
-export default function QuestsScreen({ navigation }) {
+export default function QuestsScreen() {
+  const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
   const [filteredQuests, setFilteredQuests] = useState(QUESTS_DATA);
   const [trackedQuestIds, setTrackedQuestIds] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    loadTrackedQuests();
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setIsDesktop(window.width > 768);
+    });
+    return () => subscription?.remove();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      loadTrackedQuests();
+    }, [])
+  );
+
   useEffect(() => {
-    // Filter quests based on search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       const filtered = QUESTS_DATA.filter(quest => 
@@ -36,28 +45,19 @@ export default function QuestsScreen({ navigation }) {
     }
   }, [searchQuery]);
 
-  const handleSearch = () => {
-    // Search is now handled automatically by useEffect
-  };
-
   const loadTrackedQuests = async () => {
     try {
       const stored = await AsyncStorage.getItem(TRACKED_QUESTS_KEY);
-      if (stored) {
-        setTrackedQuestIds(JSON.parse(stored));
-      }
+      if (stored) setTrackedQuestIds(JSON.parse(stored));
     } catch (error) {
       console.error('Error loading tracked quests:', error);
     }
   };
 
   const toggleTracked = async (questId) => {
-    let newTracked;
-    if (trackedQuestIds.includes(questId)) {
-      newTracked = trackedQuestIds.filter(id => id !== questId);
-    } else {
-      newTracked = [...trackedQuestIds, questId];
-    }
+    const newTracked = trackedQuestIds.includes(questId)
+      ? trackedQuestIds.filter(id => id !== questId)
+      : [...trackedQuestIds, questId];
     setTrackedQuestIds(newTracked);
     try {
       await AsyncStorage.setItem(TRACKED_QUESTS_KEY, JSON.stringify(newTracked));
@@ -69,15 +69,12 @@ export default function QuestsScreen({ navigation }) {
   const renderReward = (reward, index) => {
     const rarity = reward.item?.rarity?.toLowerCase() || 'common';
     const rarityColor = {
-      legendary: '#ff3e00',
-      epic: '#a855f7',
-      rare: '#3b82f6',
-      uncommon: '#22c55e',
-      common: '#c0c0c0',
+      legendary: '#ff3e00', epic: '#a855f7', rare: '#3b82f6',
+      uncommon: '#22c55e', common: '#c0c0c0',
     }[rarity] || '#c0c0c0';
 
     return (
-      <View key={index} style={styles.rewardItem}>
+      <View key={index} style={[styles.rewardItem, isDesktop && styles.rewardItemDesktop]}>
         <View style={[styles.rewardIcon, { borderColor: rarityColor }]}>
           <Ionicons name="cube" size={14} color={rarityColor} />
         </View>
@@ -92,47 +89,37 @@ export default function QuestsScreen({ navigation }) {
   const renderQuest = (quest, index) => {
     const isTracked = trackedQuestIds.includes(quest.id);
     const hasRewards = quest.rewards && quest.rewards.length > 0;
-
+    
     return (
       <View key={`${quest.id}-${index}`} style={[styles.questCard, isTracked && styles.questCardTracked]}>
-        {/* Header */}
         <View style={styles.questHeader}>
           <View style={styles.questTitleRow}>
             <Ionicons name="newspaper" size={16} color="#00ff41" />
             <Text style={styles.questTitle} numberOfLines={1}>{quest.name}</Text>
           </View>
-          <TouchableOpacity 
-            onPress={() => toggleTracked(quest.id)}
-            style={[styles.trackButton, isTracked && styles.trackButtonActive]}
-          >
-            <Ionicons 
-              name={isTracked ? "star" : "star-outline"} 
-              size={20} 
-              color={isTracked ? "#ff8c00" : "#a8a8a8"} 
-            />
+          <TouchableOpacity onPress={() => toggleTracked(quest.id)} style={[styles.trackButton, isTracked && styles.trackButtonActive]}>
+            <Ionicons name={isTracked ? "star" : "star-outline"} size={20} color={isTracked ? "#ff8c00" : "#a8a8a8"} />
           </TouchableOpacity>
         </View>
-
-        {/* Objectives */}
+        
         {quest.objectives && quest.objectives.length > 0 && (
           <View style={styles.objectivesSection}>
             <Text style={styles.sectionLabel}>OBJECTIVES:</Text>
-            {quest.objectives.map((objective, idx) => (
+            {quest.objectives.map((obj, idx) => (
               <View key={idx} style={styles.objectiveRow}>
                 <View style={styles.objectiveBullet} />
-                <Text style={styles.objectiveText}>{objective}</Text>
+                <Text style={styles.objectiveText}>{obj}</Text>
               </View>
             ))}
           </View>
         )}
-
-        {/* Required Items */}
+        
         {quest.required_items && quest.required_items.length > 0 && (
           <View style={styles.requiredSection}>
             <Text style={styles.sectionLabel}>REQUIRED ITEMS:</Text>
             <View style={styles.rewardsGrid}>
               {quest.required_items.map((item, idx) => (
-                <View key={idx} style={styles.rewardItem}>
+                <View key={idx} style={[styles.rewardItem, isDesktop && styles.rewardItemDesktop]}>
                   <View style={[styles.rewardIcon, { borderColor: '#eab308' }]}>
                     <Ionicons name="alert-circle" size={14} color="#eab308" />
                   </View>
@@ -145,8 +132,7 @@ export default function QuestsScreen({ navigation }) {
             </View>
           </View>
         )}
-
-        {/* Rewards */}
+        
         {hasRewards && (
           <View style={styles.rewardsSection}>
             <Text style={styles.sectionLabel}>REWARDS:</Text>
@@ -159,14 +145,15 @@ export default function QuestsScreen({ navigation }) {
     );
   };
 
-  const loading = false;
-  const quests = filteredQuests;
-
   return (
     <AnimatedScreen>
-      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Quests" />}
+      <SEO 
+        title="Quests Database"
+        description="Complete Arc Raiders quests database. Browse all quests, track your progress, view objectives and rewards. Stay on top of your missions."
+        path="/quests"
+      />
+      {isDesktop && <DesktopNav navigation={{}} currentRoute="Quests" />}
       <ScrollView style={styles.container} contentContainerStyle={[styles.scrollContent, isDesktop && styles.contentDesktop]}>
-        {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerTop}>
             <Ionicons name="newspaper" size={16} color="#ff8c00" />
@@ -180,17 +167,16 @@ export default function QuestsScreen({ navigation }) {
             <Text style={styles.statText}>FOUND: {filteredQuests.length.toString().padStart(2, '0')}</Text>
           </View>
         </View>
-
-        {/* Search Bar */}
+        
         <View style={styles.searchSection}>
           <View style={styles.searchBar}>
             <Ionicons name="search" size={14} color="#a8a8a8" />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="SEARCH_DATABASE..."
-              placeholderTextColor="#707070"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
+            <TextInput 
+              style={styles.searchInput} 
+              placeholder="SEARCH_DATABASE..." 
+              placeholderTextColor="#707070" 
+              value={searchQuery} 
+              onChangeText={setSearchQuery} 
             />
             {searchQuery.length > 0 ? (
               <TouchableOpacity onPress={() => setSearchQuery('')}>
@@ -201,24 +187,16 @@ export default function QuestsScreen({ navigation }) {
             )}
           </View>
         </View>
-
-        {/* Quests List */}
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#ff3e00" />
-            <Text style={styles.loadingText}>LOADING QUESTS...</Text>
-          </View>
-        ) : quests.length === 0 ? (
+        
+        {filteredQuests.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="search-outline" size={48} color="#707070" />
             <Text style={styles.emptyStateTitle}>NO QUESTS FOUND</Text>
-            <Text style={styles.emptyStateText}>
-              {searchQuery ? 'Try a different search term' : 'No quests available'}
-            </Text>
+            <Text style={styles.emptyStateText}>{searchQuery ? 'Try a different search term' : 'No quests available'}</Text>
           </View>
         ) : (
           <View style={styles.questsList}>
-            {quests.map((quest, index) => renderQuest(quest, index))}
+            {filteredQuests.map((q, i) => renderQuest(q, i))}
           </View>
         )}
         
@@ -234,18 +212,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   scrollContent: {
-    padding: isDesktop ? 40 : 20,
-    paddingTop: isDesktop ? 20 : 10,
-    maxWidth: isDesktop ? 1400 : '100%',
+    padding: 20,
+    paddingTop: 10,
+    maxWidth: 1400,
     alignSelf: 'center',
     width: '100%',
     paddingBottom: 100,
   },
   contentDesktop: {
+    padding: 40,
     paddingTop: 70,
   },
   header: {
-    paddingHorizontal: isDesktop ? 24 : 0,
+    paddingHorizontal: 0,
     marginBottom: 24,
   },
   headerTop: {
@@ -255,7 +234,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headerTitle: {
-    fontSize: isDesktop ? 32 : 24,
+    fontSize: 24,
     fontWeight: '900',
     color: '#ffffff',
     letterSpacing: -1,
@@ -287,21 +266,9 @@ const styles = StyleSheet.create({
     color: '#262626',
     marginHorizontal: 4,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 16,
-  },
-  loadingText: {
-    fontSize: 12,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#a8a8a8',
-    letterSpacing: 2,
-  },
   searchSection: {
     marginBottom: 16,
-    marginHorizontal: isDesktop ? 24 : 0,
+    marginHorizontal: 0,
   },
   searchBar: {
     flexDirection: 'row',
@@ -310,13 +277,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: '#262626',
-    paddingHorizontal: isDesktop ? 24 : 16,
+    paddingHorizontal: 16,
     paddingVertical: 12,
   },
   searchInput: {
     flex: 1,
     color: '#ffffff',
-    fontSize: isDesktop ? 14 : 13,
+    fontSize: 13,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },
   cursor: {
@@ -350,10 +317,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 18,
   },
-
   questsList: {
     gap: 16,
-    paddingHorizontal: isDesktop ? 24 : 0,
+    paddingHorizontal: 0,
   },
   questCard: {
     backgroundColor: 'rgba(23, 23, 23, 0.3)',
@@ -380,7 +346,7 @@ const styles = StyleSheet.create({
   },
   questTitle: {
     flex: 1,
-    fontSize: isDesktop ? 18 : 16,
+    fontSize: 16,
     fontWeight: '700',
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
     color: '#ffffff',
@@ -435,44 +401,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#262626',
   },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    paddingTop: 12,
-    gap: 16,
-  },
-  paginationButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255, 62, 0, 0.1)',
-    borderWidth: 1,
-    borderColor: '#ff3e00',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  paginationButtonDisabled: {
-    backgroundColor: 'rgba(64, 64, 64, 0.1)',
-    borderColor: '#707070',
-  },
-  paginationText: {
-    fontSize: 10,
-    fontWeight: '700',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#ff3e00',
-    letterSpacing: 1,
-  },
-  paginationTextDisabled: {
-    color: '#707070',
-  },
-  paginationInfo: {
-    fontSize: 11,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#a8a8a8',
-    letterSpacing: 1,
-  },
   rewardsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -486,7 +414,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#262626',
     padding: 8,
-    minWidth: isDesktop ? 180 : 150,
+    minWidth: 150,
+  },
+  rewardItemDesktop: {
+    minWidth: 180,
   },
   rewardIcon: {
     width: 32,

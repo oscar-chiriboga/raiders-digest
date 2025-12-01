@@ -14,7 +14,7 @@ const isDesktop = width > 768;
 // Tier to rarity color mapping
 const getTierColor = (tier) => {
   const tierMap = {
-    'Common': { color: '#9ca3af', letter: 'D', bg: 'rgba(156, 163, 175, 0.1)' },
+    'Common': { color: '#c0c0c0', letter: 'D', bg: 'rgba(156, 163, 175, 0.1)' },
     'Uncommon': { color: '#22c55e', letter: 'C', bg: 'rgba(34, 197, 94, 0.1)' },
     'Rare': { color: '#3b82f6', letter: 'B', bg: 'rgba(59, 130, 246, 0.1)' },
     'Epic': { color: '#a855f7', letter: 'A', bg: 'rgba(168, 85, 247, 0.1)' },
@@ -570,7 +570,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: 'rgba(23, 23, 23, 0.5)',
     borderWidth: 2,
-    borderColor: '#404040',
+    borderColor: '#707070',
   },
   filterBtnActive: {
     backgroundColor: '#ff8c00',

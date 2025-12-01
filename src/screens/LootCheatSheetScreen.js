@@ -14,7 +14,7 @@ const isDesktop = width > 768;
 
 const getTierColor = (tier) => {
   const tierMap = {
-    'Common': { color: '#9ca3af', letter: 'D', bg: 'rgba(156, 163, 175, 0.1)' },
+    'Common': { color: '#c0c0c0', letter: 'D', bg: 'rgba(156, 163, 175, 0.1)' },
     'Uncommon': { color: '#22c55e', letter: 'C', bg: 'rgba(34, 197, 94, 0.1)' },
     'Rare': { color: '#3b82f6', letter: 'B', bg: 'rgba(59, 130, 246, 0.1)' },
     'Epic': { color: '#a855f7', letter: 'A', bg: 'rgba(168, 85, 247, 0.1)' },
@@ -125,21 +125,21 @@ export default function LootCheatSheetScreen({ navigation }) {
             style={[styles.tab, activeTab === 'quests' && styles.tabActive]}
             onPress={() => setActiveTab('quests')}
           >
-            <Ionicons name="flag" size={14} color={activeTab === 'quests' ? '#000000' : '#737373'} />
+            <Ionicons name="flag" size={14} color={activeTab === 'quests' ? '#000000' : '#a8a8a8'} />
             <Text style={[styles.tabText, activeTab === 'quests' && styles.tabTextActive]}>QUESTS</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.tab, activeTab === 'progression' && styles.tabActive]}
             onPress={() => setActiveTab('progression')}
           >
-            <Ionicons name="trending-up" size={14} color={activeTab === 'progression' ? '#000000' : '#737373'} />
+            <Ionicons name="trending-up" size={14} color={activeTab === 'progression' ? '#000000' : '#a8a8a8'} />
             <Text style={[styles.tabText, activeTab === 'progression' && styles.tabTextActive]}>PROGRESSION</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.tab, activeTab === 'recycle' && styles.tabActive]}
             onPress={() => setActiveTab('recycle')}
           >
-            <Ionicons name="trash" size={14} color={activeTab === 'recycle' ? '#000000' : '#737373'} />
+            <Ionicons name="trash" size={14} color={activeTab === 'recycle' ? '#000000' : '#a8a8a8'} />
             <Text style={[styles.tabText, activeTab === 'recycle' && styles.tabTextActive]}>RECYCLE</Text>
           </TouchableOpacity>
         </View>
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#737373',
+    color: '#a8a8a8',
     letterSpacing: 1,
     fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
   },

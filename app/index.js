@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Platform, Animated } from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Platform, Animated, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter, useFocusEffect } from 'expo-router';
 import Svg, { Defs, Filter, FeGaussianBlur, FeMerge, FeMergeNode, LinearGradient, Stop, G, Line, Text as SvgText, Path } from 'react-native-svg';
-import AnimatedScreen from '../components/AnimatedScreen';
-import DesktopNav from '../components/DesktopNav';
-import Footer from '../components/Footer';
-import { PATCH_NOTES_DATA } from '../data';
-import { QUESTS_DATA } from '../data-quests';
-import { LOOT_CHEATSHEET } from '../data-loot-cheatsheet';
+
+import AnimatedScreen from '../src/components/AnimatedScreen';
+import DesktopNav from '../src/components/DesktopNav';
+import Footer from '../src/components/Footer';
+import SEO from '../src/components/SEO';
+import { PATCH_NOTES_DATA } from '../src/data';
+import { QUESTS_DATA } from '../src/data-quests';
 
 const TRACKED_QUESTS_KEY = '@tracked_quests';
-
 const { width } = Dimensions.get('window');
-const isDesktop = width > 768;
 
 const TIPS_DATA = [
   { title: 'SOUND DISCIPLINE', text: 'Sprinting alerts nearby Drones. Use crouch-walk near POIs to avoid detection.' },
@@ -49,150 +49,152 @@ const RaidersLogo = ({ style }) => {
 
   return (
     <Animated.View style={[style, { opacity: glowOpacity }]}>
-  <Svg viewBox="0 0 800 300" style={style}>
-    <Defs>
-      <LinearGradient id="arcOrange" x1="0" y1="0" x2="1" y2="0">
-        <Stop offset="0%" stopColor="#ff3300" />
-        <Stop offset="50%" stopColor="#ff6600" />
-        <Stop offset="100%" stopColor="#ff3300" />
-      </LinearGradient>
-      <LinearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0%" stopColor="#ffffff" />
-        <Stop offset="45%" stopColor="#cccccc" />
-        <Stop offset="50%" stopColor="#999999" />
-        <Stop offset="55%" stopColor="#cccccc" />
-        <Stop offset="100%" stopColor="#eeeeee" />
-      </LinearGradient>
-    </Defs>
+      <Svg viewBox="0 0 800 300" style={style}>
+        <Defs>
+          <LinearGradient id="arcOrange" x1="0" y1="0" x2="1" y2="0">
+            <Stop offset="0%" stopColor="#ff3300" />
+            <Stop offset="50%" stopColor="#ff6600" />
+            <Stop offset="100%" stopColor="#ff3300" />
+          </LinearGradient>
+          <LinearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor="#ffffff" />
+            <Stop offset="45%" stopColor="#cccccc" />
+            <Stop offset="50%" stopColor="#999999" />
+            <Stop offset="55%" stopColor="#cccccc" />
+            <Stop offset="100%" stopColor="#eeeeee" />
+          </LinearGradient>
+        </Defs>
 
-    <G>
-      <Path d="M 50 50 L 150 50 L 170 30" fill="none" stroke="#444" strokeWidth="2" />
-      <Path d="M 750 50 L 650 50 L 630 30" fill="none" stroke="#444" strokeWidth="2" />
-      <Path d="M 50 250 L 150 250 L 170 270" fill="none" stroke="#444" strokeWidth="2" />
-      <Path d="M 750 250 L 650 250 L 630 270" fill="none" stroke="#444" strokeWidth="2" />
+        <G>
+          <Path d="M 50 50 L 150 50 L 170 30" fill="none" stroke="#444" strokeWidth="2" />
+          <Path d="M 750 50 L 650 50 L 630 30" fill="none" stroke="#444" strokeWidth="2" />
+          <Path d="M 50 250 L 150 250 L 170 270" fill="none" stroke="#444" strokeWidth="2" />
+          <Path d="M 750 250 L 650 250 L 630 270" fill="none" stroke="#444" strokeWidth="2" />
 
-      <Line x1="40" y1="60" x2="40" y2="240" stroke="#ff4500" strokeWidth="4" opacity="0.8" />
-      <Line x1="760" y1="60" x2="760" y2="240" stroke="#ff4500" strokeWidth="4" opacity="0.8" />
-      
-      <Line x1="180" y1="150" x2="620" y2="150" stroke="#ff4500" strokeWidth="1" opacity="0.2" />
+          <Line x1="40" y1="60" x2="40" y2="240" stroke="#ff4500" strokeWidth="4" opacity="0.8" />
+          <Line x1="760" y1="60" x2="760" y2="240" stroke="#ff4500" strokeWidth="4" opacity="0.8" />
+          
+          <Line x1="180" y1="150" x2="620" y2="150" stroke="#ff4500" strokeWidth="1" opacity="0.2" />
 
-      <SvgText
-        x="400"
-        y="160"
-        fontFamily="sans-serif"
-        fontWeight="900"
-        fontSize="110"
-        letterSpacing="8"
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fill="#ffffff"
-        stroke="#1a1a1a"
-        strokeWidth="3"
-      >
-        RAIDERS
-      </SvgText>
-      <SvgText
-        x="400"
-        y="160"
-        fontFamily="sans-serif"
-        fontWeight="900"
-        fontSize="110"
-        letterSpacing="8"
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fill="url(#metalGrad)"
-      >
-        RAIDERS
-      </SvgText>
-      
-      <G transform="translate(400, 205)">
-        <Path d="M -150 0 L 150 0 L 160 35 L -160 35 Z" fill="#ff4500" opacity="0.9" />
-        <SvgText
-          x="0"
-          y="26"
-          fontFamily="Arial, Helvetica, sans-serif"
-          fontWeight="bold"
-          fontSize="24"
-          letterSpacing="12"
-          textAnchor="middle"
-          fill="#0a0a0a"
-          stroke="#000"
-          strokeWidth="1"
-          paintOrder="stroke"
-        >
-          DIGEST
-        </SvgText>
-      </G>
+          <SvgText
+            x="400"
+            y="160"
+            fontFamily="sans-serif"
+            fontWeight="900"
+            fontSize="110"
+            letterSpacing="8"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="#ffffff"
+            stroke="#1a1a1a"
+            strokeWidth="3"
+          >
+            RAIDERS
+          </SvgText>
+          <SvgText
+            x="400"
+            y="160"
+            fontFamily="sans-serif"
+            fontWeight="900"
+            fontSize="110"
+            letterSpacing="8"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="url(#metalGrad)"
+          >
+            RAIDERS
+          </SvgText>
+          
+          <G transform="translate(400, 205)">
+            <Path d="M -150 0 L 150 0 L 160 35 L -160 35 Z" fill="#ff4500" opacity="0.9" />
+            <SvgText
+              x="0"
+              y="26"
+              fontFamily="Arial, Helvetica, sans-serif"
+              fontWeight="bold"
+              fontSize="24"
+              letterSpacing="12"
+              textAnchor="middle"
+              fill="#0a0a0a"
+              stroke="#000"
+              strokeWidth="1"
+              paintOrder="stroke"
+            >
+              DIGEST
+            </SvgText>
+          </G>
 
-      <SvgText
-        x="400"
-        y="45"
-        fontFamily="monospace"
-        fontSize="12"
-        fill="#888"
-        letterSpacing="4"
-        textAnchor="middle"
-      >
-        // SYSTEM_OVERRIDE // ARC_NET_V2.4
-      </SvgText>
+          <SvgText
+            x="400"
+            y="45"
+            fontFamily="monospace"
+            fontSize="12"
+            fill="#888"
+            letterSpacing="4"
+            textAnchor="middle"
+          >
+            // SYSTEM_OVERRIDE // ARC_NET_V2.4
+          </SvgText>
 
-      <SvgText
-        x="400"
-        y="265"
-        fontFamily="monospace"
-        fontSize="10"
-        fill="#888"
-        letterSpacing="2"
-        textAnchor="middle"
-      >
-        EST. 2025 • RESISTANCE BROADCAST
-      </SvgText>
-    </G>
-  </Svg>
+          <SvgText
+            x="400"
+            y="265"
+            fontFamily="monospace"
+            fontSize="10"
+            fill="#888"
+            letterSpacing="2"
+            textAnchor="middle"
+          >
+            EST. 2025 • RESISTANCE BROADCAST
+          </SvgText>
+        </G>
+      </Svg>
     </Animated.View>
   );
 };
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen() {
+  const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
   const [trackedQuests, setTrackedQuests] = useState([]);
-
+  
   useEffect(() => {
-    loadTrackedQuests();
-    
-    // Set up listener for when screen comes into focus
-    const unsubscribe = navigation.addListener('focus', () => {
-      loadTrackedQuests();
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setIsDesktop(window.width > 768);
     });
-
-    return unsubscribe;
-  }, [navigation]);
-
-  const loadTrackedQuests = async () => {
+    return () => subscription?.remove();
+  }, []);
+  
+  const loadTrackedQuests = useCallback(async () => {
     try {
-      // Use static quest data
       const storedIds = await AsyncStorage.getItem(TRACKED_QUESTS_KEY);
       if (storedIds) {
         const questIds = JSON.parse(storedIds);
-        if (questIds.length > 0) {
-          // Get tracked quests and sort them - starred ones first
-          const tracked = QUESTS_DATA.filter(q => questIds.includes(q.id));
-          setTrackedQuests(tracked);
-        } else {
-          setTrackedQuests([]);
-        }
+        const tracked = QUESTS_DATA.filter(q => questIds.includes(q.id));
+        setTrackedQuests(tracked);
       } else {
-        // No tracked quests yet
         setTrackedQuests([]);
       }
     } catch (error) {
       console.error('Error loading tracked quests:', error);
-      setTrackedQuests([]);
     }
-  };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadTrackedQuests();
+    }, [loadTrackedQuests])
+  );
+
+  const router = useRouter();
 
   return (
     <AnimatedScreen>
-      {isDesktop && <DesktopNav navigation={navigation} currentRoute="Home" />}
+      <SEO 
+        title="Raiders Digest - Arc Raiders Database & Guides"
+        description="Your tactical database for Arc Raiders. Browse weapons, enemies, quests, loot, traders, and maps. Track quests, view patch notes, and access survival guides."
+        path="/"
+      />
+      {isDesktop && <DesktopNav navigation={{}} currentRoute="Home" />}
       <ScrollView style={styles.container} contentContainerStyle={[styles.content, isDesktop && styles.contentDesktop]}>
         {/* Background Grid */}
         <View style={styles.backgroundGrid} />
@@ -202,7 +204,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.heroAccent} />
           
           {/* SVG Logo */}
-          <RaidersLogo style={styles.logo} />
+          <RaidersLogo style={[styles.logo, isDesktop && styles.logoDesktop]} />
           
           <View style={styles.heroStatusBadge}>
             <Ionicons name="terminal" size={14} color="#ff8c00" />
@@ -227,7 +229,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.accessGrid}>
             <TouchableOpacity 
               style={styles.accessCard}
-              onPress={() => navigation.navigate('SurvivalGuide')}
+              onPress={() => router.push('/survival-guide')}
             >
               <View style={styles.accessIcon}>
                 <Ionicons name="shield-checkmark" size={24} color="#ff8c00" />
@@ -241,7 +243,7 @@ export default function HomeScreen({ navigation }) {
 
             <TouchableOpacity 
               style={styles.accessCard}
-              onPress={() => navigation.navigate('Traders')}
+              onPress={() => router.push('/traders')}
             >
               <View style={styles.accessIcon}>
                 <Ionicons name="people" size={24} color="#eab308" />
@@ -255,7 +257,7 @@ export default function HomeScreen({ navigation }) {
             
             <TouchableOpacity 
               style={styles.accessCard}
-              onPress={() => navigation.navigate('LootCheatSheet')}
+              onPress={() => router.push('/loot-cheatsheet')}
             >
               <View style={styles.accessIcon}>
                 <Ionicons name="bookmark" size={24} color="#eab308" />
@@ -269,7 +271,7 @@ export default function HomeScreen({ navigation }) {
 
             <TouchableOpacity 
               style={styles.accessCard}
-              onPress={() => navigation.navigate('Crafting')}
+              onPress={() => router.push('/crafting')}
             >
               <View style={styles.accessIcon}>
                 <Ionicons name="construct" size={24} color="#ff8c00" />
@@ -283,13 +285,14 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Tracked Quests - Only show if there are tracked quests */}
+        {/* Tracked Quests */}
         {trackedQuests.length > 0 && (
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <View style={styles.sectionAccent} />
               <Text style={styles.sectionTitle}>STARRED_QUESTS</Text>
-              <TouchableOpacity           onPress={() => navigation.navigate('Quests')}
+              <TouchableOpacity 
+                onPress={() => router.push('/quests')}
                 style={styles.manageButton}
               >
                 <Text style={styles.manageButtonText}>MANAGE</Text>
@@ -362,7 +365,7 @@ export default function HomeScreen({ navigation }) {
                 <View style={styles.sectionAccentGrey} />
                 <Text style={styles.sectionTitle}>DEV_LOG</Text>
               </View>
-              <TouchableOpacity onPress={() => navigation.navigate('PatchNotes')}>
+              <TouchableOpacity onPress={() => router.push('/patch-notes')}>
                 <View style={styles.viewAllContainer}>
                   <Text style={styles.viewAllText}>VIEW_ARCHIVE</Text>
                   <Ionicons name="chevron-forward" size={10} color="#ff3e00" />
@@ -427,15 +430,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   content: {
-    padding: isDesktop ? 40 : 24,
-    paddingTop: isDesktop ? 20 : 10,
+    padding: 24,
+    paddingTop: 10,
     paddingBottom: 100,
-    maxWidth: isDesktop ? 1200 : '100%',
+    maxWidth: 1200,
     alignSelf: 'center',
     width: '100%',
   },
   contentDesktop: {
-    paddingTop: 70,
+    padding: 40,
+    paddingTop: 90,
   },
   backgroundGrid: {
     position: 'absolute',
@@ -458,12 +462,15 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'center',
   },
-
   logo: {
     width: '100%',
-    maxWidth: isDesktop ? 600 : 400,
-    height: isDesktop ? 180 : 120,
+    maxWidth: 400,
+    height: 120,
     marginBottom: 24,
+  },
+  logoDesktop: {
+    maxWidth: 600,
+    height: 180,
   },
   heroStatusBadge: {
     flexDirection: 'row',
@@ -501,9 +508,8 @@ const styles = StyleSheet.create({
   heroDivider: {
     width: '100%',
     height: 1,
-    opacity: 0.5,
-    // Create gradient effect manually with multiple views if needed
     backgroundColor: '#ff8c00',
+    opacity: 0.5,
   },
   
   // Section Headers
@@ -603,31 +609,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 48,
-    backgroundColor: 'rgba(23, 23, 23, 0.3)',
-    borderWidth: 1,
-    borderColor: '#262626',
-    borderStyle: 'dashed',
-  },
-  emptyStateTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#a8a8a8',
-    letterSpacing: 2,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    fontSize: 12,
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    color: '#909090',
-    textAlign: 'center',
-    lineHeight: 18,
-  },
   questsGrid: {
     gap: 16,
   },
@@ -720,14 +701,17 @@ const styles = StyleSheet.create({
   bottomRow: {
     gap: 24,
     flexDirection: 'column',
+    marginTop: 24,
   },
   bottomRowDesktop: {
     flexDirection: 'row',
+    gap: 24,
   },
   
   // Patch Notes
   patchSection: {
     flex: 1,
+    marginBottom: 24,
   },
   patchSectionDesktop: {
     flex: 2,
@@ -800,9 +784,10 @@ const styles = StyleSheet.create({
   },
   tipsSectionDesktop: {
     flex: 1,
+    marginTop: 0,
   },
   tipsSectionMobile: {
-    marginTop: 64,
+    marginTop: 24,
   },
   tipsContainer: {
     gap: 12,
