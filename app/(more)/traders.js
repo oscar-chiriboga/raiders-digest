@@ -7,11 +7,26 @@ import Footer from '../../src/components/Footer';
 import CurrencyIcon from '../../src/components/CurrencyIcon';
 import ArcSeedsIcon from '../../src/components/ArcSeedsIcon';
 import SEO from '../../src/components/SEO';
-import { useApiData } from '../../src/utils/useApiData';
+import { TRADERS_DATA } from '../../src/data-traders';
+
+// Transform static data to match the component's expected structure
+const TRADERS_TRANSFORMED = TRADERS_DATA.reduce((acc, trader) => {
+  acc[trader.name] = trader.inventory.map(invEntry => ({
+    ...invEntry.item,
+    item_type: invEntry.item.type,
+    trader_price: invEntry.costs.map(c => `${c.quantity} ${c.item.name}`).join(', '),
+  }));
+  return acc;
+}, {});
 
 export default function TradersScreen() {
   const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
-  const { data: traders, loading, error, refresh } = useApiData('traders');
+
+  const traders = TRADERS_TRANSFORMED;
+  const loading = false;
+  const error = null;
+  const refresh = () => {};
+
   const [refreshing, setRefreshing] = useState(false);
   const [selectedTrader, setSelectedTrader] = useState('all');
   const [selectedRarity, setSelectedRarity] = useState('all');
