@@ -103,13 +103,18 @@ function MoreModal({ visible, onClose }) {
 }
 
 function AppTabs() {
-  const [isDesktop, setIsDesktop] = useState(Dimensions.get('window').width > 768);
+  // Check if we're on web AND the screen is desktop-sized
+  const [isDesktop, setIsDesktop] = useState(
+    Platform.OS === 'web' && Dimensions.get('window').width > 768
+  );
   const insets = useSafeAreaInsets();
   const tabBarHeight = Platform.OS === 'ios' ? 70 : 65;
   const bottomPadding = insets.bottom > 0 ? insets.bottom : 10;
   const [moreModalVisible, setMoreModalVisible] = useState(false);
 
   useEffect(() => {
+    if (Platform.OS !== 'web') return; // Only run on web
+    
     const updateLayout = () => {
       const width = Dimensions.get('window').width;
       setIsDesktop(width > 768);
@@ -126,7 +131,13 @@ function AppTabs() {
       <Tabs
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarStyle: isDesktop ? { display: 'none' } : {
+          tabBarStyle: isDesktop ? { 
+            display: 'none',
+            height: 0,
+            opacity: 0,
+            position: 'absolute',
+            bottom: -100 
+          } : {
             position: 'absolute',
             bottom: 0,
             left: 0,
