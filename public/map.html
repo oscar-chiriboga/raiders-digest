@@ -497,27 +497,22 @@
       createLegend();
     }
 
-    // Load map data from JSON and any user-submitted markers
+    // Load user-submitted markers only (no base data)
     async function loadMapData() {
       try {
-        const response = await fetch('./map-data.json');
-        const data = await response.json();
-        allMarkers = data.allData || [];
-        
         // Load user-submitted markers from backend (if available)
-        try {
-          const userMarkersResponse = await fetch(API_ENDPOINT);
-          if (userMarkersResponse.ok) {
-            const userMarkers = await userMarkersResponse.json();
-            allMarkers = [...allMarkers, ...userMarkers];
-          }
-        } catch (err) {
-          console.log('User markers not available yet');
+        const userMarkersResponse = await fetch(API_ENDPOINT);
+        if (userMarkersResponse.ok) {
+          const userMarkers = await userMarkersResponse.json();
+          allMarkers = userMarkers;
+          displayMarkers();
+        } else {
+          console.log('No user markers available yet');
+          allMarkers = [];
         }
-        
-        displayMarkers();
       } catch (error) {
-        console.error('Failed to load map data:', error);
+        console.log('Backend not available yet - starting with empty map');
+        allMarkers = [];
       }
     }
 
