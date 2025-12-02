@@ -1,11 +1,20 @@
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 
 const MARKERS_KEY = 'dam-battlegrounds-markers';
 
+// Create Redis client using REDIS_URL
+let redis = null;
+async function getRedisClient() {
+  if (!redis) {
+    redis = createClient({
+      url: process.env.REDIS_URL
+    });
+    await redis.connect();
+  }
+  return redis;
+}
+
 export default async function handler(req, res) {
-  // Log environment variables for debugging
-  console.log('KV_REST_API_URL exists:', !!process.env.KV_REST_API_URL);
-  console.log('KV_REST_API_TOKEN exists:', !!process.env.KV_REST_API_TOKEN);
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
@@ -16,9 +25,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    const client = await getRedisClient();
+    
     if (req.method === 'GET') {
       // Get all markers
-      const markers = await kv.get(MARKERS_KEY) || [];
+      const data = await client.get(MARKERS_KEY);
+      const markers = data ? JSON.parse(data) : [];
       return res.status(200).json(markers);
     }
 
@@ -33,13 +45,14 @@ export default async function handler(req, res) {
       newMarker.createdAt = new Date().toISOString();
       
       // Get existing markers
-      const markers = await kv.get(MARKERS_KEY) || [];
+      const data = await client.get(MARKERS_KEY);
+      const markers = data ? JSON.parse(data) : [];
       
       // Add new marker
       markers.push(newMarker);
       
-      // Save back to KV
-      await kv.set(MARKERS_KEY, markers);
+      // Save back to Redis
+      await client.set(MARKERS_KEY, JSON.stringify(markers));
       
       return res.status(201).json(newMarker);
     }
@@ -48,10 +61,11 @@ export default async function handler(req, res) {
       // Delete marker by ID (from query param)
       const { id } = req.query;
       
-      const markers = await kv.get(MARKERS_KEY) || [];
+      const data = await client.get(MARKERS_KEY);
+      const markers = data ? JSON.parse(data) : [];
       const filteredMarkers = markers.filter(m => m.id !== id);
       
-      await kv.set(MARKERS_KEY, filteredMarkers);
+      await client.set(MARKERS_KEY, JSON.stringify(filteredMarkers));
       
       return res.status(200).json({ success: true });
     }

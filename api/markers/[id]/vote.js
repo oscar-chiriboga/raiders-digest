@@ -1,6 +1,18 @@
-import { kv } from '@vercel/kv';
+import { createClient } from 'redis';
 
 const MARKERS_KEY = 'dam-battlegrounds-markers';
+
+// Create Redis client using REDIS_URL
+let redis = null;
+async function getRedisClient() {
+  if (!redis) {
+    redis = createClient({
+      url: process.env.REDIS_URL
+    });
+    await redis.connect();
+  }
+  return redis;
+}
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -17,11 +29,13 @@ export default async function handler(req, res) {
   }
 
   try {
+    const client = await getRedisClient();
     const { id } = req.query;
     const { vote } = req.body; // 'up' or 'down'
     
     // Get all markers
-    const markers = await kv.get(MARKERS_KEY) || [];
+    const data = await client.get(MARKERS_KEY);
+    const markers = data ? JSON.parse(data) : [];
     
     // Find and update the marker
     const markerIndex = markers.findIndex(m => m.id === id);
@@ -50,7 +64,7 @@ export default async function handler(req, res) {
     }
     
     // Save back
-    await kv.set(MARKERS_KEY, markers);
+    await client.set(MARKERS_KEY, JSON.stringify(markers));
     
     return res.status(200).json(marker);
   } catch (error) {
