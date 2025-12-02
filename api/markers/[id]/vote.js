@@ -55,6 +55,9 @@ export default async function handler(req, res) {
     return res.status(200).json(marker);
   } catch (error) {
     console.error('Vote Error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      details: error.message
+    });
   }
 }
