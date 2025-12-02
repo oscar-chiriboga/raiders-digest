@@ -3,6 +3,9 @@ import { kv } from '@vercel/kv';
 const MARKERS_KEY = 'dam-battlegrounds-markers';
 
 export default async function handler(req, res) {
+  // Log environment variables for debugging
+  console.log('KV_REST_API_URL exists:', !!process.env.KV_REST_API_URL);
+  console.log('KV_REST_API_TOKEN exists:', !!process.env.KV_REST_API_TOKEN);
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
