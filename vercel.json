@@ -2,21 +2,11 @@
   "buildCommand": "npx expo export --platform web && node copy-public-files.js",
   "outputDirectory": "dist",
   "rewrites": [
+    { "source": "/map.html", "destination": "/map.html" },
+    { "source": "/map-data.json", "destination": "/map-data.json" },
+    { "source": "/dam-battlegrounds-2k.webp", "destination": "/dam-battlegrounds-2k.webp" },
+    { "source": "/dam-battlegrounds-4k.webp", "destination": "/dam-battlegrounds-4k.webp" },
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "routes": [
-    {
-      "src": "/map-data.json",
-      "dest": "/map-data.json"
-    },
-    {
-      "src": "/map.html",
-      "dest": "/map.html"
-    },
-    {
-      "src": "/dam-battlegrounds-(2k|4k).webp",
-      "dest": "/$0"
-    }
   ],
   "headers": [
     {
