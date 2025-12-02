@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "name": "tick",
+    "pos": [
+      1259,
+      3312.858319915096
+    ],
+    "type": "tick",
+    "icon": "tick",
+    "category": "arc",
+    "subcategory": "tick"
+  },
+  {
+    "id": 2,
+    "name": "sentinel",
+    "pos": [
+      3172.928966375015,
+      4219.824225048862
+    ],
+    "type": "sentinel",
+    "icon": "sentinel",
+    "category": "arc",
+    "subcategory": "sentinel"
+  },
+  {
+    "id": 3,
+    "name": "tick",
+    "pos": [
+      1355,
+      3105.90639823899
+    ],
+    "type": "tick",
+    "icon": "tick",
+    "category": "arc",
+    "subcategory": "tick"
+  },
+  {
+    "id": 4,
+    "name": "pop",
+    "pos": [
+      3612.908433217793,
+      4743.802727582946
+    ],
+    "type": "pop",
+    "icon": "pop",
+    "category": "arc",
+    "subcategory": "pop"
+  },
+  {
+    "id": 5,
+    "name": "container",
+    "pos": [
+      4236,
+      4039.840900232526
+    ],
+    "type": "container",
+    "icon": "container",
+    "category": "containers",
+    "subcategory": "base_container"
+  },
+  {
+    "id": 6,
+    "name": "breach",
+    "pos": [
+      2332.249910745678,
+      2789.936993758019
+    ],
+    "type": "breach",
+    "icon": "breach",
+    "category": "containers",
+    "subcategory": "breachable_container"
+  },
+  {
+    "id": 7,
+    "name": "container",
+    "pos": [
+      2260.216024542874,
+      2765.9392419488177
+    ],
+    "type": "container",
+    "icon": "container",
+    "category": "containers",
+    "subcategory": "base_container"
+  },
+  {
+    "id": 8,
+    "name": "spawn",
+    "pos": [
+      4008.8554354741523,
+      3749.0094826227823
+    ],
+    "type": "spawn",
+    "icon": "spawn",
+    "category": "locations",
+    "subcategory": "player_spawn"
+  },
+  {
+    "id": 9,
+    "name": "breach",
+    "pos": [
+      2233.203317216823,
+      2813.9347455672205
+    ],
+    "type": "breach",
+    "icon": "breach",
+    "category": "containers",
+    "subcategory": "breachable_container"
+  },
+  {
+    "id": 10,
+    "name": "pop",
+    "pos": [
+      1784.184962190304,
+      3767.934183519521
+    ],
+    "type": "pop",
+    "icon": "pop",
+    "category": "arc",
+    "subcategory": "pop"
+  },
+  {
+    "id": 11,
+    "name": "bison",
+    "pos": [
+      2002.287562082127,
+      4178.8956832521
+    ],
+    "type": "bison",
+    "icon": "bison",
+    "category": "arc",
+    "subcategory": "bison"
+  },
+  {
+    "id": 12,
+    "name": "utility",
+    "pos": [
+      1831.2070823504678,
+      3952.9168537154505
+    ],
+    "type": "utility",
+    "icon": "utility-crate",
+    "category": "containers",
+    "subcategory": "utility_crate"
+  },
+  {
+    "id": 13,
+    "name": "baron",
+    "pos": [
+      2284.2273199438087,
+      2820.9340898449045
+    ],
+    "type": "baron",
+    "icon": "baron",
+    "category": "containers",
+    "subcategory": "baron_husk"
+  },
+  {
+    "id": 14,
+    "name": "depot",
+    "pos": [
+      1930.253675879323,
+      3755.9353076149205
+    ],
+    "type": "depot",
+    "icon": "depot",
+    "category": "locations",
+    "subcategory": "field_depot"
+  },
+  {
+    "id": 15,
+    "name": "rocketeer",
+    "pos": [
+      1970.2725015475473,
+      3771.9338088210548
+    ],
+    "type": "rocketeer",
+    "icon": "rocketeer",
+    "category": "arc",
+    "subcategory": "rocketeer"
+  },
+  {
+    "id": 16,
+    "name": "tick",
+    "pos": [
+      3476.946169831066,
+      4793.786920622715
+    ],
+    "type": "tick",
+    "icon": "tick",
+    "category": "arc",
+    "subcategory": "tick"
+  },
+  {
+    "id": 17,
+    "name": "container",
+    "pos": [
+      3346.9248042485515,
+      4430.816321568746
+    ],
+    "type": "container",
+    "icon": "container",
+    "category": "containers",
+    "subcategory": "base_container"
+  },
+  {
+    "id": 18,
+    "name": "tick",
+    "pos": [
+      3431.9586562104582,
+      4774.792927267603
+    ],
+    "type": "tick",
+    "icon": "tick",
+    "category": "arc",
+    "subcategory": "tick"
+  },
+  {
+    "id": 19,
+    "name": "container",
+    "pos": [
+      4212,
+      3969.8571586029248
+    ],
+    "type": "container",
+    "icon": "container",
+    "category": "containers",
+    "subcategory": "base_container"
+  },
+  {
+    "id": 20,
+    "name": "Field Crate",
+    "pos": [
+      3320.9894559462914,
+      4777.791978849989
+    ],
+    "type": "container",
+    "icon": "container",
+    "category": "containers",
+    "subcategory": "base_container"
+  }
+]

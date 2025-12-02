@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dam Battlegrounds - Interactive Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0a0a0a;
+      color: #fff;
+      overflow: hidden;
+    }
+    
+    #map {
+      width: 100vw;
+      height: 100vh;
+      background: #1a1a1a;
+    }
+    
+    .custom-marker {
+      background: transparent;
+      border: none;
+    }
+    
+    .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+      background-color: #171717;
+      border: 1px solid #262626;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    }
+    
+    .leaflet-popup-content {
+      margin: 0;
+      color: #fff;
+    }
+
+    .leaflet-popup-tip {
+      background-color: #171717;
+      border: 1px solid #262626;
+      border-top: none;
+      border-right: none;
+    }
+
+    .leaflet-control-attribution {
+      display: none !important;
+    }
+
+    #addLocationToggle,
+    #toggleLegend {
+      position: absolute;
+      top: 10px;
+      z-index: 1000;
+      background: rgba(23, 23, 23, 0.95);
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #262626;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Courier New', monospace;
+    }
+
+    #addLocationToggle {
+      right: 10px;
+    }
+
+    #toggleLegend {
+      right: 160px;
+    }
+
+    #addLocationToggle:hover,
+    #toggleLegend:hover {
+      background: rgba(38, 38, 38, 0.95);
+      border-color: #ff8c00;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 25px rgba(255, 140, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      #addLocationToggle,
+      #toggleLegend {
+        padding: 8px 12px;
+        font-size: 10px;
+        gap: 5px;
+      }
+      
+      #addLocationToggle svg,
+      #toggleLegend svg {
+        width: 14px;
+        height: 14px;
+      }
+      
+      #addLocationToggle span,
+      #toggleLegend span {
+        display: none;
+      }
+      
+      #toggleLegend {
+        right: 60px;
+      }
+    }
+
+    #controlPanel {
+      position: absolute;
+      top: 60px;
+      right: 10px;
+      z-index: 999;
+      background: rgba(23, 23, 23, 0.98);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #262626;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      min-width: 240px;
+      max-width: 280px;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+      display: none;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    #controlPanel.active {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      #controlPanel {
+        top: 50px;
+        right: 10px;
+        left: auto;
+        min-width: 200px;
+        max-width: 240px;
+        padding: 14px;
+        max-height: calc(100vh - 120px);
+      }
+    }
+
+    #controlPanel h3 {
+      color: #ff8c00;
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Courier New', monospace;
+    }
+
+    #controlPanel p {
+      font-size: 10px;
+      color: #a8a8a8;
+      margin: 0 0 12px 0;
+      line-height: 1.4;
+      font-family: 'Courier New', monospace;
+    }
+
+    @media (max-width: 768px) {
+      #controlPanel h3 {
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      
+      #controlPanel p {
+        font-size: 9px;
+        margin-bottom: 10px;
+      }
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .button-group {
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+    }
+
+    .location-btn {
+      padding: 10px 12px;
+      background: linear-gradient(135deg, rgba(20, 20, 40, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%);
+      color: #fff;
+      border: 2px solid;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: 'Courier New', monospace;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+      .location-btn {
+        padding: 8px 10px;
+        font-size: 10px;
+        gap: 6px;
+      }
+      
+      .location-btn span:first-child {
+        font-size: 14px;
+      }
+    }
+
+    .location-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: width 0.4s;
+    }
+
+    .location-btn:hover::before {
+      width: 100%;
+    }
+
+    .location-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(100, 181, 246, 0.4);
+    }
+
+    .location-btn.active {
+      background: linear-gradient(135deg, var(--btn-color) 0%, var(--btn-color-dark) 100%);
+      box-shadow: 0 0 20px var(--btn-glow);
+      transform: scale(1.02);
+    }
+
+    .info-box {
+      padding: 10px;
+      background: rgba(255, 140, 0, 0.1);
+      border-radius: 8px;
+      border-left: 3px solid #ff8c00;
+      color: #ff8c00;
+      font-size: 10px;
+      margin-bottom: 12px;
+      animation: pulse 2s ease-in-out infinite;
+      font-family: 'Courier New', monospace;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    @media (max-width: 768px) {
+      .info-box {
+        padding: 8px;
+        font-size: 9px;
+      }
+    }
+
+
+
+    #mapLegend {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: rgba(23, 23, 23, 0.98);
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #262626;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      min-width: 180px;
+      max-width: 220px;
+      transition: all 0.3s ease-out;
+    }
+
+    #mapLegend.hidden {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      #mapLegend {
+        bottom: 70px;
+        left: 10px;
+        padding: 10px 12px;
+        min-width: 160px;
+        max-width: 200px;
+      }
+    }
+
+    #mapLegend h3 {
+      color: #ff8c00;
+      margin: 0 0 10px 0;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Courier New', monospace;
+    }
+
+    @media (max-width: 768px) {
+      #mapLegend h3 {
+        font-size: 10px;
+        margin-bottom: 8px;
+      }
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #a8a8a8;
+      margin-bottom: 7px;
+      transition: all 0.2s;
+      font-family: 'Courier New', monospace;
+    }
+
+    .legend-item:hover {
+      color: #ffffff;
+      transform: translateX(2px);
+    }
+
+    @media (max-width: 768px) {
+      .legend-item {
+        font-size: 9px;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+    }
+
+    .legend-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .legend-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(100, 181, 246, 0.1);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #64b5f6;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00d9ff;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  
+  <button id="addLocationToggle" onclick="togglePanel()">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+    </svg>
+    <span>Add Location</span>
+  </button>
+  
+  <button id="toggleLegend" onclick="toggleLegend()">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+      <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+    </svg>
+    <span>Map Key</span>
+  </button>
+  
+  <div id="controlPanel">
+    <h3>ADD LOCATION</h3>
+    <p>Help build the community map! Click a location type below, then click on the map to add it.</p>
+    <div class="button-group" id="locationButtons"></div>
+    <div id="infoBox" style="display: none;" class="info-box"></div>
+  </div>
+
+  <div id="mapLegend">
+    <h3>Map Key</h3>
+    <div id="legendItems"></div>
+  </div>
+
+  <script>
+    // Location types configuration
+    const locationTypes = [
+      { label: 'Cargo Elevator', icon: 'helicopter', subcategory: 'cargo_elevator', category: 'locations', color: '#10b981' },
+      { label: 'Locked Door', icon: 'lock', subcategory: 'locked_room', category: 'locations', color: '#ef4444' },
+      { label: 'Field Depot', icon: 'box', subcategory: 'field_depot', category: 'locations', color: '#f59e0b' },
+      { label: 'Location', icon: 'pin', subcategory: 'player_spawn', category: 'locations', color: '#8b5cf6' },
+      { label: 'Raider Hatch', icon: 'door', subcategory: 'hatch', category: 'locations', color: '#06b6d4' },
+      { label: 'Raider Camp', icon: 'tent', subcategory: 'raider_camp', category: 'locations', color: '#dc2626' },
+    ];
+
+    // Icon SVG generator
+    function getIconSVG(iconType, color) {
+      const icons = {
+        helicopter: '<path fill="currentColor" d="M20 6h-2V4h-3V2h-2v2H6v2H4v2h2v8h5v2h-1v2h4v-2h-1v-2h5V8h2V6zM6 8h12v6H6V8z"/>',
+        lock: '<path fill="currentColor" d="M12 2C9.24 2 7 4.24 7 7v3H6v10h12V10h-1V7c0-2.76-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3v3H9V7c0-1.66 1.34-3 3-3z"/>',
+        box: '<path fill="currentColor" d="M21 16V8l-9-4-9 4v8l9 4 9-4zM12 6.18L18.09 9 12 11.82 5.91 9 12 6.18zM5 11.1l6 2.7v6.29l-6-2.7V11.1zm8 8.99v-6.29l6-2.7v6.29l-6 2.7z"/>',
+        pin: '<path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>',
+        door: '<path fill="currentColor" d="M19 19V5c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v14H3v2h18v-2h-2zm-8-6h-2v-2h2v2z"/>',
+        tent: '<path fill="currentColor" d="M12 3L2 21h20L12 3zm0 4.5l5 9.5H7l5-9.5z"/>',
+      };
+      return `<svg viewBox="0 0 24 24" width="16" height="16" style="color: ${color};">${icons[iconType] || icons.pin}</svg>`;
+    }
+
+    let map;
+    let addMode = null;
+    let allMarkers = [];
+    const API_ENDPOINT = '/api/markers'; // Backend endpoint for markers
+
+    // Initialize map
+    function initMap() {
+      map = L.map('map', {
+        crs: L.CRS.Simple,
+        minZoom: -3,
+        maxZoom: 4,
+        attributionControl: false,
+        zoomControl: true
+      });
+
+      const bounds = [[0, 0], [7000, 7000]];
+      map.setMaxBounds(bounds);
+      
+      // Set zoom based on screen size - zoom out one more level
+      const isMobile = window.innerWidth < 768;
+      const initialZoom = isMobile ? -3 : -2;
+      
+      map.fitBounds(bounds);
+      map.setZoom(initialZoom);
+
+      // Add responsive image overlay
+      const width = window.innerWidth;
+      const imagePath = width < 768 ? './dam-battlegrounds-2k.webp' : './dam-battlegrounds-4k.webp';
+      
+      L.imageOverlay(imagePath, bounds).addTo(map);
+
+      // Handle map clicks
+      map.on('click', handleMapClick);
+
+      // Load map data
+      loadMapData();
+      
+      // Create UI
+      createLocationButtons();
+      createLegend();
+    }
+
+    // Load map data from JSON and any user-submitted markers
+    async function loadMapData() {
+      try {
+        const response = await fetch('./map-data.json');
+        const data = await response.json();
+        allMarkers = data.allData || [];
+        
+        // Load user-submitted markers from backend (if available)
+        try {
+          const userMarkersResponse = await fetch(API_ENDPOINT);
+          if (userMarkersResponse.ok) {
+            const userMarkers = await userMarkersResponse.json();
+            allMarkers = [...allMarkers, ...userMarkers];
+          }
+        } catch (err) {
+          console.log('User markers not available yet');
+        }
+        
+        displayMarkers();
+      } catch (error) {
+        console.error('Failed to load map data:', error);
+      }
+    }
+
+    // Save marker to backend
+    async function saveMarkerToBackend(marker) {
+      try {
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(marker)
+        });
+        
+        if (response.ok) {
+          return await response.json();
+        } else {
+          throw new Error('Failed to save marker');
+        }
+      } catch (error) {
+        console.error('Error saving marker:', error);
+        alert('Unable to save marker. Please try again later.');
+        return null;
+      }
+    }
+
+    // Vote on marker (thumbs up/down)
+    async function voteOnMarker(markerId, voteType) {
+      try {
+        const response = await fetch(`${API_ENDPOINT}/${markerId}/vote`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ vote: voteType })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          // Reload markers to show updated votes
+          await loadMapData();
+          return result;
+        }
+      } catch (error) {
+        console.error('Error voting on marker:', error);
+        alert('Unable to vote. Please try again later.');
+      }
+    }
+
+    // Delete marker (if votes are negative enough)
+    async function deleteMarker(markerId) {
+      try {
+        const response = await fetch(`${API_ENDPOINT}/${markerId}`, {
+          method: 'DELETE'
+        });
+        
+        if (response.ok) {
+          // Reload markers
+          await loadMapData();
+        }
+      } catch (error) {
+        console.error('Error deleting marker:', error);
+      }
+    }
+
+    // Create marker icon
+    function createMarkerIcon(category, subcategory) {
+      let color = '#3b82f6';
+      let iconType = 'pin';
+      
+      if (subcategory === 'extraction' || subcategory === 'cargo_elevator') {
+        color = '#10b981';
+        iconType = 'helicopter';
+      } else if (subcategory === 'locked_room') {
+        color = '#ef4444';
+        iconType = 'lock';
+      } else if (subcategory === 'field_depot') {
+        color = '#f59e0b';
+        iconType = 'box';
+      } else if (subcategory === 'player_spawn') {
+        color = '#8b5cf6';
+        iconType = 'pin';
+      } else if (subcategory === 'hatch') {
+        color = '#06b6d4';
+        iconType = 'door';
+      } else if (subcategory === 'raider_camp') {
+        color = '#dc2626';
+        iconType = 'tent';
+      } else if (category === 'arc' || category === 'bosses') {
+        color = '#ef4444';
+        iconType = 'pin';
+      } else if (category === 'containers') {
+        color = '#22c55e';
+        iconType = 'box';
+      }
+
+      const svg = getIconSVG(iconType, '#ffffff');
+
+      return L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="width: 28px; height: 28px; background-color: ${color}; border: 2px solid rgba(255, 255, 255, 0.9); border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">${svg}</div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        popupAnchor: [0, -14]
+      });
+    }
+
+    // Transform coordinates
+    function transformCoordinates(lat, lng) {
+      return [7000 - lat, lng];
+    }
+
+    // Display all markers
+    function displayMarkers() {
+      allMarkers.forEach(marker => {
+        const [leafletLat, leafletLng] = transformCoordinates(marker.lat, marker.lng);
+        const icon = createMarkerIcon(marker.category, marker.subcategory);
+        
+        const leafletMarker = L.marker([leafletLat, leafletLng], { icon }).addTo(map);
+        
+        // Only show voting for user-submitted markers (those with votes property)
+        const isUserSubmitted = marker.hasOwnProperty('upvotes') || marker.hasOwnProperty('downvotes');
+        const upvotes = marker.upvotes || 0;
+        const downvotes = marker.downvotes || 0;
+        const netVotes = upvotes - downvotes;
+        
+        let popupContent = `<div style="padding: 10px; min-width: 180px; background: #171717; font-family: 'Courier New', monospace;">`;
+        popupContent += `<strong style="text-transform: capitalize; display: block; font-size: 13px; margin-bottom: 4px; color: #fff; font-weight: 900; letter-spacing: 0.5px;">${marker.instanceName || marker.subcategory?.replace(/_/g, ' ') || marker.category}</strong>`;
+        
+        if (marker.subcategory) {
+          popupContent += `<div style="font-size: 10px; margin-bottom: 8px; color: #a8a8a8; text-transform: uppercase; letter-spacing: 0.5px;">${marker.subcategory.replace(/_/g, ' ')}</div>`;
+        }
+        
+        // Show voting buttons for user-submitted markers
+        if (isUserSubmitted) {
+          popupContent += `<div style="display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #262626;">`;
+          popupContent += `<button onclick="voteOnMarker('${marker.id}', 'up')" style="background: #22c55e; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; color: #000; font-weight: bold; font-size: 10px; display: flex; align-items: center; gap: 3px; transition: all 0.2s; font-family: 'Courier New', monospace;">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+            ${upvotes}
+          </button>`;
+          popupContent += `<button onclick="voteOnMarker('${marker.id}', 'down')" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; border-radius: 4px; padding: 5px 10px; cursor: pointer; color: #ef4444; font-weight: bold; font-size: 10px; display: flex; align-items: center; gap: 3px; transition: all 0.2s; font-family: 'Courier New', monospace;">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
+            ${downvotes}
+          </button>`;
+          popupContent += `<span style="color: ${netVotes >= 0 ? '#22c55e' : '#ef4444'}; font-weight: bold; font-size: 11px; margin-left: auto; font-family: 'Courier New', monospace;">${netVotes >= 0 ? '+' : ''}${netVotes}</span>`;
+          popupContent += `</div>`;
+        }
+        
+        popupContent += `</div>`;
+        
+        leafletMarker.bindPopup(popupContent);
+      });
+    }
+
+    // Handle map click
+    async function handleMapClick(e) {
+      if (!addMode) return;
+
+      const gameLat = 7000 - e.latlng.lat;
+      const gameLng = e.latlng.lng;
+
+      const newMarker = {
+        lat: gameLat,
+        lng: gameLng,
+        category: addMode.category,
+        subcategory: addMode.subcategory,
+        instanceName: addMode.label,
+        upvotes: 0,
+        downvotes: 0,
+        mapID: 'dam',
+        zlayers: 2147483647,
+        eventConditionMask: 1,
+        added_by: 'community',
+        added_at: new Date().toISOString()
+      };
+
+      // Save to backend
+      const savedMarker = await saveMarkerToBackend(newMarker);
+      
+      if (savedMarker) {
+        // Add to local markers array
+        allMarkers.push(savedMarker);
+        
+        // Redraw all markers
+        map.eachLayer(layer => {
+          if (layer instanceof L.Marker) {
+            map.removeLayer(layer);
+          }
+        });
+        displayMarkers();
+        
+        // Show success message
+        alert('Location added successfully! Others will see it once it gets enough upvotes.');
+        
+        // Deactivate add mode
+        addMode = null;
+        document.querySelectorAll('.location-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        map.getContainer().style.cursor = 'grab';
+        document.getElementById('infoBox').style.display = 'none';
+      }
+    }
+
+    // Toggle panel visibility
+    function togglePanel() {
+      const panel = document.getElementById('controlPanel');
+      panel.classList.toggle('active');
+    }
+
+    // Toggle legend visibility
+    function toggleLegend() {
+      const legend = document.getElementById('mapLegend');
+      legend.classList.toggle('hidden');
+    }
+
+    // Create location buttons
+    function createLocationButtons() {
+      const container = document.getElementById('locationButtons');
+      locationTypes.forEach(type => {
+        const btn = document.createElement('button');
+        btn.className = 'location-btn';
+        btn.style.borderColor = type.color;
+        btn.style.setProperty('--btn-color', type.color);
+        btn.style.setProperty('--btn-color-dark', adjustBrightness(type.color, -20));
+        btn.style.setProperty('--btn-glow', type.color + '80');
+        const iconSvg = getIconSVG(type.icon, type.color);
+        btn.innerHTML = `<span style="display: flex; align-items: center;">${iconSvg}</span><span>${type.label}</span>`;
+        btn.onclick = () => toggleAddMode(type, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    // Helper function to adjust color brightness
+    function adjustBrightness(color, percent) {
+      const num = parseInt(color.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) + amt;
+      const G = (num >> 8 & 0x00FF) + amt;
+      const B = (num & 0x0000FF) + amt;
+      return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255))
+        .toString(16).slice(1);
+    }
+
+    // Toggle add mode
+    function toggleAddMode(type, button) {
+      if (addMode?.subcategory === type.subcategory) {
+        addMode = null;
+        button.classList.remove('active');
+        map.getContainer().style.cursor = 'grab';
+        document.getElementById('infoBox').style.display = 'none';
+      } else {
+        // Deactivate all buttons
+        document.querySelectorAll('.location-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        addMode = type;
+        button.classList.add('active');
+        map.getContainer().style.cursor = 'crosshair';
+        
+        const infoBox = document.getElementById('infoBox');
+        infoBox.style.display = 'block';
+        infoBox.style.borderLeftColor = type.color;
+        infoBox.innerHTML = `<strong>Click map</strong> to add ${type.label}`;
+      }
+    }
+
+    // Create legend
+    function createLegend() {
+      const container = document.getElementById('legendItems');
+      locationTypes.forEach(type => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        const iconSvg = getIconSVG(type.icon, '#ffffff');
+        item.innerHTML = `
+          <div class="legend-icon" style="background-color: ${type.color};">${iconSvg}</div>
+          <span style="font-weight: 600;">${type.label}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+
+
+    // Initialize on load
+    window.onload = initMap;
+  </script>
+</body>
+</html>
